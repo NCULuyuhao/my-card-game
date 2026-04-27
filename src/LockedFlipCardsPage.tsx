@@ -1637,6 +1637,8 @@ export default function LockedFlipCardsPage() {
   const [hasNewCollectedContent, setHasNewCollectedContent] = useState(false);
   const [hasNewTitleReward, setHasNewTitleReward] = useState(false);
   const rewardTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [showFallingLock, setShowFallingLock] = useState(false);
+  const [showUnlockBurst, setShowUnlockBurst] = useState(false);
   const pendingCardUpdateRef = useRef<null | {
     targetCard: GameCard;
     content: string;
@@ -1737,7 +1739,6 @@ export default function LockedFlipCardsPage() {
     const closeCard = useCallback(() => {
         if (isUnlocking) return;
         setActiveId(null);
-        setIsModalReady(false);
         setInputValue("");
         setNewInputValue("");
         }, [isUnlocking]);
@@ -1827,21 +1828,35 @@ export default function LockedFlipCardsPage() {
   const targetCard = latestCard;
   const content = inputValue.trim();
 
-  setIsUnlocking(true);
+    setIsUnlocking(true);
+    setShowFallingLock(true);
+    setShowUnlockBurst(false);
 
-  await new Promise((resolve) => setTimeout(resolve, 350));
+    // 鎖頭掉落時間
+    await new Promise((resolve) => setTimeout(resolve, 750));
 
-  pendingCardUpdateRef.current = {
+    // 中央解鎖爆發特效
+    setShowFallingLock(false);
+
+    // 再顯示中央解鎖爆發特效
+    setShowUnlockBurst(true);
+
+    await new Promise((resolve) => setTimeout(resolve, 650));
+
+    await new Promise((resolve) => setTimeout(resolve, 650));
+
+    pendingCardUpdateRef.current = {
     targetCard,
     content,
     wasUnlocked: false,
-  };
+    };
 
-  setIsUnlocking(false);
-  setActiveId(null);
-  setIsModalReady(false);
-  setInputValue("");
-  setNewInputValue("");
+    setShowFallingLock(false);
+    setShowUnlockBurst(false);
+    setIsUnlocking(false);
+    setActiveId(null);
+    setInputValue("");
+    setNewInputValue("");
 };
 
   return (
@@ -1912,7 +1927,12 @@ export default function LockedFlipCardsPage() {
     </div>
     ) : null}
 
-      <AnimatePresence onExitComplete={applyPendingCardUpdate}>
+      <AnimatePresence
+        onExitComplete={() => {
+            setIsModalReady(false);
+            applyPendingCardUpdate();
+        }}
+        >
         {activeCard ? (
           <motion.div
             className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/30 p-4"
@@ -1924,10 +1944,10 @@ export default function LockedFlipCardsPage() {
             <motion.div
                 className="relative mx-auto my-8 w-full max-w-5xl transform-gpu will-change-transform"
                 onClick={(e) => e.stopPropagation()}
-                initial={{ opacity: 0, scale: 0.92, y: 18 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.96, y: 8 }}
-                transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.35, ease: "easeOut" }}
             >          
               {isModalReady ? (
                 <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
@@ -1944,57 +1964,57 @@ export default function LockedFlipCardsPage() {
                     </div>
 
                     <AnimatePresence>
-                        {isModalReady && (!activeCard.unlocked || isUnlocking) ? (
-                        <motion.div className="absolute inset-0 z-10">
-
-                            <motion.div
-                            className="absolute inset-0"
-                            animate={
-                                isUnlocking
-                                ? {
-                                    background: [
-                                        "rgba(255,255,255,0)",
-                                        "rgba(255,255,255,0.85)",
-                                        "rgba(255,255,255,0)"
-                                    ]
-                                    }
-                                : {}
-                            }
-                            transition={{ duration: 0.6 }}
-                            />
-
-                            <div className="absolute left-1/2 top-[3%] -translate-x-1/2 flex items-center justify-center">
-                            <motion.div
-                                initial={{ scale: 1, rotate: 0, opacity: 1 }}
-                                animate={
-                                isUnlocking
-                                    ? {
-                                        scale: [1, 1.6],
-                                        rotate: [0, 0],
-                                        opacity: [1, 0],
-                                    }
-                                    : {}
-                                }
-                                transition={{ duration: 0.9 }}
-                                className={`flex h-20 w-20 items-center justify-center rounded-full shadow-[0_0_30px_rgba(56,189,248,0.35)] ${
-                                writtenCardStateMap[activeCard.category].iconBg
-                                }`}
-                            >
-                                {isUnlocking ? (
-                                <Unlock className={`h-10 w-10 ${writtenCardStateMap[activeCard.category].iconText}`} />
-                                ) : (
-                                <Lock className={`h-10 w-10 ${writtenCardStateMap[activeCard.category].iconText}`} />
-                                )}
-                            </motion.div>
-                            </div>
-
+                    {showFallingLock && !showUnlockBurst ? (
+                        <motion.div
+                        className="absolute left-1/2 top-[3%] z-20 flex h-24 w-24 -translate-x-1/2 items-center justify-center rounded-full border border-sky-200 bg-sky-100 shadow-[0_0_34px_rgba(56,189,248,0.45)]"
+                        initial={{ y: 0, scale: 1, rotate: -8, opacity: 1 }}
+                        animate={{ y: 205, scale: 1.25, rotate: 0, opacity: 1 }}
+                        exit={{ opacity: 0, scale: 1.45 }}
+                        transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+                        >
+                        <Lock className={`h-12 w-12 ${writtenCardStateMap[activeCard.category].iconText}`} />
                         </motion.div>
-                        ) : null}
+                    ) : null}
                     </AnimatePresence>
 
+                    <AnimatePresence>
+                    {showUnlockBurst ? (
+                        <motion.div
+                        className="absolute left-1/2 top-1/2 z-30 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center"
+                        initial={{ opacity: 0, scale: 0.75 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 1.25 }}
+                        transition={{ duration: 0.35, ease: "easeOut" }}
+                        >
+                        <motion.div
+                            className={`flex h-28 w-28 items-center justify-center rounded-full border shadow-[0_0_48px_rgba(56,189,248,0.55)] ${writtenCardStateMap[activeCard.category].iconBg}`}
+                            animate={{
+                            scale: [1, 1.18, 1],
+                            rotate: [0, -8, 8, 0],
+                            }}
+                            transition={{ duration: 0.65, ease: "easeOut" }}
+                        >
+                            <Unlock className={`h-14 w-14 ${writtenCardStateMap[activeCard.category].iconText}`} />
+                        </motion.div>
+
+                        <motion.div
+                            className="absolute h-40 w-40 rounded-full border-4 border-sky-200/70"
+                            initial={{ scale: 0.5, opacity: 0.9 }}
+                            animate={{ scale: 1.45, opacity: 0 }}
+                            transition={{ duration: 0.65, ease: "easeOut" }}
+                        />
+
+                        <motion.div
+                            className="absolute h-56 w-56 rounded-full bg-sky-200/20 blur-2xl"
+                            initial={{ scale: 0.4, opacity: 0.8 }}
+                            animate={{ scale: 1.4, opacity: 0 }}
+                            transition={{ duration: 0.65, ease: "easeOut" }}
+                        />
+                        </motion.div>
+                    ) : null}
+                    </AnimatePresence>
                     </div>
                     
-
                 <Card className="border-slate-200 bg-white/92 text-slate-800 shadow-2xl backdrop-blur-xl">
                   <CardContent className="p-6 md:p-7">
                     <div className="mb-6 flex items-start justify-between gap-4">
