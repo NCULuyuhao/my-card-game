@@ -332,26 +332,26 @@ const categoryCardThemeMap: Record<
   }
 > = {
   water: {
-    lockedFace: "bg-white/55 border border-sky-100/70",
-    unlockedFace: "bg-white/55 border border-sky-200/70",
+    lockedFace: "bg-white/55 backdrop-blur-sm border border-sky-100/70",
+    unlockedFace: "bg-white/55 backdrop-blur-sm border border-sky-200/70",
     lockedAccent: "text-sky-500",
     previewShell: "bg-white border border-sky-200",
   },
   land: {
-    lockedFace: "bg-white/55 border border-lime-100/70",
-    unlockedFace: "bg-white/55 border border-lime-200/70",
+    lockedFace: "bg-white/55 backdrop-blur-sm border border-lime-100/70",
+    unlockedFace: "bg-white/55 backdrop-blur-sm border border-lime-200/70",
     lockedAccent: "text-lime-600",
     previewShell: "bg-white border border-lime-200",
   },
   leopard: {
-    lockedFace: "bg-white/55 border border-orange-100/70",
-    unlockedFace: "bg-white/55 border border-orange-200/70",
+    lockedFace: "bg-white/55 backdrop-blur-sm border border-orange-100/70",
+    unlockedFace: "bg-white/55 backdrop-blur-sm border border-orange-200/70",
     lockedAccent: "text-orange-500",
     previewShell: "bg-white border border-orange-200",
   },
   rumor: {
-    lockedFace: "bg-white/55 border border-violet-100/70",
-    unlockedFace: "bg-white/55 border border-violet-200/70",
+    lockedFace: "bg-white/55 backdrop-blur-sm border border-violet-100/70",
+    unlockedFace: "bg-white/55 backdrop-blur-sm border border-violet-200/70",
     lockedAccent: "text-violet-500",
     previewShell: "bg-white border border-violet-200",
   },
@@ -375,12 +375,12 @@ const writtenCardStateMap: Record<
 > = {
   water: {
     shell:
-      "border border-sky-200/70 bg-[linear-gradient(180deg,rgba(240,249,255,0.58)_0%,rgba(224,242,254,0.48)_100%)]",
+      "border border-sky-200/70 bg-[linear-gradient(180deg,rgba(240,249,255,0.58)_0%,rgba(224,242,254,0.48)_100%)] backdrop-blur-sm",
     iconBg: "border border-sky-200 bg-sky-100/80",
     iconText: "text-sky-500",
     hintText: "text-sky-600",
     badge: "rounded-full border border-sky-200 bg-sky-100 px-3 py-1 text-xs font-medium text-sky-700",
-    hoverGlow: "",
+    hoverGlow: "group-hover:shadow-[0_12px_28px_rgba(14,165,233,0.18)]",
     previewBox: "border border-sky-200 bg-sky-50/80",
     collectionItem: "border border-sky-200 bg-sky-50 hover:bg-sky-100/70",
     collectionLabel: "bg-sky-100 text-sky-700",
@@ -389,12 +389,12 @@ const writtenCardStateMap: Record<
   },
   land: {
     shell:
-      "border border-lime-200/70 bg-[linear-gradient(180deg,rgba(247,254,231,0.58)_0%,rgba(236,252,203,0.48)_100%)]",
+      "border border-lime-200/70 bg-[linear-gradient(180deg,rgba(247,254,231,0.58)_0%,rgba(236,252,203,0.48)_100%)] backdrop-blur-sm",
     iconBg: "border border-lime-200 bg-lime-100/80",
     iconText: "text-lime-600",
     hintText: "text-lime-700",
     badge: "rounded-full border border-lime-200 bg-lime-100 px-3 py-1 text-xs font-medium text-lime-700",
-    hoverGlow: "",
+    hoverGlow: "group-hover:shadow-[0_12px_28px_rgba(132,204,22,0.18)]",
     previewBox: "border border-lime-200 bg-lime-50/80",
     collectionItem: "border border-lime-200 bg-lime-50 hover:bg-lime-100/70",
     collectionLabel: "bg-lime-100 text-lime-700",
@@ -403,12 +403,12 @@ const writtenCardStateMap: Record<
   },
   leopard: {
     shell:
-      "border border-orange-200/70 bg-[linear-gradient(180deg,rgba(255,247,237,0.58)_0%,rgba(255,237,213,0.48)_100%)]",
+      "border border-orange-200/70 bg-[linear-gradient(180deg,rgba(255,247,237,0.58)_0%,rgba(255,237,213,0.48)_100%)] backdrop-blur-sm",
     iconBg: "border border-orange-200 bg-orange-100/80",
     iconText: "text-orange-500",
     hintText: "text-orange-700",
     badge: "rounded-full border border-orange-200 bg-orange-100 px-3 py-1 text-xs font-medium text-orange-700",
-    hoverGlow: "",
+    hoverGlow: "group-hover:shadow-[0_12px_28px_rgba(249,115,22,0.18)]",
     previewBox: "border border-orange-200 bg-orange-50/80",
     collectionItem: "border border-orange-200 bg-orange-50 hover:bg-orange-100/70",
     collectionLabel: "bg-orange-100 text-orange-700",
@@ -417,12 +417,12 @@ const writtenCardStateMap: Record<
   },
   rumor: {
     shell:
-      "border border-violet-200/70 bg-[linear-gradient(180deg,rgba(250,245,255,0.58)_0%,rgba(243,232,255,0.48)_100%)]",
+      "border border-violet-200/70 bg-[linear-gradient(180deg,rgba(250,245,255,0.58)_0%,rgba(243,232,255,0.48)_100%)] backdrop-blur-sm",
     iconBg: "border border-violet-200 bg-violet-100/80",
     iconText: "text-violet-500",
     hintText: "text-violet-700",
     badge: "rounded-full border border-violet-200 bg-violet-100 px-3 py-1 text-xs font-medium text-violet-700",
-    hoverGlow: "",
+    hoverGlow: "group-hover:shadow-[0_12px_28px_rgba(139,92,246,0.18)]",
     previewBox: "border border-violet-200 bg-violet-50/80",
     collectionItem: "border border-violet-200 bg-violet-50 hover:bg-violet-100/70",
     collectionLabel: "bg-violet-100 text-violet-700",
@@ -460,6 +460,9 @@ function createAllCards(): GameCard[] {
   );
 }
 
+function clamp(value: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, value));
+}
 
 function getDisplayTitle(card: GameCard) {
   return card.unlocked ? card.revealedTitle : card.title;
@@ -570,7 +573,7 @@ function TitleEmblem({
       <div
         className={`relative flex h-16 w-16 items-center justify-center rounded-[40%_60%_55%_45%/45%_40%_60%_55%] ${tierStyle.emblem}`}
       >
-        <div className={`absolute inset-0 rounded-[inherit] ${themeStyle.glow}`} />
+        <div className={`absolute inset-0 rounded-[inherit] blur-xl ${themeStyle.glow}`} />
         <Crown className={`relative z-10 h-8 w-8 ${themeStyle.accent}`} />
       </div>
     );
@@ -605,10 +608,10 @@ function TitleBadgeCard({ title }: { title: TitleReward }) {
     <div
       className={`relative min-w-[260px] max-w-[260px] overflow-hidden rounded-[24px] p-[1px] ${tierClasses.shell}`}
     >
-      <div className={`relative h-full rounded-[23px] px-4 py-4 ${tierClasses.inner}`}>
+      <div className={`relative h-full rounded-[23px] px-4 py-4 backdrop-blur-xl ${tierClasses.inner}`}>
         <div className="absolute inset-0 opacity-20">
-          <div className={`absolute -left-6 top-2 h-20 w-20 rounded-full ${themeClasses.glow}`} />
-          <div className={`absolute right-0 top-10 h-16 w-16 rounded-full ${themeClasses.glow}`} />
+          <div className={`absolute -left-6 top-2 h-20 w-20 rounded-full blur-2xl ${themeClasses.glow}`} />
+          <div className={`absolute right-0 top-10 h-16 w-16 rounded-full blur-2xl ${themeClasses.glow}`} />
         </div>
 
         <div className={`absolute right-3 top-3 ${tierClasses.deco}`}>
@@ -674,25 +677,122 @@ function BalanceScaleBackground({
   developmentScore: number;
   conservationScore: number;
 }) {
-  const total = Math.max(1, developmentScore + conservationScore);
-  const conservationPercent = Math.round((conservationScore / total) * 100);
-  const developmentPercent = 100 - conservationPercent;
+  const difference = developmentScore - conservationScore;
+  const rotate = clamp(difference * 4, -14, 14);
 
   return (
-    <div className="pointer-events-none fixed left-1/2 top-4 z-0 w-[min(720px,calc(100vw-32px))] -translate-x-1/2 px-4">
-      <div className="rounded-2xl border border-white/70 bg-white/70 p-3 shadow-sm">
-        <div className="mb-2 flex items-center justify-between text-xs font-semibold text-slate-600">
-          <span>保育 {conservationScore}</span>
-          <span>開發 {developmentScore}</span>
+    <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+
+      <div className="absolute left-[-14%] top-[6%] h-[560px] w-[560px] rounded-full bg-emerald-200/18 blur-[100px]" />
+      <div className="absolute right-[-14%] top-[8%] h-[600px] w-[600px] rounded-full bg-orange-200/18 blur-[100px]" />
+      <div className="absolute left-1/2 top-1/2 h-[520px] w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber-100/24 blur-[120px]" />
+
+      <div className="absolute left-1/2 top-1/2 h-[700px] w-[1160px] origin-center -translate-x-1/2 -translate-y-1/2 scale-[0.42] opacity-[0.23] sm:scale-[0.55] md:scale-[0.72] lg:scale-[0.88] xl:scale-100">
+
+        <div className="absolute bottom-[22px] left-1/2 h-20 w-[620px] -translate-x-1/2 rounded-full bg-amber-950/18 blur-2xl" />
+
+        <div className="absolute bottom-[96px] left-1/2 h-12 w-[330px] -translate-x-1/2 rounded-[50%] bg-[linear-gradient(180deg,#fde68a,#d97706,#78350f)] shadow-[0_14px_30px_rgba(120,53,15,0.28)]" />
+        <div className="absolute bottom-[128px] left-1/2 h-8 w-[210px] -translate-x-1/2 rounded-[50%] bg-[linear-gradient(180deg,#fff7c2,#f59e0b,#92400e)] shadow-[0_10px_24px_rgba(120,53,15,0.22)]" />
+
+        <div className="absolute left-1/2 top-[250px] h-[300px] w-12 -translate-x-1/2 rounded-full bg-[linear-gradient(90deg,#451a03_0%,#92400e_12%,#fbbf24_28%,#fff7c2_45%,#d97706_62%,#78350f_82%,#451a03_100%)] shadow-[0_22px_55px_rgba(120,53,15,0.3)]">
+          <div className="absolute left-3 top-8 h-[235px] w-2 rounded-full bg-white/50 blur-[1px]" />
+          <div className="absolute right-2 top-8 h-[245px] w-1 rounded-full bg-amber-950/35" />
         </div>
-        <div className="flex h-3 overflow-hidden rounded-full bg-slate-100">
-          <div className="bg-emerald-300" style={{ width: `${conservationPercent}%` }} />
-          <div className="bg-orange-300" style={{ width: `${developmentPercent}%` }} />
+
+        <div className="absolute left-1/2 top-[150px] h-36 w-36 -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_34%_28%,#fffbe6_0%,#facc15_24%,#b45309_58%,#451a03_100%)] shadow-[0_20px_48px_rgba(120,53,15,0.35)]">
+          <div className="absolute inset-[15px] rounded-full border border-amber-100/80 bg-[radial-gradient(circle_at_34%_28%,rgba(255,255,255,0.86),rgba(255,255,255,0.22)_46%,rgba(120,53,15,0.2)_100%)]" />
+          <div className="absolute left-9 top-8 h-6 w-6 rounded-full bg-white/80 blur-[1px]" />
+          <div className="absolute bottom-5 left-1/2 h-3 w-20 -translate-x-1/2 rounded-full bg-amber-950/20" />
         </div>
+
+        <motion.div
+            animate={{ rotate }}
+            transition={{ type: "spring", stiffness: 95, damping: 16 }}
+            className="absolute left-1/2 top-[194px] h-[330px] w-[920px] -translate-x-1/2 transform-gpu will-change-transform"
+            style={{ transformOrigin: "50% 26px" }}
+            >
+            <motion.div
+                className="absolute inset-0 transform-gpu will-change-transform"
+                animate={{
+                rotate: [-0.7, -0.35, 0.3, 0.7, 0.35, -0.3, -0.7],
+                }}
+                transition={{
+                duration: 6.5,
+                repeat: Infinity,
+                ease: "easeInOut",
+                }}
+                style={{ transformOrigin: "50% 26px" }}
+            >
+
+            <div className="absolute left-0 top-0 h-10 w-full rounded-full bg-[linear-gradient(180deg,#fff7c2_0%,#facc15_18%,#d97706_44%,#92400e_75%,#451a03_100%)] shadow-[0_22px_55px_rgba(120,53,15,0.3)]">
+              <div className="absolute left-12 right-12 top-1.5 h-2 rounded-full bg-[linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,0.9),rgba(255,255,255,0))]" />
+              <div className="absolute bottom-1 left-10 right-10 h-1 rounded-full bg-amber-950/35" />
+            </div>
+
+            <div className="absolute -left-8 top-[-10px] h-16 w-16 rounded-full bg-[radial-gradient(circle_at_32%_28%,#fffbe6,#fbbf24_34%,#92400e_74%,#451a03)] shadow-[0_14px_32px_rgba(120,53,15,0.32)]" />
+            <div className="absolute -right-8 top-[-10px] h-16 w-16 rounded-full bg-[radial-gradient(circle_at_32%_28%,#fffbe6,#fbbf24_34%,#92400e_74%,#451a03)] shadow-[0_14px_32px_rgba(120,53,15,0.32)]" />
+
+            <div className="absolute left-1/2 top-[-22px] h-24 w-24 -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_35%_30%,#fffbe6,#facc15_34%,#92400e_78%,#451a03)] shadow-[0_18px_40px_rgba(120,53,15,0.34)]">
+              <div className="absolute inset-[16px] rounded-full border border-amber-100/80 bg-white/20" />
+              <div className="absolute left-7 top-6 h-5 w-5 rounded-full bg-white/70 blur-[1px]" />
+            </div>
+
+            <div className="absolute left-[220px] top-[30px] h-[184px] w-[3px] origin-top -translate-x-1/2 -rotate-[34deg] rounded-full bg-[linear-gradient(180deg,#fff7c2,#d97706,#78350f)] shadow-[0_0_8px_rgba(251,191,36,0.35)]" />
+            <div className="absolute left-[220px] top-[30px] h-[184px] w-[3px] -translate-x-1/2 rounded-full bg-[linear-gradient(180deg,#fffbe6,#f59e0b,#78350f)] shadow-[0_0_8px_rgba(251,191,36,0.35)]" />
+            <div className="absolute left-[220px] top-[30px] h-[184px] w-[3px] origin-top -translate-x-1/2 rotate-[34deg] rounded-full bg-[linear-gradient(180deg,#fff7c2,#d97706,#78350f)] shadow-[0_0_8px_rgba(251,191,36,0.35)]" />
+
+            <div className="absolute left-[700px] top-[30px] h-[184px] w-[3px] origin-top -translate-x-1/2 -rotate-[34deg] rounded-full bg-[linear-gradient(180deg,#fff7c2,#d97706,#78350f)] shadow-[0_0_8px_rgba(251,191,36,0.35)]" />
+            <div className="absolute left-[700px] top-[30px] h-[184px] w-[3px] -translate-x-1/2 rounded-full bg-[linear-gradient(180deg,#fffbe6,#f59e0b,#78350f)] shadow-[0_0_8px_rgba(251,191,36,0.35)]" />
+            <div className="absolute left-[700px] top-[30px] h-[184px] w-[3px] origin-top -translate-x-1/2 rotate-[34deg] rounded-full bg-[linear-gradient(180deg,#fff7c2,#d97706,#78350f)] shadow-[0_0_8px_rgba(251,191,36,0.35)]" />
+
+            <div className="absolute left-[70px] top-[176px] flex w-[300px] flex-col items-center">
+              <div className="relative h-[72px] w-[286px]">
+
+                <div className="absolute left-1/2 top-0 h-14 w-[286px] -translate-x-1/2 rounded-[50%] bg-[linear-gradient(180deg,#fffbe6_0%,#facc15_24%,#b45309_62%,#451a03_100%)] shadow-[0_16px_34px_rgba(120,53,15,0.28)]">
+                  <div className="absolute left-1/2 top-1 h-6 w-[246px] -translate-x-1/2 rounded-[50%] bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(255,255,255,0.22))]" />
+                  <div className="absolute bottom-1 left-1/2 h-3 w-[230px] -translate-x-1/2 rounded-[50%] bg-amber-950/25" />
+                </div>
+
+                <div className="absolute left-1/2 top-[9px] h-9 w-[242px] -translate-x-1/2 rounded-[50%] border border-emerald-300/70 bg-[radial-gradient(ellipse_at_center,rgba(236,253,245,0.96)_0%,rgba(110,231,183,0.62)_52%,rgba(6,95,70,0.42)_100%)] shadow-inner" />
+                <div className="absolute left-1/2 top-[16px] z-10 -translate-x-1/2 text-3xl font-black tracking-[0.18em] text-emerald-800 drop-shadow-[0_2px_3px_rgba(255,255,255,0.75)]">
+                保育
+                </div>
+
+                <div className="absolute left-1/2 top-[14px] h-2 w-[170px] -translate-x-1/2 rounded-full bg-white/75 blur-[1px]" />
+                <div className="absolute left-[72px] top-[22px] h-5 w-14 rounded-full bg-white/20 blur-md" />
+
+                <div className="absolute left-1/2 top-[41px] h-4 w-[232px] -translate-x-1/2 rounded-[50%] bg-[linear-gradient(180deg,#b45309_0%,#78350f_72%,#451a03_100%)] opacity-80 shadow-[0_10px_20px_rgba(120,53,15,0.22)]" />
+
+              </div>
+            </div>
+
+            <div className="absolute right-[70px] top-[176px] flex w-[300px] flex-col items-center">
+              <div className="relative h-[72px] w-[286px]">
+
+                <div className="absolute left-1/2 top-0 h-14 w-[286px] -translate-x-1/2 rounded-[50%] bg-[linear-gradient(180deg,#fffbe6_0%,#facc15_24%,#b45309_62%,#451a03_100%)] shadow-[0_16px_34px_rgba(120,53,15,0.28)]">
+                  <div className="absolute left-1/2 top-1 h-6 w-[246px] -translate-x-1/2 rounded-[50%] bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(255,255,255,0.22))]" />
+                  <div className="absolute bottom-1 left-1/2 h-3 w-[230px] -translate-x-1/2 rounded-[50%] bg-amber-950/25" />
+                </div>
+
+                <div className="absolute left-1/2 top-[9px] h-9 w-[242px] -translate-x-1/2 rounded-[50%] border border-orange-300/70 bg-[radial-gradient(ellipse_at_center,rgba(255,247,237,0.96)_0%,rgba(253,186,116,0.62)_52%,rgba(194,65,12,0.42)_100%)] shadow-inner" />
+
+                <div className="absolute left-1/2 top-[16px] z-10 -translate-x-1/2 text-3xl font-black tracking-[0.18em] text-orange-800 drop-shadow-[0_2px_3px_rgba(255,255,255,0.75)]">
+                開發
+                </div>
+
+                <div className="absolute left-1/2 top-[14px] h-2 w-[170px] -translate-x-1/2 rounded-full bg-white/75 blur-[1px]" />
+                <div className="absolute left-[72px] top-[22px] h-5 w-14 rounded-full bg-white/20 blur-md" />
+
+                <div className="absolute left-1/2 top-[41px] h-4 w-[232px] -translate-x-1/2 rounded-[50%] bg-[linear-gradient(180deg,#b45309_0%,#78350f_72%,#451a03_100%)] opacity-80 shadow-[0_10px_20px_rgba(120,53,15,0.22)]" />
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
       </div>
     </div>
   );
 }
+
 function CategoryTabs({
   activeCategory,
   onChange,
@@ -708,10 +808,10 @@ function CategoryTabs({
 }) {
 
   return (
-    <div className="relative mb-8 overflow-hidden rounded-[30px] border border-slate-200 bg-white/75 p-5 shadow-sm">
+    <div className="relative mb-8 overflow-hidden rounded-[30px] border border-slate-200 bg-white/75 p-5 shadow-[0_12px_30px_rgba(15,23,42,0.06)] backdrop-blur-md">
       <div className="pointer-events-none absolute inset-0 opacity-25">
-        <div className="absolute left-[8%] top-2 h-24 w-24 rounded-full bg-emerald-200/30" />
-        <div className="absolute right-[12%] top-8 h-20 w-20 rounded-full bg-lime-200/25" />
+        <div className="absolute left-[8%] top-2 h-24 w-24 rounded-full bg-emerald-200/30 blur-2xl" />
+        <div className="absolute right-[12%] top-8 h-20 w-20 rounded-full bg-lime-200/25 blur-2xl" />
       </div>
 
       <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -739,14 +839,16 @@ function CategoryTabs({
           const active = activeCategory === key;
 
           return (
-            <button
+            <motion.button
               key={key}
               type="button"
+              whileHover={{ y: -3 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => onChange(key)}
               className={[
                 "relative overflow-hidden rounded-[26px] border px-4 py-4 text-left transition",
                 active
-                  ? "border-slate-300 bg-slate-50 shadow-sm"
+                  ? "border-slate-300 bg-slate-50 shadow-[0_8px_20px_rgba(15,23,42,0.06)]"
                   : "border-slate-200 bg-white hover:bg-slate-50",
               ].join(" ")}
             >
@@ -768,7 +870,7 @@ function CategoryTabs({
                 <p className="text-lg font-bold text-slate-800">{item.label}</p>
                 <p className="mt-2 text-sm leading-6 text-slate-600">{item.subtitle}</p>
               </div>
-            </button>
+            </motion.button>
           );
         })}
       </div>
@@ -829,7 +931,7 @@ function TrophyPanel({
             initial={{ opacity: 0, y: 20, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 12, scale: 0.96 }}
-            className="rounded-3xl border border-slate-200 bg-white/92 p-4 shadow-lg"
+            className="rounded-3xl border border-slate-200 bg-white/92 p-4 shadow-[0_20px_50px_rgba(15,23,42,0.14)] backdrop-blur-xl"
             style={{
               width: `min(calc(100vw - 40px), ${desiredPanelWidth}px)`,
               maxWidth: "calc(100vw - 40px)",
@@ -867,20 +969,43 @@ function TrophyPanel({
         ) : null}
       </AnimatePresence>
 
-      <button
+      <motion.button
         type="button"
-        
+        whileHover={{ scale: 1.06 }}
+        whileTap={{ scale: 0.95 }}
+        animate={
+          hasNewTitle && !open
+            ? {
+                scale: [1, 1.06, 1],
+                boxShadow: [
+                  "0 10px 24px rgba(15,23,42,0.14)",
+                  "0 0 0 6px rgba(251,191,36,0.12), 0 0 20px rgba(251,191,36,0.18)",
+                  "0 10px 24px rgba(15,23,42,0.14)",
+                ],
+              }
+            : {
+                scale: 1,
+                boxShadow: "0 10px 24px rgba(15,23,42,0.14)",
+              }
+        }
+        transition={
+          hasNewTitle && !open
+            ? { duration: 1.2, repeat: Infinity, ease: "easeInOut" }
+            : { duration: 0.2 }
+        }
         onClick={handleTogglePanel}
         className="relative flex h-16 w-16 items-center justify-center rounded-full border border-amber-200 bg-gradient-to-br from-amber-100 to-yellow-200 text-amber-800"
       >
         {hasNewTitle && !open ? (
           <motion.span
             className="absolute right-2 top-2 h-3 w-3 rounded-full bg-amber-500"
+            animate={{ opacity: [0.35, 1, 0.35], scale: [0.9, 1.2, 0.9] }}
+            transition={{ duration: 1, repeat: Infinity, ease: "easeInOut" }}
           />
         ) : null}
 
         {open ? <ChevronDown className="h-6 w-6" /> : <Trophy className="h-7 w-7" />}
-      </button>
+      </motion.button>
     </div>
   );
 }
@@ -975,7 +1100,7 @@ function CollectedCardsPanel({
             initial={{ opacity: 0, y: 20, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 12, scale: 0.96 }}
-            className="max-h-[460px] w-[380px] overflow-hidden rounded-3xl border border-slate-200 bg-white/92 p-4 shadow-lg"
+            className="max-h-[460px] w-[380px] overflow-hidden rounded-3xl border border-slate-200 bg-white/92 p-4 shadow-[0_20px_50px_rgba(15,23,42,0.14)] backdrop-blur-xl"
           >
             <div className="mb-3 flex items-center gap-3">
               <div className="rounded-full bg-sky-50 p-2">
@@ -1043,57 +1168,87 @@ function CollectedCardsPanel({
         ) : null}
       </AnimatePresence>
 
-      <button
+      <motion.button
         type="button"
-        
+        whileHover={{ scale: 1.06 }}
+        whileTap={{ scale: 0.95 }}
+        animate={
+          hasNewContent && !open
+            ? {
+                scale: [1, 1.06, 1],
+                boxShadow: [
+                  "0 10px 24px rgba(15,23,42,0.14)",
+                  "0 0 0 6px rgba(14,165,233,0.10), 0 0 20px rgba(14,165,233,0.16)",
+                  "0 10px 24px rgba(15,23,42,0.14)",
+                ],
+              }
+            : {
+                scale: 1,
+                boxShadow: "0 10px 24px rgba(15,23,42,0.14)",
+              }
+        }
+        transition={
+          hasNewContent && !open
+            ? { duration: 1.2, repeat: Infinity, ease: "easeInOut" }
+            : { duration: 0.2 }
+        }
         onClick={handleTogglePanel}
         className="relative flex h-16 w-16 items-center justify-center rounded-full border border-sky-200 bg-gradient-to-br from-sky-50 to-cyan-100 text-sky-700"
       >
         {hasNewContent && !open ? (
           <motion.span
             className="absolute right-2 top-2 h-3 w-3 rounded-full bg-sky-500"
+            animate={{ opacity: [0.35, 1, 0.35], scale: [0.9, 1.2, 0.9] }}
+            transition={{ duration: 1, repeat: Infinity, ease: "easeInOut" }}
           />
         ) : null}
         {open ? <ChevronDown className="h-6 w-6" /> : <BookOpen className="h-7 w-7" />}
-      </button>
+      </motion.button>
     </div>
   );
 }
 
 function TitleRewardCelebration({
   reward,
-  onClose,
 }: {
   reward: TitleReward | null;
-  onClose: () => void;
 }) {
-  if (!reward) return null;
 
-  const tier = getTitleTier(reward.id);
-  const theme = getTitleTheme(reward.id);
-  const themeClasses = getTitleThemeClasses(theme);
-  const tierClasses = getTitleTierCardClasses(tier);
+
+    const tier = reward ? getTitleTier(reward.id) : "novice";
+    const theme = reward ? getTitleTheme(reward.id) : "cross";
+    const themeClasses = getTitleThemeClasses(theme);
+    const tierClasses = getTitleTierCardClasses(tier);  
 
   return (
-    <AnimatePresence>
-      {reward ? (
+  <AnimatePresence>
+    {reward ? (
+      <motion.div
+        className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/10 p-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 1 }}
+        transition={{ duration: 0.55 }}
+      >
         <motion.div
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/20 p-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          initial={{ scale: 0.85, y: 24, opacity: 0 }}
+          animate={{ scale: 1, y: 0, opacity: 1 }}
+          exit={{
+            scale: 0.08,
+            x: "42vw",
+            y: "38vh",
+            opacity: 0,
+          }}
+          transition={{
+            duration: 0.55,
+            ease: [0.22, 1, 0.36, 1],
+          }}
+          className="relative w-full max-w-md origin-center"
         >
-          <motion.div
-            initial={{ scale: 0.85, y: 24, opacity: 0 }}
-            animate={{ scale: 1, y: 0, opacity: 1 }}
-            exit={{ scale: 0.92, y: 16, opacity: 0 }}
-            transition={{ duration: 0.35, ease: "easeOut" }}
-            className="relative w-full max-w-md"
-          >
             <motion.div
               animate={{ rotate: 10, opacity: 1, scale: 1.08 }}
               initial={{ rotate: 0, opacity: 0.5, scale: 0.9 }}
-              transition={{ duration: 1.1, ease: "easeInOut" }}
+              transition={{ duration: 1.1, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
               className={`absolute -left-6 top-8 ${themeClasses.accent}`}
             >
               <Sparkles className="h-8 w-8" />
@@ -1102,7 +1257,7 @@ function TitleRewardCelebration({
             <motion.div
               animate={{ rotate: -12, opacity: 1, scale: 1.12 }}
               initial={{ rotate: 0, opacity: 0.45, scale: 0.9 }}
-              transition={{ duration: 1.2, ease: "easeInOut" }}
+              transition={{ duration: 1.2, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
               className={`absolute -right-4 top-10 ${themeClasses.accent}`}
             >
               {tier === "master" ? <Crown className="h-7 w-7" /> : <Sparkles className="h-7 w-7" />}
@@ -1111,16 +1266,16 @@ function TitleRewardCelebration({
             <motion.div
               animate={{ y: -6, opacity: 1 }}
               initial={{ y: 0, opacity: 0.55 }}
-              transition={{ duration: 1.4, ease: "easeInOut" }}
+              transition={{ duration: 1.4, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
               className={`absolute left-1/2 top-[-18px] -translate-x-1/2 ${themeClasses.accent}`}
             >
               {tier === "advanced" ? <Stars className="h-9 w-9" /> : <Sparkles className="h-9 w-9" />}
             </motion.div>
 
             <div className={`relative overflow-hidden rounded-[32px] p-[1px] ${tierClasses.shell}`}>
-              <div className="relative overflow-hidden rounded-[31px] bg-white/10 px-7 py-8">
+              <div className="relative overflow-hidden rounded-[31px] bg-white/10 px-7 py-8 backdrop-blur-xl">
                 <div className="absolute inset-0 opacity-20">
-                  <div className={`absolute left-1/2 top-4 h-40 w-40 -translate-x-1/2 rounded-full ${themeClasses.glow}`} />
+                  <div className={`absolute left-1/2 top-4 h-40 w-40 -translate-x-1/2 rounded-full blur-3xl ${themeClasses.glow}`} />
                 </div>
 
                 <div className="relative flex flex-col items-center text-center">
@@ -1134,18 +1289,7 @@ function TitleRewardCelebration({
 
                   <h2 className={`mt-2 text-3xl font-bold ${tierClasses.name}`}>{reward.name}</h2>
                   <p className={`mt-3 text-sm leading-6 ${tierClasses.desc}`}>{reward.description}</p>
-
-                  <div className="mt-6 rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm text-white/90">
-                    已加入右下角稱號收藏
-                  </div>
-
-                  <Button
-                    type="button"
-                    onClick={onClose}
-                    className="mt-6 rounded-2xl bg-white/90 px-5 py-6 text-slate-950 hover:bg-white"
-                  >
-                    收進稱號收藏
-                  </Button>
+                  
                 </div>
               </div>
             </div>
@@ -1170,7 +1314,7 @@ function CollectedCardPreview({
     <AnimatePresence>
       {card ? (
         <motion.div
-          className="fixed inset-0 z-[58] flex items-center justify-center bg-slate-900/25 p-4"
+          className="fixed inset-0 z-[58] flex items-center justify-center bg-slate-900/25 p-4 backdrop-blur-md"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -1182,11 +1326,11 @@ function CollectedCardPreview({
             exit={{ scale: 0.96, y: 10, opacity: 0 }}
             transition={{ duration: 0.28, ease: "easeOut" }}
             onClick={(e) => e.stopPropagation()}
-            className={`relative w-full max-w-3xl rounded-[32px] p-[1px] shadow-lg ${
+            className={`relative w-full max-w-3xl rounded-[32px] p-[1px] shadow-[0_30px_100px_rgba(15,23,42,0.18)] ${
               cardTheme?.previewShell ?? "bg-white border border-slate-200"
             }`}
           >
-            <div className="rounded-[31px] bg-white/95 p-8">
+            <div className="rounded-[31px] bg-white/95 p-8 backdrop-blur-xl">
               <div className="mb-6 flex items-start justify-between gap-4">
                 <div>
                   <div className="mt-3 flex items-start gap-3">
@@ -1255,17 +1399,18 @@ const GameCardGrid = memo(function GameCardGrid({
   activeId,
   activeCategoryMeta,
   onOpenCard,
+  justUnlockedId,
+  categoryFlipKey,
 }: {
   categoryCards: GameCard[];
   activeId: string | null;
   activeCategoryMeta: CategoryMeta;
   onOpenCard: (card: GameCard) => void;
+  justUnlockedId: string | null;
+  categoryFlipKey: CategoryKey | null;
 }) {
   return (
-    <div
-      className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-      style={{ contentVisibility: "auto", containIntrinsicSize: "900px" }}
-    >
+    <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {categoryCards.map((card, index) => {
         const isOpened = activeId === card.id;
         const displayTitle = getDisplayTitle(card);
@@ -1274,25 +1419,98 @@ const GameCardGrid = memo(function GameCardGrid({
         const writtenTheme = writtenCardStateMap[card.category];
 
         return (
-          <button
+          <motion.button
             key={card.id}
-            type="button"
             onClick={() => onOpenCard(card)}
-            className="group relative aspect-[6/5] rounded-[28px] text-left transition-transform duration-150 active:scale-[0.99] [contain:layout_paint_style]"
+            className="group relative aspect-[6/5] text-left"
+            whileHover={{ y: -4, scale: 1.01 }}
+            transition={{ type: "spring", stiffness: 280, damping: 24 }}
           >
             <div
-              className={`relative flex h-full flex-col overflow-hidden rounded-[28px] border shadow-sm ${
-                isWritten ? writtenTheme.shell : cardTheme.lockedFace
+              className={`absolute -inset-1 rounded-[32px] opacity-0 transition duration-300 group-hover:opacity-100 ${
+                isWritten
+                  ? writtenTheme.hoverGlow
+                  : "group-hover:shadow-[0_12px_28px_rgba(15,23,42,0.10)]"
               }`}
-            >
-              <div className="flex items-center justify-between px-4 py-2 text-xs tracking-[0.25em] text-slate-500">
-                <span>{activeCategoryMeta.label.toUpperCase()}</span>
-                <span>#{String(index + 1).padStart(2, "0")}</span>
-              </div>
+            />
 
-              <div className="relative flex flex-1 flex-col items-center justify-center gap-3 px-4 pb-4">
-                {isWritten ? (
-                  <>
+            <div className="relative h-full [perspective:1200px]">
+              <motion.div
+                initial={{
+                    rotateY:
+                        card.unlocked &&
+                        card.id !== justUnlockedId &&
+                        card.category !== categoryFlipKey
+                        ? 180
+                        : 0,
+                    }}
+                    animate={{ rotateY: card.unlocked ? 180 : 0 }}
+                    transition={{
+                    duration:
+                        card.id === justUnlockedId || card.category === categoryFlipKey
+                        ? 0.8
+                        : 0,
+                    }}
+                className="relative h-full w-full rounded-[28px] transform-gpu will-change-transform"
+                style={{ transformStyle: "preserve-3d" }}
+              >
+                <div
+                  className={`absolute inset-0 rounded-[28px] shadow-[0_10px_24px_rgba(15,23,42,0.08)] ${
+                    isWritten ? writtenTheme.shell : cardTheme.lockedFace
+                  }`}
+                  style={{ backfaceVisibility: "hidden" }}
+                >
+                  <div className="flex h-full flex-col overflow-hidden rounded-[28px]">
+                    <div className="flex items-center justify-between px-4 py-1 text-xs tracking-[0.25em] text-slate-500">
+                      <span>{activeCategoryMeta.label.toUpperCase()}</span>
+                      <span>#{String(index + 1).padStart(2, "0")}</span>
+                    </div>
+
+                    <div className="relative flex flex-1 items-start justify-center overflow-hidden pt-0">
+                      <img
+                        src={card.imageSrc}
+                        alt=""
+                        aria-hidden="true"
+                        loading="lazy"
+                        decoding="async"
+                        className="pointer-events-none absolute left-1/2 top-1/2 z-0 h-90 w-90 -translate-x-1/2 -translate-y-1/2 object-contain opacity-20 transform-gpu"
+                      />
+
+                      <div className="absolute inset-0 z-10 flex items-center justify-center">
+                        <div
+                          className={`rounded-full p-6 shadow-md ${
+                            isWritten
+                              ? writtenTheme.iconBg
+                              : "border border-slate-200 bg-white"
+                          }`}
+                        >
+                          <Lock
+                            className={`h-10 w-10 ${
+                              isWritten
+                                ? writtenTheme.iconText
+                                : cardTheme.lockedAccent
+                            }`}
+                          />
+                        </div>
+                      </div>
+
+                      <p className="pointer-events-none absolute bottom-2 left-1/2 -translate-x-1/2 text-xs tracking-wide text-slate-400">
+                        輸入文字後解鎖
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  className={`absolute inset-0 rounded-[28px] shadow-[0_10px_24px_rgba(15,23,42,0.08)] ${
+                    isWritten ? writtenTheme.shell : cardTheme.unlockedFace
+                  }`}
+                  style={{
+                    transform: "rotateY(180deg)",
+                    backfaceVisibility: "hidden",
+                  }}
+                >
+                  <div className="flex h-full flex-col items-center justify-center gap-3 p-4">
                     <img
                       src={card.imageSrc}
                       alt={displayTitle}
@@ -1300,26 +1518,19 @@ const GameCardGrid = memo(function GameCardGrid({
                       decoding="async"
                       className="h-24 object-contain"
                     />
-                    <p className="line-clamp-2 text-center text-sm font-bold leading-5 text-slate-800">
+
+                    <p className="text-center text-sm font-bold leading-5 text-slate-800">
                       {displayTitle}
                     </p>
-                  </>
-                ) : (
-                  <>
-                    <div className="rounded-full border border-slate-200 bg-white p-6 shadow-sm">
-                      <Lock className={`h-10 w-10 ${cardTheme.lockedAccent}`} />
-                    </div>
-                    <p className="text-center text-sm font-bold text-slate-700">{card.title}</p>
-                    <p className="text-xs tracking-wide text-slate-400">輸入文字後解鎖</p>
-                  </>
-                )}
-              </div>
+                  </div>
+                </div>
+              </motion.div>
             </div>
 
             {isOpened ? (
               <div className="pointer-events-none absolute inset-0 rounded-[28px] ring-2 ring-violet-300/60" />
             ) : null}
-          </button>
+          </motion.button>
         );
       })}
     </div>
@@ -1332,10 +1543,41 @@ function WaterBackground({ category }: { category: CategoryKey }) {
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
       <div className="absolute inset-x-0 bottom-0 h-[42%] bg-[linear-gradient(to_top,rgba(255,255,255,0.03),rgba(255,255,255,0.01),transparent)]" />
-      <div className={`absolute bottom-28 left-[-20%] h-16 w-[160%] rounded-[100%] ${bg.wave1}`} />
-      <div className={`absolute bottom-20 left-[-18%] h-20 w-[155%] rounded-[100%] ${bg.wave2}`} />
-      <div className={`absolute bottom-12 left-[-22%] h-24 w-[165%] rounded-[100%] ${bg.wave3}`} />
-      <div className={`absolute bottom-4 left-[-16%] h-28 w-[150%] rounded-[100%] ${bg.wave4}`} />
+
+      <motion.div
+        animate={{ x: 160 }}
+        initial={{ x: 0 }}
+        transition={{ duration: 9, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
+        className={`absolute bottom-28 left-[-20%] h-16 w-[160%] rounded-[100%] ${bg.wave1}`}
+      />
+
+      <motion.div
+        animate={{ x: -140 }}
+        initial={{ x: 0 }}
+        transition={{ duration: 11, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
+        className={`absolute bottom-20 left-[-18%] h-20 w-[155%] rounded-[100%] ${bg.wave2}`}
+      />
+
+      <motion.div
+        animate={{ x: 180 }}
+        initial={{ x: 0 }}
+        transition={{ duration: 8, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
+        className={`absolute bottom-12 left-[-22%] h-24 w-[165%] rounded-[100%] ${bg.wave3}`}
+      />
+
+      <motion.div
+        animate={{ x: -120 }}
+        initial={{ x: 0 }}
+        transition={{ duration: 10, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
+        className={`absolute bottom-4 left-[-16%] h-28 w-[150%] rounded-[100%] ${bg.wave4}`}
+      />
+
+      <motion.div
+        animate={{ x: 260, opacity: 0.12 }}
+        initial={{ x: 0, opacity: 0.05 }}
+        transition={{ duration: 10, repeat: Infinity, repeatType: "reverse", ease: "linear" }}
+        className={`absolute bottom-0 left-[-10%] h-[34%] w-[60%] skew-x-[-18deg] blur-xl ${bg.lightBeam}`}
+      />
     </div>
   );
 }
@@ -1385,17 +1627,21 @@ export default function LockedFlipCardsPage() {
   const [inputValue, setInputValue] = useState("");
   const [newInputValue, setNewInputValue] = useState("");
   const [isUnlocking, setIsUnlocking] = useState(false);
-
+  const [justUnlockedId, setJustUnlockedId] = useState<string | null>(null);
+  const [categoryFlipKey, setCategoryFlipKey] = useState<CategoryKey | null>(null);
   const [developmentScore, setDevelopmentScore] = useState(0);
   const [conservationScore, setConservationScore] = useState(0);
-
   const [earnedTitles, setEarnedTitles] = useState<TitleReward[]>([]);
   const [pendingReward, setPendingReward] = useState<TitleReward | null>(null);
   const [previewCard, setPreviewCard] = useState<GameCard | null>(null);
   const [hasNewCollectedContent, setHasNewCollectedContent] = useState(false);
   const [hasNewTitleReward, setHasNewTitleReward] = useState(false);
-
   const rewardTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingCardUpdateRef = useRef<null | {
+    targetCard: GameCard;
+    content: string;
+    wasUnlocked: boolean;
+    }>(null);
 
   const categoryCards = useMemo(
     () => cards.filter((card) => card.category === activeCategory),
@@ -1406,7 +1652,6 @@ export default function LockedFlipCardsPage() {
     () => cards.find((card) => card.id === activeId) ?? null,
     [cards, activeId]
   );
-
   const unlockedCountByCategory = useMemo(
     () =>
       CATEGORY_KEYS.reduce((counts, category) => {
@@ -1420,34 +1665,22 @@ export default function LockedFlipCardsPage() {
 
   const activeCategoryMeta = categoryMetaMap[activeCategory];
   const activeBackground = categoryBackgroundMap[activeCategory];
-  const totalUnlockedCount = useMemo(
-    () => CATEGORY_KEYS.reduce((sum, category) => sum + unlockedCountByCategory[category], 0),
-    [unlockedCountByCategory]
-  );
+  const totalUnlockedCount = cards.filter((card) => card.unlocked).length;
   const totalCardCount = cards.length;
-  const isUpdateMode = activeCard?.unlocked === true;
-
-  useEffect(() => {
-    // 預先載入目前分類前幾張卡片圖片，減少第一次開卡或切換分類時的卡頓。
-    categoryCards.slice(0, 12).forEach((card) => {
-      const image = new Image();
-      image.src = card.imageSrc;
-    });
-  }, [categoryCards]);
 
   useEffect(() => {
     const rewardChecks = getRewardChecks(unlockedCountByCategory);
+
     const newlyEarned = rewardChecks.filter(({ reward, isUnlocked }) => {
       const alreadyHas = earnedTitles.some((title) => title.id === reward.id);
       return isUnlocked && !alreadyHas;
     });
 
-    if (newlyEarned.length === 0) return;
-
-    const rewards = newlyEarned.map((item) => item.reward);
-    setEarnedTitles((prev) => [...prev, ...rewards]);
-    setPendingReward(rewards[0]);
-    setHasNewTitleReward(true);
+    if (newlyEarned.length > 0) {
+      setEarnedTitles((prev) => [...prev, ...newlyEarned.map((item) => item.reward)]);
+      setPendingReward(newlyEarned[0].reward);
+      setHasNewTitleReward(true);
+    }
   }, [earnedTitles, unlockedCountByCategory]);
 
   useEffect(() => {
@@ -1468,183 +1701,218 @@ export default function LockedFlipCardsPage() {
     };
   }, [pendingReward]);
 
-  const closeRewardCard = useCallback(() => {
-    if (rewardTimerRef.current) {
-      clearTimeout(rewardTimerRef.current);
-      rewardTimerRef.current = null;
-    }
-    setPendingReward(null);
-  }, []);
-
-  const openCollectedPreview = useCallback((card: GameCard) => {
+    const openCollectedPreview = useCallback((card: GameCard) => {
     setPreviewCard(card);
-  }, []);
+    }, []);
 
-  const closeCollectedPreview = useCallback(() => {
+    const closeCollectedPreview = useCallback(() => {
     setPreviewCard(null);
-  }, []);
+    }, []);
+    
+    const handleChangeCategory = useCallback((category: CategoryKey) => {
+    if (category === activeCategory) return;
 
-  const openCard = useCallback((card: GameCard) => {
-    setActiveId(card.id);
-    setInputValue(card.content || "");
-    setNewInputValue("");
-    setIsUnlocking(false);
+    setActiveCategory(category);
+    setCategoryFlipKey(category);
 
-    // 讓彈窗先掛載，下一幀再顯示內容，避免圖片載入時造成版面跳動。
-    setIsModalReady(false);
-    requestAnimationFrame(() => setIsModalReady(true));
-  }, []);
+    window.setTimeout(() => {
+        setCategoryFlipKey(null);
+    }, 900);
+    }, [activeCategory]);
 
-  const resetModalState = useCallback(() => {
-    setActiveId(null);
-    setIsModalReady(false);
-    setInputValue("");
-    setNewInputValue("");
-    setIsUnlocking(false);
-  }, []);
+    const openCard = useCallback((card: GameCard) => {
+        setIsModalReady(false);
+        setActiveId(card.id);
+        setIsUnlocking(false);
 
-  const closeCard = useCallback(() => {
-    if (isUnlocking) return;
-    resetModalState();
-  }, [isUnlocking, resetModalState]);
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+            setInputValue(card.content || "");
+            setNewInputValue("");
+            setIsModalReady(true);
+            });
+        });
+        }, []);
 
-  const handleOpenCollectedPanel = useCallback(() => {
+    const closeCard = useCallback(() => {
+        if (isUnlocking) return;
+        setActiveId(null);
+        setIsModalReady(false);
+        setInputValue("");
+        setNewInputValue("");
+        }, [isUnlocking]);
+
+    const handleOpenCollectedPanel = useCallback(() => {
     setHasNewCollectedContent(false);
-  }, []);
+    }, []);
 
-  const handleOpenTrophyPanel = useCallback(() => {
+    const handleOpenTrophyPanel = useCallback(() => {
     setHasNewTitleReward(false);
-  }, []);
+    }, []);
 
-  const updateCardContent = useCallback((cardId: string, content: string) => {
+    const applyPendingCardUpdate = useCallback(() => {
+  const pending = pendingCardUpdateRef.current;
+  if (!pending) return;
+
+  pendingCardUpdateRef.current = null;
+
+  const { targetCard, content, wasUnlocked } = pending;
+
+        if (!wasUnlocked) {
+        setJustUnlockedId(targetCard.id);
+
+        window.setTimeout(() => {
+            setJustUnlockedId(null);
+        }, 900);
+        }
+
+        setCards((prev) =>
+    prev.map((card) =>
+      card.id === targetCard.id
+        ? {
+            ...card,
+            content,
+            unlocked: true,
+            unlockedAt: wasUnlocked ? card.unlockedAt : Date.now(),
+          }
+        : card
+    )
+  );
+
+  if (!wasUnlocked) {
+    const effect = getBalanceEffect(targetCard.category);
+    setDevelopmentScore((prev) => prev + effect.development);
+    setConservationScore((prev) => prev + effect.conservation);
+  }
+
+  setHasNewCollectedContent(true);
+}, []);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  if (!activeCard) return;
+
+  const latestCard = cards.find((card) => card.id === activeCard.id);
+  if (!latestCard) return;
+
+  // ✅ 用 cards 裡最新狀態判斷，不用 activeCard.unlocked
+  if (latestCard.unlocked) {
+    if (!newInputValue.trim()) return;
+
+    const content = `${latestCard.content}\n—— 更新內容 ——\n${newInputValue.trim()}`;
+
     setCards((prev) =>
       prev.map((card) =>
-        card.id === cardId
+        card.id === latestCard.id
           ? {
               ...card,
               content,
               unlocked: true,
-              unlockedAt: card.unlockedAt ?? Date.now(),
+              unlockedAt: card.unlockedAt,
             }
           : card
       )
     );
-  }, []);
 
-  const unlockCard = useCallback((targetCard: GameCard, content: string) => {
-    updateCardContent(targetCard.id, content);
-
-    const effect = getBalanceEffect(targetCard.category);
-    setDevelopmentScore((prev) => prev + effect.development);
-    setConservationScore((prev) => prev + effect.conservation);
-    setHasNewCollectedContent(true);
-  }, [updateCardContent]);
-
-  const appendCardContent = useCallback((targetCard: GameCard, addedText: string) => {
-    const trimmedText = addedText.trim();
-    if (!trimmedText) return;
-
-    const nextContent = `${targetCard.content}\n—— 更新內容 ——\n${trimmedText}`;
-
-    updateCardContent(targetCard.id, nextContent);
-    setInputValue(nextContent);
+    setInputValue(content);
     setNewInputValue("");
+    setIsUnlocking(false);
     setHasNewCollectedContent(true);
-  }, [updateCardContent]);
+    return;
+  }
 
-  const handleSubmit = useCallback(
-    async (event: React.FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-      if (!activeCard || isUnlocking) return;
+  // ✅ 只有真正未解鎖才關閉彈窗
+  if (!inputValue.trim()) return;
 
-      const latestCard = cards.find((card) => card.id === activeCard.id);
-      if (!latestCard) return;
+  const targetCard = latestCard;
+  const content = inputValue.trim();
 
-      if (latestCard.unlocked) {
-        appendCardContent(latestCard, newInputValue);
-        return;
-      }
+  setIsUnlocking(true);
 
-      const content = inputValue.trim();
-      if (!content) return;
+  await new Promise((resolve) => setTimeout(resolve, 350));
 
-      setIsUnlocking(true);
+  pendingCardUpdateRef.current = {
+    targetCard,
+    content,
+    wasUnlocked: false,
+  };
 
-      // 保留「送出並解鎖」的短動畫；只有解鎖流程會在動畫後關閉彈窗。
-      await new Promise((resolve) => setTimeout(resolve, 650));
-
-      unlockCard(latestCard, content);
-      resetModalState();
-    },
-    [
-      activeCard,
-      appendCardContent,
-      cards,
-      inputValue,
-      isUnlocking,
-      newInputValue,
-      resetModalState,
-      unlockCard,
-    ]
-  );
-
-  const showMainPage = !activeCard;
+  setIsUnlocking(false);
+  setActiveId(null);
+  setIsModalReady(false);
+  setInputValue("");
+  setNewInputValue("");
+};
 
   return (
     <div
       className={`relative min-h-screen overflow-hidden text-slate-800 transition-colors duration-700 ${activeBackground.pageBg}`}
     >
-      <MemoizedBalanceScaleBackground
-        developmentScore={developmentScore}
-        conservationScore={conservationScore}
-      />
-      <MemoizedWaterBackground category={activeCategory} />
+    {!activeCard ? (
+    <>
+    <MemoizedBalanceScaleBackground
+      developmentScore={developmentScore}
+      conservationScore={conservationScore}
+    />
 
-      {showMainPage ? (
-        <>
-          <MemoizedCollectedCardsPanel
-            cards={cards}
-            onOpenCard={openCollectedPreview}
-            hasNewContent={hasNewCollectedContent}
-            onOpenPanel={handleOpenCollectedPanel}
-          />
+    <MemoizedWaterBackground category={activeCategory} />
+    </>
+    ) : null}
 
-          <MemoizedTrophyPanel
-            titles={earnedTitles}
-            hasNewTitle={hasNewTitleReward}
-            onOpenPanel={handleOpenTrophyPanel}
-          />
-        </>
-      ) : null}
+    {!activeCard ? (
+  <>
+    <MemoizedCollectedCardsPanel
+      cards={cards}
+      onOpenCard={openCollectedPreview}
+      hasNewContent={hasNewCollectedContent}
+      onOpenPanel={handleOpenCollectedPanel}
+    />
 
-      <div
-        aria-hidden={activeCard ? true : undefined}
-        className={`relative z-10 mx-auto max-w-7xl px-6 pb-12 pt-10 transition-[filter,opacity,transform] duration-200 ${
-          activeCard ? "pointer-events-none opacity-95" : ""
-        }`}
-      >
+    <MemoizedTrophyPanel
+      titles={earnedTitles}
+      hasNewTitle={hasNewTitleReward}
+      onOpenPanel={handleOpenTrophyPanel}
+    />
+  </>
+) : null}
+
+    <MemoizedTitleRewardCelebration
+  reward={pendingReward}
+/>
+
+    <MemoizedCollectedCardPreview
+    card={previewCard}
+    onClose={closeCollectedPreview}
+    />
+
+        {!activeCard ? (
+    <div className="relative z-10 mx-auto max-w-7xl px-6 pb-12 pt-10">
+        <div className="mb-8 flex flex-col gap-4">
+        <div className="flex justify-start"></div>
+        </div>
+
         <MemoizedCategoryTabs
-          activeCategory={activeCategory}
-          onChange={setActiveCategory}
-          unlockedCountByCategory={unlockedCountByCategory}
-          totalUnlockedCount={totalUnlockedCount}
-          totalCardCount={totalCardCount}
+        activeCategory={activeCategory}
+        onChange={handleChangeCategory}
+        unlockedCountByCategory={unlockedCountByCategory}
+        totalUnlockedCount={totalUnlockedCount}
+        totalCardCount={totalCardCount}
         />
 
         <div className="mb-6" />
 
         <GameCardGrid
-          categoryCards={categoryCards}
-          activeId={activeId}
-          activeCategoryMeta={activeCategoryMeta}
-          onOpenCard={openCard}
+        categoryCards={categoryCards}
+        activeId={activeId}
+        activeCategoryMeta={activeCategoryMeta}
+        onOpenCard={openCard}
+        justUnlockedId={justUnlockedId}
+        categoryFlipKey={categoryFlipKey}
         />
-      </div>
+    </div>
+    ) : null}
 
-      <MemoizedTitleRewardCelebration reward={pendingReward} onClose={closeRewardCard} />
-      <MemoizedCollectedCardPreview card={previewCard} onClose={closeCollectedPreview} />
-
-      <AnimatePresence>
+      <AnimatePresence onExitComplete={applyPendingCardUpdate}>
         {activeCard ? (
           <motion.div
             className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/30 p-4"
@@ -1654,186 +1922,179 @@ export default function LockedFlipCardsPage() {
             exit={{ opacity: 0 }}
           >
             <motion.div
-              className="relative mx-auto my-8 w-full max-w-5xl"
-              onClick={(event) => event.stopPropagation()}
-              initial={{ opacity: 0, scale: 0.92, y: 18 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.96, y: 8 }}
-              transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
-            >
+                className="relative mx-auto my-8 w-full max-w-5xl transform-gpu will-change-transform"
+                onClick={(e) => e.stopPropagation()}
+                initial={{ opacity: 0, scale: 0.92, y: 18 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.96, y: 8 }}
+                transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+            >          
               {isModalReady ? (
                 <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-                  <div className="relative flex h-[520px] items-center justify-center overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-lg">
+                <div className="relative flex h-[520px] items-center justify-center overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.14)]">
+
                     <div className="flex max-h-full max-w-full items-center justify-center">
-                      <img
-                        src={activeCard.imageSrc}
-                        alt={activeCard.title}
-                        loading="eager"
-                        decoding="async"
-                        className="max-h-full max-w-full object-contain"
-                      />
+                       <img
+                            src={activeCard.imageSrc}
+                            alt={activeCard.title}
+                            loading="eager"
+                            decoding="sync"
+                            className="max-h-full max-w-full object-contain transform-gpu will-change-transform"
+                        />
                     </div>
 
                     <AnimatePresence>
-                      {!isUpdateMode || isUnlocking ? (
+                        {isModalReady && (!activeCard.unlocked || isUnlocking) ? (
                         <motion.div className="absolute inset-0 z-10">
-                          <motion.div
+
+                            <motion.div
                             className="absolute inset-0"
                             animate={
-                              isUnlocking
+                                isUnlocking
                                 ? {
                                     background: [
-                                      "rgba(255,255,255,0)",
-                                      "rgba(255,255,255,0.85)",
-                                      "rgba(255,255,255,0)",
-                                    ],
-                                  }
+                                        "rgba(255,255,255,0)",
+                                        "rgba(255,255,255,0.85)",
+                                        "rgba(255,255,255,0)"
+                                    ]
+                                    }
                                 : {}
                             }
                             transition={{ duration: 0.6 }}
-                          />
+                            />
 
-                          <div className="absolute left-1/2 top-[3%] flex -translate-x-1/2 items-center justify-center">
+                            <div className="absolute left-1/2 top-[3%] -translate-x-1/2 flex items-center justify-center">
                             <motion.div
-                              initial={{ scale: 1, rotate: 0, opacity: 1 }}
-                              animate={
+                                initial={{ scale: 1, rotate: 0, opacity: 1 }}
+                                animate={
                                 isUnlocking
-                                  ? {
-                                      scale: [1, 1.6],
-                                      rotate: [0, 0],
-                                      opacity: [1, 0],
+                                    ? {
+                                        scale: [1, 1.6],
+                                        rotate: [0, 0],
+                                        opacity: [1, 0],
                                     }
-                                  : {}
-                              }
-                              transition={{ duration: 0.9 }}
-                              className={`flex h-20 w-20 items-center justify-center rounded-full shadow-[0_0_30px_rgba(56,189,248,0.35)] ${
+                                    : {}
+                                }
+                                transition={{ duration: 0.9 }}
+                                className={`flex h-20 w-20 items-center justify-center rounded-full shadow-[0_0_30px_rgba(56,189,248,0.35)] ${
                                 writtenCardStateMap[activeCard.category].iconBg
-                              }`}
+                                }`}
                             >
-                              {isUnlocking ? (
-                                <Unlock
-                                  className={`h-10 w-10 ${
-                                    writtenCardStateMap[activeCard.category].iconText
-                                  }`}
-                                />
-                              ) : (
-                                <Lock
-                                  className={`h-10 w-10 ${
-                                    writtenCardStateMap[activeCard.category].iconText
-                                  }`}
-                                />
-                              )}
+                                {isUnlocking ? (
+                                <Unlock className={`h-10 w-10 ${writtenCardStateMap[activeCard.category].iconText}`} />
+                                ) : (
+                                <Lock className={`h-10 w-10 ${writtenCardStateMap[activeCard.category].iconText}`} />
+                                )}
                             </motion.div>
-                          </div>
-                        </motion.div>
-                      ) : null}
-                    </AnimatePresence>
-                  </div>
+                            </div>
 
-                  <Card className="border-slate-200 bg-white/92 text-slate-800 shadow-lg">
-                    <CardContent className="p-6 md:p-7">
-                      <div className="mb-6 flex items-start justify-between gap-4">
-                        <div>
-                          <h1 className="mt-2 text-2xl font-bold">輸入卡牌資料</h1>
+                        </motion.div>
+                        ) : null}
+                    </AnimatePresence>
+
+                    </div>
+                    
+
+                <Card className="border-slate-200 bg-white/92 text-slate-800 shadow-2xl backdrop-blur-xl">
+                  <CardContent className="p-6 md:p-7">
+                    <div className="mb-6 flex items-start justify-between gap-4">
+                      <div>
+                        <h1 className="mt-2 text-2xl font-bold">輸入卡牌資料</h1>
                         </div>
 
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          onClick={closeCard}
-                          disabled={isUnlocking}
-                          className="rounded-full text-black hover:bg-slate-100 hover:text-black"
-                        >
-                          <X className="h-5 w-5 text-black" />
-                        </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={closeCard}
+                        disabled={isUnlocking}
+                        className="rounded-full text-black hover:bg-slate-100 hover:text-black"
+                      >
+                        <X className="h-5 w-5 text-black" />
+                      </Button>
+                    </div>
+
+                    <form
+                    onSubmit={handleSubmit}
+                    onClick={(e) => e.stopPropagation()}
+                    className="flex h-full flex-col space-y-5"
+                    >
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-slate-700">卡牌分類</label>
+                        <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+                          {categoryMetaMap[activeCard.category].label}
+                        </div>
                       </div>
 
-                      <form
-                        onSubmit={handleSubmit}
-                        onClick={(event) => event.stopPropagation()}
-                        className="flex h-full flex-col space-y-5"
-                      >
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium text-slate-700">
-                            卡牌分類
-                          </label>
-                          <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
-                            {categoryMetaMap[activeCard.category].label}
-                          </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-slate-700">卡牌標題</label>
+                        <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+                          {activeCard.unlocked ? activeCard.revealedTitle : activeCard.title}
                         </div>
+                      </div>
 
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium text-slate-700">
-                            卡牌標題
-                          </label>
-                          <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
-                            {activeCard.unlocked
-                              ? activeCard.revealedTitle
-                              : activeCard.title}
-                          </div>
-                        </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-slate-500">內容輸入</label>
 
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium text-slate-500">
-                            內容輸入
-                          </label>
+                            {activeCard.unlocked ? (
+                                <div className="mt-2 space-y-4">
 
-                          {isUpdateMode ? (
-                            <div className="mt-2 space-y-4">
-                              <textarea
+                                <textarea
+                                    value={inputValue}
+                                    readOnly
+                                    rows={6}
+                                    className="w-full rounded-2xl border border-slate-200 bg-slate-100 px-4 py-4 text-base text-slate-700 outline-none"
+                                />
+
+                                <textarea
+                                    value={newInputValue}
+                                    onChange={(e) => setNewInputValue(e.target.value)}
+                                    placeholder="請輸入要新增的內容..."
+                                    rows={5}
+                                    className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 text-base text-slate-800 outline-none placeholder:text-slate-400 focus:border-sky-300"
+                                />
+                                </div>
+                            ) : (
+                                <textarea
                                 value={inputValue}
-                                readOnly
-                                rows={6}
-                                className="w-full rounded-2xl border border-slate-200 bg-slate-100 px-4 py-4 text-base text-slate-700 outline-none"
-                              />
+                                onChange={(e) => setInputValue(e.target.value)}
+                                placeholder="請輸入這張卡牌要顯示的內容..."
+                                rows={10}
+                                className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 text-base text-slate-800 outline-none placeholder:text-slate-400 focus:border-sky-300"
+                                />
+                            )}
+                      </div>
 
-                              <textarea
-                                value={newInputValue}
-                                onChange={(event) => setNewInputValue(event.target.value)}
-                                placeholder="請輸入要新增的內容..."
-                                rows={5}
-                                className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 text-base text-slate-800 outline-none placeholder:text-slate-400 focus:border-sky-300"
-                              />
-                            </div>
-                          ) : (
-                            <textarea
-                              value={inputValue}
-                              onChange={(event) => setInputValue(event.target.value)}
-                              placeholder="請輸入這張卡牌要顯示的內容..."
-                              rows={10}
-                              className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 text-base text-slate-800 outline-none placeholder:text-slate-400 focus:border-sky-300"
-                            />
-                          )}
-                        </div>
-
-                        <div className="mt-auto flex justify-end gap-3">
-                          <Button
+                      <div className="mt-auto flex justify-end gap-3">
+                        <Button
                             type="submit"
-                            disabled={
-                              isUnlocking ||
-                              (isUpdateMode
-                                ? !newInputValue.trim()
-                                : !inputValue.trim())
+                            onClick={(e) => e.stopPropagation()}
+                          disabled={
+                            isUnlocking ||
+                            (activeCard.unlocked ? !newInputValue.trim() : !inputValue.trim())
                             }
-                            className="rounded-2xl bg-sky-500 px-5 py-6 text-white hover:bg-sky-400"
-                          >
-                            <Send className="mr-2 h-4 w-4" />
-                            {isUnlocking
-                              ? "解鎖中..."
-                              : isUpdateMode
-                              ? "更新內容"
-                              : "送出並解鎖"}
-                          </Button>
+                          className="rounded-2xl bg-sky-500 px-5 py-6 text-white hover:bg-sky-400"
+                        >
+                          <Send className="mr-2 h-4 w-4" />
+                          {isUnlocking
+                            ? activeCard.unlocked
+                            ? "更新中..."
+                            : "解鎖中..."
+                            : activeCard.unlocked
+                            ? "更新內容"
+                            : "送出並解鎖"}
+                        </Button>
                         </div>
-                      </form>
-                    </CardContent>
-                  </Card>
-                </div>
+                    </form>
+                  </CardContent>
+                </Card>
+              </div>
               ) : (
-                <div className="flex h-[520px] items-center justify-center rounded-[32px] bg-white shadow-lg">
-                  <div className="text-sm font-medium text-slate-500">載入卡牌中...</div>
+            <div className="flex h-[520px] items-center justify-center rounded-[32px] bg-white shadow-[0_20px_60px_rgba(15,23,42,0.14)]">
+                <div className="text-sm font-medium text-slate-500">
+                載入卡牌中...
                 </div>
-              )}
+            </div>
+            )}
             </motion.div>
           </motion.div>
         ) : null}
