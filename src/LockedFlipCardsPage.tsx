@@ -124,6 +124,33 @@ const categoryMetaMap: Record<CategoryKey, CategoryMeta> = {
 
 };
 
+const categoryTabThemeMap: Record<CategoryKey, {
+  active: string;
+  inactive: string;
+  badge: string;
+}> = {
+  water: {
+    active: "border-sky-300 bg-sky-50 text-sky-800",
+    inactive: "border-sky-100 bg-white hover:bg-sky-50",
+    badge: "bg-sky-100 text-sky-700",
+  },
+  land: {
+    active: "border-lime-300 bg-lime-50 text-lime-800",
+    inactive: "border-lime-100 bg-white hover:bg-lime-50",
+    badge: "bg-lime-100 text-lime-700",
+  },
+  leopard: {
+    active: "border-orange-300 bg-orange-50 text-orange-800",
+    inactive: "border-orange-100 bg-white hover:bg-orange-50",
+    badge: "bg-orange-100 text-orange-700",
+  },
+  rumor: {
+    active: "border-violet-300 bg-violet-50 text-violet-800",
+    inactive: "border-violet-100 bg-white hover:bg-violet-50",
+    badge: "bg-violet-100 text-violet-700",
+  },
+};
+
 const revealedTitlesByCategory: Record<CategoryKey, string[]> = {
   water: [
     "苗栗市降水量資訊",
@@ -837,7 +864,7 @@ function CategoryTabs({
         {CATEGORY_KEYS.map((key) => {
           const item = categoryMetaMap[key];
           const active = activeCategory === key;
-
+          const theme = categoryTabThemeMap[key];
           return (
             <motion.button
               key={key}
@@ -847,15 +874,13 @@ function CategoryTabs({
               onClick={() => onChange(key)}
               className={[
                 "relative overflow-hidden rounded-[26px] border px-4 py-4 text-left transition",
-                active
-                  ? "border-slate-300 bg-slate-50 shadow-[0_8px_20px_rgba(15,23,42,0.06)]"
-                  : "border-slate-200 bg-white hover:bg-slate-50",
-              ].join(" ")}
+                active ? theme.active : theme.inactive,
+                ].join(" ")}
             >
               <div className="flex items-center justify-between gap-3">
                 <div className="rounded-full bg-slate-100 p-2 text-slate-600">{item.icon}</div>
                 <div className="flex items-center gap-2">
-                  <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700">
+                  <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${theme.badge}`}>
                     {unlockedCountByCategory[key]} / {CATEGORY_TOTAL_COUNTS[key]}
                   </span>
                   {active ? (
@@ -1900,8 +1925,11 @@ export default function LockedFlipCardsPage() {
     onClose={closeCollectedPreview}
     />
 
-        {!activeCard ? (
-    <div className="relative z-10 mx-auto max-w-7xl px-6 pb-12 pt-10">
+        <div
+        className={`relative z-10 mx-auto max-w-7xl px-6 pb-12 pt-10 ${
+            activeCard ? "pointer-events-none" : ""
+        }`}
+        >
         <div className="mb-8 flex flex-col gap-4">
         <div className="flex justify-start"></div>
         </div>
@@ -1925,7 +1953,6 @@ export default function LockedFlipCardsPage() {
         categoryFlipKey={categoryFlipKey}
         />
     </div>
-    ) : null}
 
       <AnimatePresence
         onExitComplete={() => {
