@@ -50,6 +50,7 @@ type LockedFlipCardsPageProps = {
   studentThought: string;
   studentPlan: string;
   onSubmitSummary: (summary: FinalSummary) => void;
+  onTitleRewardsChange?: (titles: TitleReward[]) => void;
 };
 
 type CollectionSortMode = "latest" | "water" | "land" | "leopard" | "rumor";
@@ -78,14 +79,13 @@ const CARD_GROUPS: Array<{
   { category: "rumor", startImageId: 91, count: CATEGORY_TOTAL_COUNTS.rumor },
 ];
 
-const COLLECTION_SORT_CATEGORY: Record<CollectionSortMode, CategoryKey | null> =
-  {
-    latest: null,
-    water: "water",
-    land: "land",
-    leopard: "leopard",
-    rumor: "rumor",
-  };
+const COLLECTION_SORT_CATEGORY: Record<CollectionSortMode, CategoryKey | null> = {
+  latest: null,
+  water: "water",
+  land: "land",
+  leopard: "leopard",
+  rumor: "rumor",
+};
 
 const COLLECTION_SORT_OPTIONS: Array<{
   mode: CollectionSortMode;
@@ -874,7 +874,7 @@ function CategoryTabs({
   totalCardCount,
   onRequestFinish,
 }: {
-  activeCategory: CategoryKey;
+  activeCategory: CategoryKey | null;
   onChange: (category: CategoryKey) => void;
   unlockedCountByCategory: Record<CategoryKey, number>;
   totalUnlockedCount: number;
@@ -895,8 +895,7 @@ function CategoryTabs({
           </div>
           <div>
             <p className="text-2xl font-bold tracking-[0.2em] text-slate-600">
-              {" "}
-              數據探究選單{" "}
+              數據探究選單
             </p>
           </div>
         </div>
@@ -1210,8 +1209,7 @@ function CollectedCardsPanel({
               </div>
               <div>
                 <p className="text-lg font-bold tracking-[0.2em] text-sky-700">
-                  {" "}
-                  數據卡牌收藏{" "}
+                  數據卡牌收藏
                 </p>
               </div>
             </div>
@@ -1561,7 +1559,21 @@ const GameCardGrid = memo(function GameCardGrid({
   categoryFlipKey: CategoryKey | null;
 }) {
   return (
-    <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <motion.div
+      key={activeCategoryMeta.key}
+      initial="hidden"
+      animate="show"
+      variants={{
+        hidden: {},
+        show: {
+          transition: {
+            staggerChildren: 0.06,
+            delayChildren: 0.12,
+          },
+        },
+      }}
+      className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+    >
       {categoryCards.map((card, index) => {
         const isOpened = activeId === card.id;
         const displayTitle = getDisplayTitle(card);
@@ -1572,10 +1584,26 @@ const GameCardGrid = memo(function GameCardGrid({
         return (
           <motion.button
             key={card.id}
+            variants={{
+              hidden: {
+                opacity: 0,
+                y: -28,
+                scale: 0.96,
+              },
+              show: {
+                opacity: 1,
+                y: 0,
+                scale: 1,
+                transition: {
+                  duration: 0.45,
+                  ease: [0.22, 1, 0.36, 1],
+                },
+              },
+            }}
             onClick={() => onOpenCard(card)}
             className="group relative aspect-[6/5] text-left"
             whileHover={{ y: -4, scale: 1.01 }}
-            transition={{ type: "spring", stiffness: 280, damping: 24 }}
+            whileTap={{ scale: 0.98 }}
           >
             <div
               className={`absolute -inset-1 rounded-[32px] opacity-0 transition duration-300 group-hover:opacity-100 ${
@@ -1685,7 +1713,7 @@ const GameCardGrid = memo(function GameCardGrid({
           </motion.button>
         );
       })}
-    </div>
+    </motion.div>
   );
 });
 
@@ -1800,6 +1828,7 @@ export default function LockedFlipCardsPage({
   studentThought,
   studentPlan,
   onSubmitSummary,
+  onTitleRewardsChange,
 }: LockedFlipCardsPageProps) {
   const [isFinished, setIsFinished] = useState(false);
   const [finalDiscovery, setFinalDiscovery] = useState("");
@@ -1811,7 +1840,7 @@ export default function LockedFlipCardsPage({
     [],
   );
   const [cards, setCards] = useState<GameCard[]>(createAllCards);
-  const [activeCategory, setActiveCategory] = useState<CategoryKey>("water");
+  const [activeCategory, setActiveCategory] = useState<CategoryKey | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [isModalReady, setIsModalReady] = useState(false);
   const [inputValue, setInputValue] = useState("");
@@ -1838,7 +1867,10 @@ export default function LockedFlipCardsPage({
   }>(null);
 
   const categoryCards = useMemo(
-    () => cards.filter((card) => card.category === activeCategory),
+    () =>
+      activeCategory
+        ? cards.filter((card) => card.category === activeCategory)
+        : [],
     [cards, activeCategory],
   );
 
@@ -1860,11 +1892,18 @@ export default function LockedFlipCardsPage({
     [cards],
   );
 
-  const activeCategoryMeta = categoryMetaMap[activeCategory];
-  const activeBackground = categoryBackgroundMap[activeCategory];
+  const activeCategoryMeta = activeCategory
+    ? categoryMetaMap[activeCategory]
+    : null;
+  const activeBackground = activeCategory
+    ? categoryBackgroundMap[activeCategory]
+    : categoryBackgroundMap.water;
   const totalUnlockedCount = cards.filter((card) => card.unlocked).length;
   const totalCardCount = cards.length;
 
+  useEffect(() => {
+    onTitleRewardsChange?.(earnedTitles);
+  }, [earnedTitles, onTitleRewardsChange]);
   useEffect(() => {
     const rewardChecks = getRewardChecks(unlockedCountByCategory);
 
@@ -1996,8 +2035,6 @@ export default function LockedFlipCardsPage({
 
     const latestCard = cards.find((card) => card.id === activeCard.id);
     if (!latestCard) return;
-
-    // ✅ 用 cards 裡最新狀態判斷，不用 activeCard.unlocked
     if (latestCard.unlocked) {
       if (!newInputValue.trim()) return;
 
@@ -2022,8 +2059,6 @@ export default function LockedFlipCardsPage({
       setHasNewCollectedContent(true);
       return;
     }
-
-    // ✅ 只有真正未解鎖才關閉彈窗
     if (!inputValue.trim()) return;
 
     const targetCard = latestCard;
@@ -2032,14 +2067,8 @@ export default function LockedFlipCardsPage({
     setIsUnlocking(true);
     setShowFallingLock(true);
     setShowUnlockBurst(false);
-
-    // 鎖頭掉落時間
     await new Promise((resolve) => setTimeout(resolve, 750));
-
-    // 中央解鎖爆發特效
     setShowFallingLock(false);
-
-    // 再顯示中央解鎖爆發特效
     setShowUnlockBurst(true);
 
     await new Promise((resolve) => setTimeout(resolve, 650));
@@ -2162,7 +2191,6 @@ export default function LockedFlipCardsPage({
 
           <div className="space-y-6">
             <div className="grid gap-6 md:grid-cols-2">
-              {/* 1 */}
               <section className="rounded-3xl border border-slate-200 bg-slate-50 p-6">
                 <h2 className="mb-3 text-xl font-bold text-slate-700">
                   1. 你在想什麼？
@@ -2172,8 +2200,6 @@ export default function LockedFlipCardsPage({
                   {studentThought || "尚未填寫"}
                 </div>
               </section>
-
-              {/* 2 */}
               <section className="rounded-3xl border border-slate-200 bg-slate-50 p-6">
                 <h2 className="mb-3 text-xl font-bold text-slate-700">
                   2. 你對於你的想法有什麼規劃的解決方法嗎？
@@ -2279,7 +2305,6 @@ export default function LockedFlipCardsPage({
                           className="relative h-full w-full rounded-2xl transform-gpu"
                           style={{ transformStyle: "preserve-3d" }}
                         >
-                          {/* 正面：圖片 + 標題 */}
                           <div
                             className="absolute inset-0 rounded-2xl border border-amber-200 bg-white p-3"
                             style={{ backfaceVisibility: "hidden" }}
@@ -2298,8 +2323,6 @@ export default function LockedFlipCardsPage({
                               點擊查看內容
                             </p>
                           </div>
-
-                          {/* 背面：學生撰寫內容 */}
                           <div
                             className="absolute inset-0 rounded-2xl border border-amber-200 bg-amber-50 p-4"
                             style={{
@@ -2371,7 +2394,9 @@ export default function LockedFlipCardsPage({
             conservationScore={conservationScore}
           />
 
-          <MemoizedWaterBackground category={activeCategory} />
+          {activeCategory ? (
+            <MemoizedWaterBackground category={activeCategory} />
+          ) : null}
         </>
       ) : null}
 
@@ -2445,31 +2470,41 @@ export default function LockedFlipCardsPage({
           </motion.div>
         ) : null}
       </AnimatePresence>
-      <div
-        className={`relative z-10 mx-auto max-w-7xl px-6 pb-12 pt-10 ${
+      <motion.div
+        layout
+        transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+        className={`relative z-10 mx-auto flex min-h-screen max-w-7xl flex-col px-6 pb-12 pt-10 ${
           activeCard ? "pointer-events-none" : ""
-        }`}
+        } ${!activeCategory ? "justify-center" : "justify-start"}`}
       >
-        <MemoizedCategoryTabs
-          activeCategory={activeCategory}
-          onChange={handleChangeCategory}
-          unlockedCountByCategory={unlockedCountByCategory}
-          totalUnlockedCount={totalUnlockedCount}
-          totalCardCount={totalCardCount}
-          onRequestFinish={() => setShowFinishConfirm(true)}
-        />
+        <motion.div
+          layout
+          animate={{ scale: activeCategory ? 0.98 : 1 }}
+          transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <MemoizedCategoryTabs
+            activeCategory={activeCategory}
+            onChange={handleChangeCategory}
+            unlockedCountByCategory={unlockedCountByCategory}
+            totalUnlockedCount={totalUnlockedCount}
+            totalCardCount={totalCardCount}
+            onRequestFinish={() => setShowFinishConfirm(true)}
+          />
+        </motion.div>
 
         <div className="mb-6" />
 
-        <GameCardGrid
-          categoryCards={categoryCards}
-          activeId={activeId}
-          activeCategoryMeta={activeCategoryMeta}
-          onOpenCard={openCard}
-          justUnlockedId={justUnlockedId}
-          categoryFlipKey={categoryFlipKey}
-        />
-      </div>
+        {activeCategory && activeCategoryMeta ? (
+          <GameCardGrid
+            categoryCards={categoryCards}
+            activeId={activeId}
+            activeCategoryMeta={activeCategoryMeta}
+            onOpenCard={openCard}
+            justUnlockedId={justUnlockedId}
+            categoryFlipKey={categoryFlipKey}
+          />
+        ) : null}
+      </motion.div>
 
       <AnimatePresence
         onExitComplete={() => {
@@ -2479,7 +2514,7 @@ export default function LockedFlipCardsPage({
       >
         {activeCard ? (
           <motion.div
-           className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-slate-900/30 p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-slate-900/30 p-4"
             onClick={closeCard}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
