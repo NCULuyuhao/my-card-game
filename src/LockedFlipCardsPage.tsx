@@ -79,13 +79,14 @@ const CARD_GROUPS: Array<{
   { category: "rumor", startImageId: 91, count: CATEGORY_TOTAL_COUNTS.rumor },
 ];
 
-const COLLECTION_SORT_CATEGORY: Record<CollectionSortMode, CategoryKey | null> = {
-  latest: null,
-  water: "water",
-  land: "land",
-  leopard: "leopard",
-  rumor: "rumor",
-};
+const COLLECTION_SORT_CATEGORY: Record<CollectionSortMode, CategoryKey | null> =
+  {
+    latest: null,
+    water: "water",
+    land: "land",
+    leopard: "leopard",
+    rumor: "rumor",
+  };
 
 const COLLECTION_SORT_OPTIONS: Array<{
   mode: CollectionSortMode;
@@ -894,9 +895,8 @@ function CategoryTabs({
             <Leaf className="h-6 w-6 text-[#6f7d5f]" />
           </div>
           <div>
-            <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-[#bbb296] bg-[#f7f1e3]/85 px-3 py-1 text-[11px] font-black tracking-[0.26em] text-[#68614f]"><span className="h-1.5 w-1.5 rounded-full bg-[#7d8b6f]" />DATA EXPLORATION</div>
             <p className="font-serif text-3xl font-semibold tracking-[0.12em] text-stone-800">
-              數據探究選單
+              數據探究清單
             </p>
           </div>
         </div>
@@ -957,7 +957,9 @@ function CategoryTabs({
               </div>
 
               <div className="mt-4">
-                <p className="font-serif text-xl font-semibold tracking-[0.06em] text-stone-800">{item.label}</p>
+                <p className="font-serif text-xl font-semibold tracking-[0.06em] text-stone-800">
+                  {item.label}
+                </p>
                 <p className="mt-2 text-sm leading-6 text-stone-600">
                   {item.subtitle}
                 </p>
@@ -1841,7 +1843,9 @@ export default function LockedFlipCardsPage({
     [],
   );
   const [cards, setCards] = useState<GameCard[]>(createAllCards);
-  const [activeCategory, setActiveCategory] = useState<CategoryKey | null>(null);
+  const [activeCategory, setActiveCategory] = useState<CategoryKey | null>(
+    null,
+  );
   const [activeId, setActiveId] = useState<string | null>(null);
   const [isModalReady, setIsModalReady] = useState(false);
   const [inputValue, setInputValue] = useState("");
@@ -2096,6 +2100,8 @@ export default function LockedFlipCardsPage({
     confirmedEvidenceIds.includes(card.id),
   );
 
+  const isFinalDiscoveryLocked = confirmedEvidenceCards.length === 0;
+
   function toggleEvidenceCard(cardId: string) {
     setSelectedEvidenceIds((prev) =>
       prev.includes(cardId)
@@ -2134,7 +2140,7 @@ export default function LockedFlipCardsPage({
 
   if (isFinished) {
     return (
-      <div className="relative min-h-screen overflow-hidden bg-[#f3efe6] p-6 text-stone-800">
+      <div className="relative min-h-screen overflow-hidden bg-[#f3efe6] px-4 py-6 text-stone-800 md:p-6">
         <div className="pointer-events-none absolute inset-0 opacity-70">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.9),transparent_35%),radial-gradient(circle_at_85%_15%,rgba(173,163,138,0.22),transparent_30%),linear-gradient(135deg,rgba(68,64,60,0.06)_0_1px,transparent_1px_32px)]" />
           <div className="absolute left-10 top-10 h-72 w-72 rounded-full bg-stone-300/20 blur-[90px]" />
@@ -2152,13 +2158,13 @@ export default function LockedFlipCardsPage({
                 initial={{ scale: 0.92, y: 18, opacity: 0 }}
                 animate={{ scale: 1, y: 0, opacity: 1 }}
                 exit={{ scale: 0.96, y: 10, opacity: 0 }}
-                className="w-full max-w-md rounded-[28px] bg-white p-6 shadow-2xl"
+                className="w-full max-w-md overflow-hidden rounded-[34px] border border-[#d8cbb3] bg-[#fffaf0] p-6 shadow-[0_24px_70px_rgba(45,41,34,0.18)]"
               >
-                <h2 className="text-2xl font-black text-slate-800">
+                <h2 className="font-serif text-2xl font-semibold tracking-[0.08em] text-[#332c24]">
                   確認送出數據探究總結？
                 </h2>
 
-                <p className="mt-3 text-sm leading-7 text-slate-600">
+                <p className="mt-3 text-sm font-medium leading-7 text-stone-600">
                   送出後，這份數據探究總結會存到首頁的調查書紀錄中。
                 </p>
 
@@ -2178,7 +2184,7 @@ export default function LockedFlipCardsPage({
                       setShowSubmitConfirm(false);
                       submitFinalSummary();
                     }}
-                    className="rounded-2xl bg-blue-600 text-white hover:bg-blue-500"
+                    className="rounded-2xl border border-[#63513f] bg-[#4a382b] text-[#fffaf0] shadow-[0_8px_0_rgba(74,56,43,0.22)] hover:bg-[#5b4635]"
                   >
                     確認送出
                   </Button>
@@ -2187,35 +2193,53 @@ export default function LockedFlipCardsPage({
             </motion.div>
           ) : null}
         </AnimatePresence>
-        <div className="relative z-10 mx-auto max-w-5xl overflow-hidden rounded-[34px] border border-stone-200/90 bg-white/72 p-8 shadow-[0_22px_70px_rgba(45,41,34,0.10)] backdrop-blur-xl">
-          <h1 className="mb-8 font-serif text-4xl font-semibold tracking-[0.12em] text-stone-800">
-            數據探究總結
-          </h1>
+        <div className="relative z-10 mx-auto max-w-5xl overflow-hidden rounded-[34px] border border-[#d8cbb3] bg-[#f7f1e6]/86 p-8 shadow-[0_22px_70px_rgba(45,41,34,0.11)] backdrop-blur-md">
+          <div className="mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-[#d8cbb3]/80 pb-6">
+            <div>
+              <p className="mb-2 inline-flex rounded-full border border-[#d8cbb3] bg-[#fffaf0] px-4 py-1 text-xs font-black tracking-[0.18em] text-[#7b5b37]">
+                INVESTIGATION FILE
+              </p>
+              <h1 className="font-serif text-4xl font-semibold tracking-[0.12em] text-[#332c24]">
+                數據探究總結
+              </h1>
+            </div>
+            <div className="rounded-2xl border border-[#d8cbb3] bg-white/62 px-4 py-3 text-sm font-black text-stone-600">
+              已選證據：{confirmedEvidenceCards.length} 張
+            </div>
+          </div>
 
           <div className="space-y-6">
             <div className="grid gap-6 md:grid-cols-2">
-              <section className="rounded-3xl border border-slate-200 bg-slate-50 p-6">
-                <h2 className="mb-3 text-xl font-bold text-slate-700">
+              <section className="rounded-[28px] border border-[#d8cbb3] bg-[#fffaf0]/86 p-6 shadow-[0_14px_36px_rgba(45,41,34,0.08)]">
+                <h2 className="mb-3 font-serif text-xl font-semibold tracking-[0.06em] text-[#332c24]">
                   1. 你在想什麼？
                 </h2>
 
-                <div className="rounded-2xl border border-slate-200 bg-white p-4 text-slate-700">
+                <div className="relative min-h-[68px] overflow-hidden rounded-2xl border-2 border-dashed border-[#b8aa94] bg-[repeating-linear-gradient(-45deg,rgba(120,113,108,0.10)_0_10px,rgba(255,250,240,0.82)_10px_20px)] p-4 pr-24 font-medium leading-7 text-stone-600 shadow-inner">
+                  <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full border border-[#a99373] bg-[#4a382b] px-2.5 py-1 text-[11px] font-black tracking-[0.12em] text-[#fffaf0] shadow-sm">
+                    <Lock className="h-3 w-3" />
+                    已鎖定
+                  </span>
                   {studentThought || "尚未填寫"}
                 </div>
               </section>
-              <section className="rounded-3xl border border-slate-200 bg-slate-50 p-6">
-                <h2 className="mb-3 text-xl font-bold text-slate-700">
-                  2. 你對於你的想法有什麼規劃的解決方法嗎？
+              <section className="rounded-[28px] border border-[#d8cbb3] bg-[#fffaf0]/86 p-6 shadow-[0_14px_36px_rgba(45,41,34,0.08)]">
+                <h2 className="mb-3 font-serif text-xl font-semibold tracking-[0.06em] text-[#332c24]">
+                  2. 有規劃數據探究的方向嗎？
                 </h2>
 
-                <div className="rounded-2xl border border-slate-200 bg-white p-4 text-slate-700">
+                <div className="relative min-h-[68px] overflow-hidden rounded-2xl border-2 border-dashed border-[#b8aa94] bg-[repeating-linear-gradient(-45deg,rgba(120,113,108,0.10)_0_10px,rgba(255,250,240,0.82)_10px_20px)] p-4 pr-24 font-medium leading-7 text-stone-600 shadow-inner">
+                  <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full border border-[#a99373] bg-[#4a382b] px-2.5 py-1 text-[11px] font-black tracking-[0.12em] text-[#fffaf0] shadow-sm">
+                    <Lock className="h-3 w-3" />
+                    已鎖定
+                  </span>
                   {studentPlan || "尚未填寫"}
                 </div>
               </section>
             </div>
 
-            <section className="rounded-3xl border border-slate-200 bg-slate-50 p-6">
-              <h2 className="mb-4 text-xl font-bold text-slate-700">
+            <section className="rounded-[28px] border border-[#d8cbb3] bg-[#fffaf0]/86 p-6 shadow-[0_14px_36px_rgba(45,41,34,0.08)]">
+              <h2 className="mb-4 font-serif text-xl font-semibold tracking-[0.06em] text-[#332c24]">
                 3. 你探究並解鎖的卡牌
               </h2>
 
@@ -2230,18 +2254,25 @@ export default function LockedFlipCardsPage({
                         type="button"
                         disabled={confirmedEvidenceIds.length > 0}
                         onClick={() => toggleEvidenceCard(card.id)}
-                        className={`w-[320px] rounded-2xl border bg-white p-3 text-left transition ${
+                        className={`relative w-[320px] rounded-[24px] border-2 p-3 text-left transition ${
                           isSelected
-                            ? "border-emerald-400 ring-2 ring-emerald-200"
-                            : "border-slate-200 hover:border-emerald-300"
+                            ? "scale-[1.015] border-[#4a382b] bg-[#fff4d8] shadow-[0_0_0_5px_rgba(216,203,179,0.78),0_18px_38px_rgba(74,56,43,0.20)] ring-2 ring-[#7b5b37] ring-offset-2 ring-offset-[#fffaf0]"
+                            : "border-[#e2d4bd] bg-white/78 shadow-[0_12px_28px_rgba(45,41,34,0.07)] hover:border-[#b49a78] hover:bg-[#fffaf0]"
                         }`}
                       >
+                        {isSelected ? (
+                          <span className="absolute -right-2 -top-2 z-10 rounded-full border-2 border-[#fffaf0] bg-[#4a382b] px-3 py-1 text-xs font-black tracking-[0.12em] text-[#fffaf0] shadow-[0_8px_18px_rgba(74,56,43,0.28)]">
+                            已選取
+                          </span>
+                        ) : null}
                         <div className="mb-2 flex items-center gap-2">
-                          <span className="rounded-full bg-sky-100 px-2 py-0.5 text-xs font-bold text-sky-700">
+                          <span
+                            className={`rounded-full px-2 py-0.5 text-xs font-bold ${categoryTabThemeMap[card.category].badge}`}
+                          >
                             {categoryMetaMap[card.category].label}
                           </span>
 
-                          <h3 className="text-sm font-bold text-slate-800">
+                          <h3 className="text-sm font-black text-[#332c24]">
                             {card.revealedTitle}
                           </h3>
                         </div>
@@ -2250,23 +2281,29 @@ export default function LockedFlipCardsPage({
                           <img
                             src={card.imageSrc}
                             alt={card.revealedTitle}
-                            className="h-24 w-24 flex-shrink-0 rounded-xl bg-slate-50 object-contain"
+                            className="h-24 w-24 flex-shrink-0 rounded-xl border border-[#eadfcf] bg-[#fffaf0] object-contain"
                           />
 
-                          <p className="line-clamp-3 whitespace-pre-wrap text-xs leading-5 text-slate-600">
+                          <p className="line-clamp-3 whitespace-pre-wrap text-xs font-medium leading-5 text-stone-600">
                             {card.content}
                           </p>
                         </div>
 
-                        <div className="mt-3 text-right text-xs font-bold text-emerald-600">
-                          {isSelected ? "已選擇" : "選擇此卡牌"}
+                        <div
+                          className={`mt-3 rounded-full px-3 py-1 text-center text-xs font-black tracking-[0.08em] ${
+                            isSelected
+                              ? "bg-[#4a382b] text-[#fffaf0]"
+                              : "bg-[#fffaf0] text-[#7b5b37]"
+                          }`}
+                        >
+                          {isSelected ? "目前已選取這張證據卡" : "選擇此卡牌"}
                         </div>
                       </button>
                     );
                   })}
                 </div>
               ) : (
-                <div className="rounded-2xl border border-slate-200 bg-white p-4 text-slate-500">
+                <div className="rounded-2xl border border-[#e2d4bd] bg-white/70 p-4 font-medium text-stone-500">
                   尚未解鎖任何卡牌
                 </div>
               )}
@@ -2278,15 +2315,15 @@ export default function LockedFlipCardsPage({
                     selectedEvidenceIds.length === 0 ||
                     confirmedEvidenceIds.length > 0
                   }
-                  className="rounded-2xl bg-emerald-500 px-5 py-3 text-white hover:bg-emerald-400 disabled:opacity-40"
+                  className="rounded-2xl border border-[#7d6a51] bg-[#8a765c] px-5 py-3 font-black text-[#fffaf0] shadow-[0_7px_0_rgba(74,56,43,0.18)] hover:bg-[#9a8365] disabled:opacity-40"
                 >
                   {confirmedEvidenceIds.length > 0 ? "已確定選擇" : "確定選擇"}
                 </Button>
               </div>
             </section>
 
-            <section className="rounded-3xl border border-amber-200 bg-amber-50 p-6">
-              <h2 className="mb-4 text-xl font-bold text-slate-700">
+            <section className="rounded-[28px] border border-[#d8cbb3] bg-[#fffaf0]/86 p-6 shadow-[0_14px_36px_rgba(45,41,34,0.08)]">
+              <h2 className="mb-4 font-serif text-xl font-semibold tracking-[0.06em] text-[#332c24]">
                 4. 你選定的證據
               </h2>
 
@@ -2300,45 +2337,45 @@ export default function LockedFlipCardsPage({
                         key={card.id}
                         type="button"
                         onClick={() => toggleEvidenceFlip(card.id)}
-                        className="h-[210px] w-[220px] rounded-2xl text-left [perspective:1000px]"
+                        className="h-[210px] w-[220px] rounded-[24px] text-left [perspective:1000px]"
                       >
                         <motion.div
                           animate={{ rotateY: isFlipped ? 180 : 0 }}
                           transition={{ duration: 0.45 }}
-                          className="relative h-full w-full rounded-2xl transform-gpu"
+                          className="relative h-full w-full rounded-[24px] transform-gpu"
                           style={{ transformStyle: "preserve-3d" }}
                         >
                           <div
-                            className="absolute inset-0 rounded-2xl border border-amber-200 bg-white p-3"
+                            className="absolute inset-0 rounded-[24px] border border-[#e2d4bd] bg-white/82 p-3 shadow-[0_12px_30px_rgba(45,41,34,0.08)]"
                             style={{ backfaceVisibility: "hidden" }}
                           >
                             <img
                               src={card.imageSrc}
                               alt={card.revealedTitle}
-                              className="mb-3 h-28 w-full rounded-xl bg-slate-50 object-contain"
+                              className="mb-3 h-28 w-full rounded-xl border border-[#eadfcf] bg-[#fffaf0] object-contain"
                             />
 
-                            <h3 className="w-full text-center text-sm font-bold text-slate-800">
+                            <h3 className="w-full text-center text-sm font-black text-[#332c24]">
                               {card.revealedTitle}
                             </h3>
 
-                            <p className="mt-2 text-center text-xs text-slate-400">
+                            <p className="mt-2 text-center text-xs font-bold text-stone-400">
                               點擊查看內容
                             </p>
                           </div>
                           <div
-                            className="absolute inset-0 rounded-2xl border border-amber-200 bg-amber-50 p-4"
+                            className="absolute inset-0 rounded-[24px] border border-[#e2d4bd] bg-[#fffaf0] p-4 shadow-[0_12px_30px_rgba(45,41,34,0.08)]"
                             style={{
                               transform: "rotateY(180deg)",
                               backfaceVisibility: "hidden",
                             }}
                           >
-                            <p className="mb-2 text-center text-xs font-bold text-amber-700">
-                              學生撰寫內容
+                            <p className="mb-2 text-center text-xs font-black text-[#7b5b37]">
+                              內容
                             </p>
 
-                            <div className="h-[145px] overflow-y-auto rounded-xl bg-white p-3">
-                              <p className="whitespace-pre-wrap break-words text-xs leading-5 text-slate-700">
+                            <div className="h-[145px] overflow-y-auto rounded-xl border border-[#eadfcf] bg-white/78 p-3">
+                              <p className="whitespace-pre-wrap break-words text-xs font-medium leading-5 text-stone-700">
                                 {card.content || "尚未輸入內容"}
                               </p>
                             </div>
@@ -2349,23 +2386,52 @@ export default function LockedFlipCardsPage({
                   })}
                 </div>
               ) : (
-                <div className="rounded-2xl border border-amber-200 bg-white p-4 text-slate-500">
+                <div className="rounded-2xl border border-[#e2d4bd] bg-white/70 p-4 font-medium text-stone-500">
                   尚未選定證據
                 </div>
               )}
             </section>
 
-            <section className="rounded-3xl border border-emerald-200 bg-emerald-50 p-6">
-              <h2 className="mb-3 text-xl font-bold text-slate-700">
-                5. 所以你發現了什麼？
-              </h2>
+            <section
+              className={`rounded-[28px] border p-6 shadow-[0_14px_36px_rgba(45,41,34,0.08)] ${
+                isFinalDiscoveryLocked
+                  ? "border-[#b8aa94] bg-[#eee5d6]/88"
+                  : "border-[#d8cbb3] bg-[#fffaf0]/86"
+              }`}
+            >
+              <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+                <h2 className="font-serif text-xl font-semibold tracking-[0.06em] text-[#332c24]">
+                  5. 所以你發現了什麼？
+                </h2>
+                {isFinalDiscoveryLocked ? (
+                  <span className="inline-flex items-center gap-1 rounded-full border border-[#a99373] bg-[#4a382b] px-3 py-1 text-xs font-black tracking-[0.12em] text-[#fffaf0] shadow-sm">
+                    <Lock className="h-3.5 w-3.5" />
+                    先選定證據才可撰寫
+                  </span>
+                ) : null}
+              </div>
+
+              {isFinalDiscoveryLocked ? (
+                <p className="mb-3 rounded-2xl border border-dashed border-[#b8aa94] bg-[#fffaf0]/72 px-4 py-3 text-sm font-black text-stone-600">
+                  目前此區塊已鎖定，請先在第 3 題選取卡牌並按下「確定選擇」。
+                </p>
+              ) : null}
 
               <textarea
                 value={finalDiscovery}
                 onChange={(e) => setFinalDiscovery(e.target.value)}
-                placeholder="請輸入你的最後發現..."
+                placeholder={
+                  isFinalDiscoveryLocked
+                    ? "此區塊尚未開放撰寫"
+                    : "請輸入你的最後發現..."
+                }
                 rows={8}
-                className="w-full rounded-2xl border border-emerald-200 bg-white p-4 text-base text-slate-800 outline-none focus:border-emerald-400"
+                disabled={isFinalDiscoveryLocked}
+                className={`w-full rounded-2xl border p-4 text-base font-medium leading-7 outline-none transition ${
+                  isFinalDiscoveryLocked
+                    ? "cursor-not-allowed border-dashed border-[#b8aa94] bg-[repeating-linear-gradient(-45deg,rgba(120,113,108,0.10)_0_10px,rgba(255,250,240,0.78)_10px_20px)] text-stone-500 shadow-inner placeholder:text-stone-500"
+                    : "border-[#d8cbb3] bg-white/78 text-stone-800 focus:border-[#9b7b55] focus:ring-4 focus:ring-[#d8cbb3]/35"
+                }`}
               />
             </section>
             <div className="flex justify-end">
@@ -2375,7 +2441,7 @@ export default function LockedFlipCardsPage({
                 disabled={
                   !finalDiscovery.trim() || confirmedEvidenceCards.length === 0
                 }
-                className="rounded-2xl bg-blue-600 px-6 py-4 text-white hover:bg-blue-500 disabled:opacity-40"
+                className="rounded-2xl border border-[#63513f] bg-[#4a382b] px-6 py-4 font-black text-[#fffaf0] shadow-[0_8px_0_rgba(74,56,43,0.22)] hover:bg-[#5b4635] disabled:opacity-40"
               >
                 送出數據探究總結
               </Button>
@@ -2387,9 +2453,7 @@ export default function LockedFlipCardsPage({
   }
 
   return (
-    <div
-      className="relative min-h-screen overflow-hidden bg-[#f3efe6] text-stone-800 transition-colors duration-700"
-    >
+    <div className="relative min-h-screen overflow-hidden bg-[#f3efe6] text-stone-800 transition-colors duration-700">
       <div className="pointer-events-none absolute inset-0 opacity-70">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.9),transparent_35%),radial-gradient(circle_at_85%_15%,rgba(173,163,138,0.22),transparent_30%),linear-gradient(135deg,rgba(68,64,60,0.06)_0_1px,transparent_1px_32px)]" />
         <div className="absolute left-10 top-10 h-72 w-72 rounded-full bg-stone-300/20 blur-[90px]" />
@@ -2443,13 +2507,13 @@ export default function LockedFlipCardsPage({
               initial={{ scale: 0.92, y: 18, opacity: 0 }}
               animate={{ scale: 1, y: 0, opacity: 1 }}
               exit={{ scale: 0.96, y: 10, opacity: 0 }}
-              className="w-full max-w-md rounded-[28px] bg-white p-6 shadow-2xl"
+              className="w-full max-w-md overflow-hidden rounded-[34px] border border-[#d8cbb3] bg-[#fffaf0] p-6 shadow-[0_24px_70px_rgba(45,41,34,0.18)]"
             >
-              <h2 className="text-2xl font-black text-slate-800">
+              <h2 className="font-serif text-2xl font-semibold tracking-[0.08em] text-[#332c24]">
                 確認結束數據探究？
               </h2>
 
-              <p className="mt-3 text-sm leading-7 text-slate-600">
+              <p className="mt-3 text-sm font-medium leading-7 text-stone-600">
                 結束後會進入「數據探究總結」頁面，請確認你已完成目前想解鎖與蒐集的數據卡牌。
               </p>
 

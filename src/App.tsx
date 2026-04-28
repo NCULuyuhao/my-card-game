@@ -121,6 +121,7 @@ export default function App() {
   const [finalSummaries, setFinalSummaries] = useState<FinalSummary[]>([]);
   const [isMapTaskOpen, setIsMapTaskOpen] = useState(false);
   const [reportPageIndex, setReportPageIndex] = useState(0);
+  const [openedReportIndex, setOpenedReportIndex] = useState<number | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [earnedHomeTitles, setEarnedHomeTitles] = useState<TitleReward[]>([]);
   const [titleRewardToast, setTitleRewardToast] = useState<TitleReward | null>(null);
@@ -133,6 +134,7 @@ export default function App() {
     (value) => value === "保育" || value === "開發",
   ).length;
   const reportPageCount = finalSummaries.length + 1;
+  const openedReport = openedReportIndex === null ? null : finalSummaries[openedReportIndex] ?? null;
 
   useEffect(() => {
     const completedCount = finalSummaries.length;
@@ -169,6 +171,17 @@ export default function App() {
 
     return () => window.clearTimeout(timer);
   }, [titleRewardToast]);
+
+  useEffect(() => {
+    if (openedReportIndex === null) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpenedReportIndex(null);
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [openedReportIndex]);
 
   useEffect(() => {
     window.history.replaceState({ page: "home" }, "", window.location.href);
@@ -284,6 +297,16 @@ export default function App() {
             {renderTitleCollectionSection()}
           </main>
         </div>
+
+        <AnimatePresence>
+          {openedReport ? (
+            <ReportPreviewModal
+              summary={openedReport}
+              index={openedReportIndex ?? 0}
+              onClose={() => setOpenedReportIndex(null)}
+            />
+          ) : null}
+        </AnimatePresence>
       </div>
     );
   }
@@ -341,7 +364,11 @@ export default function App() {
               }}
             >
               {reportPageIndex < finalSummaries.length ? (
-                <ReportPage summary={finalSummaries[reportPageIndex]} index={reportPageIndex} />
+                <ReportPage
+                  summary={finalSummaries[reportPageIndex]}
+                  index={reportPageIndex}
+                  onOpen={() => setOpenedReportIndex(reportPageIndex)}
+                />
               ) : (
                 <div className="px-1">
                   <div className="group relative flex min-h-[450px] w-full flex-col items-center justify-center overflow-hidden rounded-[26px] bg-[#fffaf0] p-6">
@@ -756,12 +783,35 @@ function StatCard({
   );
 }
 
-function ReportPage({ summary, index }: { summary: FinalSummary; index: number }) {
+function ReportPage({
+  summary,
+  index,
+  onOpen,
+}: {
+  summary: FinalSummary;
+  index: number;
+  onOpen: () => void;
+}) {
   return (
     <div className="min-w-full shrink-0 px-1">
-      <div className="relative min-h-[450px] overflow-hidden rounded-[26px] bg-[#fffaf0] p-6 shadow-sm">
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={onOpen}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            onOpen();
+          }
+        }}
+        className="group relative min-h-[450px] cursor-pointer overflow-hidden rounded-[26px] bg-[#fffaf0] p-6 shadow-sm outline-none transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_18px_42px_rgba(72,56,34,0.18)] focus-visible:ring-4 focus-visible:ring-[#9b2f2f]/25"
+        aria-label={`開啟調查報告書 ${index + 1}`}
+      >
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(92,67,41,0.06)_1px,transparent_1px)] bg-[size:100%_30px]" />
         <div className="pointer-events-none absolute left-0 top-0 h-full w-10 bg-gradient-to-r from-[#e5d3b2] to-transparent" />
+        <div className="pointer-events-none absolute bottom-4 right-5 rounded-full border border-[#c8b48f] bg-[#fffaf0]/90 px-3 py-1 text-[10px] font-black tracking-[0.18em] text-[#7a6a52] opacity-0 shadow-sm transition group-hover:opacity-100">
+          點擊檢視全文
+        </div>
         <div className="absolute top-3 right-3 flex items-center justify-center">
         <div className="absolute top-3 right-3 flex items-center justify-center">
         <div
@@ -834,6 +884,100 @@ function ReportPage({ summary, index }: { summary: FinalSummary; index: number }
         />
       </div>
     </div>
+  );
+}
+
+function ReportPreviewModal({
+  summary,
+  index,
+  onClose,
+}: {
+  summary: FinalSummary;
+  index: number;
+  onClose: () => void;
+}) {
+  return (
+    <motion.div
+      className="fixed inset-0 z-[9998] flex items-center justify-center bg-stone-950/55 p-4 backdrop-blur-sm"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      onClick={onClose}
+    >
+      <motion.div
+        role="dialog"
+        aria-modal="true"
+        aria-label={`調查報告書 ${index + 1}`}
+        className="relative max-h-[88vh] w-full max-w-5xl overflow-hidden rounded-[34px] border border-[#c8b48f] bg-[#efe5d1] p-4 shadow-[0_30px_90px_rgba(0,0,0,0.35)]"
+        initial={{ opacity: 0, y: 28, scale: 0.96 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 18, scale: 0.96 }}
+        transition={{ duration: 0.22 }}
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="pointer-events-none absolute inset-0 opacity-70">
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(120,92,58,0.08)_1px,transparent_1px),linear-gradient(rgba(120,92,58,0.06)_1px,transparent_1px)] bg-[size:26px_26px]" />
+          <div className="absolute right-8 top-8 rotate-[-12deg] rounded-md border-2 border-[#9b2f2f]/30 px-5 py-2 text-sm font-black tracking-[0.28em] text-[#9b2f2f]/30">
+            CASE FILE
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute right-5 top-5 z-20 flex h-11 w-11 items-center justify-center rounded-full border border-[#b8a37d] bg-[#fffaf0] text-xl font-black text-[#5c503e] shadow-sm transition hover:-translate-y-0.5 hover:bg-white"
+          aria-label="關閉調查報告書"
+        >
+          ×
+        </button>
+
+        <div className="relative max-h-[calc(88vh-2rem)] overflow-y-auto rounded-[26px] border border-[#bba985] bg-[#fbf5e8] p-5 pr-4 shadow-inner">
+          <div className="relative mb-5 border-b border-dashed border-[#c8b48f] pb-4 pr-14">
+            <p className="text-[11px] font-black tracking-[0.28em] text-[#7a6a52]">INQUIRY REPORT</p>
+            <h3 className="mt-2 font-serif text-3xl font-semibold tracking-[0.08em] text-[#332c24]">
+              調查報告書 #{index + 1}
+            </h3>
+            <p className="mt-2 text-sm font-bold tracking-[0.12em] text-[#7a6a52]">
+              完整案件紀錄檢視
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <DetectiveEvidenceBox badge="QUESTIONING" title="案件想法" content={summary.studentThought} />
+            <DetectiveEvidenceBox badge="EXPLORATION" title="行動規劃" content={summary.studentPlan} />
+          </div>
+
+          <div className="relative my-5 rounded-2xl border border-[#d2bf99] bg-[#f7ecd5] p-4 shadow-sm">
+            <div className="absolute -top-3 left-5 rotate-[-3deg] rounded-md bg-[#d8c29a] px-3 py-1 text-[10px] font-black tracking-[0.22em] text-[#5c503e] shadow-sm">
+              EVIDENCE
+            </div>
+            <div className="mb-3 flex items-center justify-between pt-2">
+              <p className="text-xs font-bold tracking-[0.18em] text-[#6d5e49]">線索卡片</p>
+              <p className="text-xs font-bold text-[#6d5e49]">{summary.evidenceCards.length} 張</p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+              {summary.evidenceCards.map((card) => (
+                <div key={card.id} className="rounded-2xl border border-[#c8b48f] bg-[#fffaf0] p-3 shadow-sm">
+                  <div className="mx-auto mb-2 h-20 w-20 rounded-xl bg-white/70 p-2">
+                    <img src={card.imageSrc} alt={card.title} className="h-full w-full object-contain" />
+                  </div>
+                  <p className="text-center text-xs font-black leading-5 text-[#4d4438]">{card.title}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <DetectiveEvidenceBox
+            badge="Conclusion"
+            title="最終結論"
+            content={summary.finalDiscovery}
+            variant="green"
+          />
+        </div>
+      </motion.div>
+    </motion.div>
   );
 }
 
