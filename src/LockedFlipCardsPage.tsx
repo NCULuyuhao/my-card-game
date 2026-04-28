@@ -1,3 +1,4 @@
+
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -24,6 +25,26 @@ import { Card, CardContent } from "@/components/ui/card";
 type CategoryKey = "water" | "land" | "leopard" | "rumor";
 type TitleTier = "novice" | "advanced" | "master";
 type TitleTheme = "water" | "land" | "leopard" | "rumor" | "cross";
+
+type EvidenceCardSummary = {
+  id: string;
+  title: string;
+  imageSrc: string;
+  content: string;
+};
+
+type FinalSummary = {
+  studentThought: string;
+  studentPlan: string;
+  evidenceCards: EvidenceCardSummary[];
+  finalDiscovery: string;
+};
+
+type LockedFlipCardsPageProps = {
+  studentThought: string;
+  studentPlan: string;
+  onSubmitSummary: (summary: FinalSummary) => void;
+};
 
 type CollectionSortMode =
   | "latest"
@@ -1644,7 +1665,16 @@ const MemoizedTrophyPanel = memo(TrophyPanel);
 const MemoizedTitleRewardCelebration = memo(TitleRewardCelebration);
 const MemoizedCollectedCardPreview = memo(CollectedCardPreview);
 
-export default function LockedFlipCardsPage() {
+export default function LockedFlipCardsPage({
+  studentThought,
+  studentPlan,
+  onSubmitSummary,
+}: LockedFlipCardsPageProps) {
+  const [isFinished, setIsFinished] = useState(false);
+  const [finalDiscovery, setFinalDiscovery] = useState("");
+  const [flippedEvidenceIds, setFlippedEvidenceIds] = useState<string[]>([]);
+  const [selectedEvidenceIds, setSelectedEvidenceIds] = useState<string[]>([]);
+  const [confirmedEvidenceIds, setConfirmedEvidenceIds] = useState<string[]>([]);
   const [cards, setCards] = useState<GameCard[]>(createAllCards);
   const [activeCategory, setActiveCategory] = useState<CategoryKey>("water");
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -1884,6 +1914,254 @@ export default function LockedFlipCardsPage() {
     setNewInputValue("");
 };
 
+const unlockedCards = cards.filter((card) => card.unlocked);
+const unlockedCardsWithContent = unlockedCards.filter((card) =>
+  card.content.trim()
+);
+
+const confirmedEvidenceCards = unlockedCardsWithContent.filter((card) =>
+  confirmedEvidenceIds.includes(card.id)
+);
+
+function toggleEvidenceCard(cardId: string) {
+  setSelectedEvidenceIds((prev) =>
+    prev.includes(cardId)
+      ? prev.filter((id) => id !== cardId)
+      : [...prev, cardId]
+  );
+}
+
+function confirmEvidenceCards() {
+  setConfirmedEvidenceIds(selectedEvidenceIds);
+}
+function toggleEvidenceFlip(cardId: string) {
+  setFlippedEvidenceIds((prev) =>
+    prev.includes(cardId)
+      ? prev.filter((id) => id !== cardId)
+      : [...prev, cardId]
+  );
+}
+
+function submitFinalSummary() {
+  if (!finalDiscovery.trim()) return;
+  if (confirmedEvidenceCards.length === 0) return;
+
+  onSubmitSummary({
+    studentThought,
+    studentPlan,
+    evidenceCards: confirmedEvidenceCards.map((card) => ({
+      id: card.id,
+      title: card.revealedTitle,
+      imageSrc: card.imageSrc,
+      content: card.content,
+    })),
+    finalDiscovery: finalDiscovery.trim(),
+  });
+}
+
+if (isFinished) {
+  return (
+    <div className="min-h-screen bg-slate-100 p-6 text-slate-800">
+      <div className="mx-auto max-w-5xl rounded-[32px] bg-white p-8 shadow-xl">
+        <h1 className="mb-8 text-3xl font-black text-slate-800">
+          數據探究總結
+        </h1>
+
+        <div className="space-y-6">
+          <div className="grid gap-6 md:grid-cols-2">
+            {/* 1 */}
+            <section className="rounded-3xl border border-slate-200 bg-slate-50 p-6">
+                <h2 className="mb-3 text-xl font-bold text-slate-700">
+                1. 你在想什麼？
+                </h2>
+
+                <div className="rounded-2xl border border-slate-200 bg-white p-4 text-slate-700">
+                {studentThought || "尚未填寫"}
+                </div>
+            </section>
+
+            {/* 2 */}
+            <section className="rounded-3xl border border-slate-200 bg-slate-50 p-6">
+                <h2 className="mb-3 text-xl font-bold text-slate-700">
+                2. 你對於你的想法有什麼規劃的解決方法嗎？
+                </h2>
+
+                <div className="rounded-2xl border border-slate-200 bg-white p-4 text-slate-700">
+                {studentPlan || "尚未填寫"}
+                </div>
+            </section>
+            </div>
+
+          <section className="rounded-3xl border border-slate-200 bg-slate-50 p-6">
+            <h2 className="mb-4 text-xl font-bold text-slate-700">
+              3. 你探究並解鎖的卡牌
+            </h2>
+
+            {unlockedCardsWithContent.length > 0 ? (
+              <div className="flex flex-wrap gap-4">
+                {unlockedCardsWithContent.map((card) => {
+                const isSelected = selectedEvidenceIds.includes(card.id);
+
+                return (
+                    <button
+                    key={card.id}
+                    type="button"
+                    disabled={confirmedEvidenceIds.length > 0}
+                    onClick={() => toggleEvidenceCard(card.id)}
+                    className={`w-[320px] rounded-2xl border bg-white p-3 text-left transition ${
+                        isSelected
+                        ? "border-emerald-400 ring-2 ring-emerald-200"
+                        : "border-slate-200 hover:border-emerald-300"
+                    }`}
+                    >
+                    <div className="mb-2 flex items-center gap-2">
+                        <span className="rounded-full bg-sky-100 px-2 py-0.5 text-xs font-bold text-sky-700">
+                        {categoryMetaMap[card.category].label}
+                        </span>
+
+                        <h3 className="text-sm font-bold text-slate-800">
+                        {card.revealedTitle}
+                        </h3>
+                    </div>
+
+                    <div className="flex items-start gap-3">
+                        <img
+                        src={card.imageSrc}
+                        alt={card.revealedTitle}
+                        className="h-24 w-24 flex-shrink-0 rounded-xl bg-slate-50 object-contain"
+                        />
+
+                        <p className="line-clamp-3 whitespace-pre-wrap text-xs leading-5 text-slate-600">
+                        {card.content}
+                        </p>
+                    </div>
+
+                    <div className="mt-3 text-right text-xs font-bold text-emerald-600">
+                        {isSelected ? "已選擇" : "選擇此卡牌"}
+                    </div>
+                    </button>
+                );
+                })}
+              </div>
+            ) : (
+              <div className="rounded-2xl border border-slate-200 bg-white p-4 text-slate-500">
+                尚未解鎖任何卡牌
+              </div>
+            )}
+            <div className="mt-5 flex justify-end">
+            <Button
+            type="button"
+            onClick={confirmEvidenceCards}
+            disabled={selectedEvidenceIds.length === 0 || confirmedEvidenceIds.length > 0}
+            className="rounded-2xl bg-emerald-500 px-5 py-3 text-white hover:bg-emerald-400 disabled:opacity-40"
+            >
+            {confirmedEvidenceIds.length > 0 ? "已確定選擇" : "確定選擇"}
+            </Button>
+            </div>
+          </section>
+
+            <section className="rounded-3xl border border-amber-200 bg-amber-50 p-6">
+            <h2 className="mb-4 text-xl font-bold text-slate-700">
+                4. 你選定的證據
+            </h2>
+
+            {confirmedEvidenceCards.length > 0 ? (
+                <div className="flex flex-wrap gap-4">
+                {confirmedEvidenceCards.map((card) => {
+  const isFlipped = flippedEvidenceIds.includes(card.id);
+
+  return (
+    <button
+      key={card.id}
+      type="button"
+      onClick={() => toggleEvidenceFlip(card.id)}
+      className="h-[210px] w-[220px] rounded-2xl text-left [perspective:1000px]"
+    >
+        <motion.div
+            animate={{ rotateY: isFlipped ? 180 : 0 }}
+            transition={{ duration: 0.45 }}
+            className="relative h-full w-full rounded-2xl transform-gpu"
+            style={{ transformStyle: "preserve-3d" }}
+        >
+            {/* 正面：圖片 + 標題 */}
+            <div
+            className="absolute inset-0 rounded-2xl border border-amber-200 bg-white p-3"
+            style={{ backfaceVisibility: "hidden" }}
+            >
+            <img
+                src={card.imageSrc}
+                alt={card.revealedTitle}
+                className="mb-3 h-28 w-full rounded-xl bg-slate-50 object-contain"
+            />
+
+            <h3 className="w-full text-center text-sm font-bold text-slate-800">
+                {card.revealedTitle}
+            </h3>
+
+            <p className="mt-2 text-center text-xs text-slate-400">
+                點擊查看內容
+            </p>
+            </div>
+
+            {/* 背面：學生撰寫內容 */}
+            <div
+            className="absolute inset-0 rounded-2xl border border-amber-200 bg-amber-50 p-4"
+            style={{
+                transform: "rotateY(180deg)",
+                backfaceVisibility: "hidden",
+            }}
+            >
+            <p className="mb-2 text-center text-xs font-bold text-amber-700">
+                學生撰寫內容
+            </p>
+
+            <div className="h-[145px] overflow-y-auto rounded-xl bg-white p-3">
+                <p className="whitespace-pre-wrap break-words text-xs leading-5 text-slate-700">
+                {card.content || "尚未輸入內容"}
+                </p>
+            </div>
+            </div>
+        </motion.div>
+        </button>
+    );
+    })}
+                </div>
+            ) : (
+                <div className="rounded-2xl border border-amber-200 bg-white p-4 text-slate-500">
+                尚未選定證據
+                </div>
+            )}
+            </section>
+
+          <section className="rounded-3xl border border-emerald-200 bg-emerald-50 p-6">
+            <h2 className="mb-3 text-xl font-bold text-slate-700">
+              5. 所以你發現了什麼？
+            </h2>
+
+            <textarea
+              value={finalDiscovery}
+              onChange={(e) => setFinalDiscovery(e.target.value)}
+              placeholder="請輸入你的最後發現..."
+              rows={8}
+              className="w-full rounded-2xl border border-emerald-200 bg-white p-4 text-base text-slate-800 outline-none focus:border-emerald-400"
+            />
+          </section>
+          <div className="flex justify-end">
+            <Button
+                type="button"
+                onClick={submitFinalSummary}
+                disabled={!finalDiscovery.trim() || confirmedEvidenceCards.length === 0}
+                className="rounded-2xl bg-blue-600 px-6 py-4 text-white hover:bg-blue-500 disabled:opacity-40"
+            >
+                送出數據探究總結
+            </Button>
+            </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
   return (
     <div
       className={`relative min-h-screen overflow-hidden text-slate-800 transition-colors duration-700 ${activeBackground.pageBg}`}
@@ -1931,7 +2209,15 @@ export default function LockedFlipCardsPage() {
         }`}
         >
         <div className="mb-8 flex flex-col gap-4">
-        <div className="flex justify-start"></div>
+        <div className="flex justify-end">
+            <Button
+            type="button"
+            onClick={() => setIsFinished(true)}
+            className="rounded-2xl bg-rose-500 px-5 py-3 text-white hover:bg-rose-400"
+            >
+            結束數據探究
+            </Button>
+        </div>
         </div>
 
         <MemoizedCategoryTabs
