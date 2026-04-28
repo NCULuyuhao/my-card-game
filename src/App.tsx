@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import LockedFlipCardsPage from "./LockedFlipCardsPage";
 import MiaoliMapPage, { labelPositions, regions } from "./MiaoliMapPage";
 
@@ -123,6 +123,7 @@ export default function App() {
   const [reportPageIndex, setReportPageIndex] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [earnedHomeTitles, setEarnedHomeTitles] = useState<TitleReward[]>([]);
+  const [titleRewardToast, setTitleRewardToast] = useState<TitleReward | null>(null);
 
   const canUseFullscreen =
     typeof document !== "undefined" && Boolean(document.documentElement.requestFullscreen);
@@ -144,7 +145,11 @@ export default function App() {
         if (existingIds.has(id)) return;
 
         const reward = HOME_TITLE_REWARDS.find((title) => title.id === id);
-        if (reward) nextTitles.push(reward);
+        if (reward) {
+          existingIds.add(id);
+          nextTitles.push(reward);
+          setTitleRewardToast(reward);
+        }
       };
 
       if (completedCount >= 1) addTitle("investigation_novice");
@@ -154,6 +159,16 @@ export default function App() {
       return nextTitles;
     });
   }, [finalSummaries.length]);
+
+  useEffect(() => {
+    if (!titleRewardToast) return;
+
+    const timer = window.setTimeout(() => {
+      setTitleRewardToast(null);
+    }, 3200);
+
+    return () => window.clearTimeout(timer);
+  }, [titleRewardToast]);
 
   useEffect(() => {
     window.history.replaceState({ page: "home" }, "", window.location.href);
@@ -205,7 +220,11 @@ export default function App() {
   function updateHomeTitles(titles: TitleReward[]) {
     setEarnedHomeTitles((prev) => {
       const rewardMap = new Map(prev.map((title) => [title.id, title]));
+
+      // LOCKEDFLIPCARDSPAGE 已經會自己判斷並播放「卡牌稱號」獲得特效。
+      // 這裡只負責把那些稱號同步到首頁收藏，不再重播首頁特效，避免機制互相干擾。
       titles.forEach((title) => rewardMap.set(title.id, title));
+
       return Array.from(rewardMap.values());
     });
   }
@@ -244,7 +263,7 @@ export default function App() {
                     onClick={toggleFullscreen}
                     className={`${GAME_BTN} ${GAME_BTN_BLUE}`}
                   >
-                    {isFullscreen ? "離開全螢幕" : "進入全螢幕"}
+                    {isFullscreen ? "關閉全螢幕" : "鎖定全螢幕"}
                   </button>
                 ) : null}
 
@@ -551,10 +570,10 @@ export default function App() {
             </div>
             <div>
               <p className="mb-2 text-xs font-black tracking-[0.3em] text-[#84745c]">
-                HONOR MEDAL ARCHIVE
+                HONOR ARCHIVE
               </p>
               <h2 className="font-serif text-3xl font-semibold tracking-[0.06em] text-[#2f2a24]">
-                學生蒐集的稱號
+                稱號收藏
               </h2>
             </div>
           </div>
@@ -572,6 +591,7 @@ export default function App() {
             return (
               <motion.div
                 key={title.id}
+                data-title-id={title.id}
                 initial={false}
                 animate={earned ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0.34, scale: 0.94, y: 4 }}
                 transition={{ duration: 0.32, ease: "easeOut" }}
@@ -653,6 +673,12 @@ export default function App() {
 
   return (
     <>
+      <AnimatePresence>
+        {titleRewardToast ? (
+          <TitleRewardToast key={titleRewardToast.id} title={titleRewardToast} />
+        ) : null}
+      </AnimatePresence>
+
       {page === "home" ? renderHomePage() : null}
 
       {page === "question1" ? (
@@ -736,9 +762,26 @@ function ReportPage({ summary, index }: { summary: FinalSummary; index: number }
       <div className="relative min-h-[450px] overflow-hidden rounded-[26px] bg-[#fffaf0] p-6 shadow-sm">
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(92,67,41,0.06)_1px,transparent_1px)] bg-[size:100%_30px]" />
         <div className="pointer-events-none absolute left-0 top-0 h-full w-10 bg-gradient-to-r from-[#e5d3b2] to-transparent" />
-        <div className="pointer-events-none absolute right-6 top-8 rotate-[-9deg] rounded-md border-2 border-[#9b2f2f]/35 px-4 py-2 text-xs font-black tracking-[0.26em] text-[#9b2f2f]/35">
-          SOLVED
+        <div className="absolute top-3 right-3 flex items-center justify-center">
+        <div className="absolute top-3 right-3 flex items-center justify-center">
+        <div
+          className="relative flex h-16 w-16 items-center justify-center rounded-full border-[3px] border-red-800
+          text-red-800 text-[11px] font-black tracking-[0.15em]
+          opacity-80
+          before:absolute before:inset-0 before:rounded-full before:border before:border-red-900 before:opacity-40
+          after:absolute after:inset-[6px] after:rounded-full after:border after:border-red-700 after:opacity-30
+          shadow-[0_2px_6px_rgba(0,0,0,0.3)]"
+          
+          /* ✅ 就加在這裡 */
+          style={{
+            WebkitMaskImage: "radial-gradient(circle, black 40%, transparent 100%)",
+            maskImage: "radial-gradient(circle, black 70%, transparent 100%)",
+          }}
+        >
+          <span className="rotate-[-8deg]">SLOVED</span>
         </div>
+      </div>
+</div>
 
         <div className="relative mb-5 flex items-start justify-between gap-3 border-b border-dashed border-[#c8b48f] pb-4">
           <div>
@@ -845,6 +888,91 @@ function Legend({ color, label }: { color: string; label: string }) {
       <span className={`h-3 w-3 rounded ${color}`} />
       {label}
     </div>
+  );
+}
+
+
+function TitleRewardToast({ title }: { title: TitleReward }) {
+  const style = getMedalStyle(title);
+  const [exitTarget, setExitTarget] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const target = document.querySelector(`[data-title-id="${title.id}"]`);
+    if (!(target instanceof HTMLElement)) return;
+
+    const rect = target.getBoundingClientRect();
+    const targetCenterX = rect.left + rect.width / 2;
+    const targetCenterY = rect.top + rect.height / 2;
+
+    setExitTarget({
+      x: targetCenterX - window.innerWidth / 2,
+      y: targetCenterY - window.innerHeight / 2,
+    });
+  }, [title.id]);
+
+  return (
+    <motion.div
+      className="pointer-events-none fixed inset-0 z-[9999] flex items-center justify-center bg-stone-950/35 p-6 backdrop-blur-[2px]"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.28 }}
+    >
+      <motion.div
+        initial={{ scale: 0.45, y: 42, opacity: 0, rotate: -8 }}
+        animate={{ scale: 1, y: 0, x: 0, opacity: 1, rotate: 0 }}
+        exit={{
+          scale: 0.08,
+          x: exitTarget.x,
+          y: exitTarget.y,
+          opacity: 0,
+          rotate: 0,
+        }}
+        transition={{ type: "spring", stiffness: 220, damping: 16 }}
+        className={`relative w-full max-w-[340px] overflow-hidden rounded-[34px] border ${style.border} bg-[#fffaf0] p-6 text-center ${style.glow}`}
+      >
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.95),transparent_45%)]" />
+        <div className="absolute -left-16 -top-16 h-36 w-36 rounded-full bg-white/45 blur-2xl" />
+        <div className="absolute -right-12 bottom-0 h-32 w-32 rounded-full bg-amber-200/30 blur-2xl" />
+
+        <motion.div
+          className="absolute left-5 top-5 text-2xl"
+          initial={{ scale: 0, rotate: -45, opacity: 0 }}
+          animate={{ scale: [0, 1.25, 1], rotate: 0, opacity: 1 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+        >
+          ✦
+        </motion.div>
+        <motion.div
+          className="absolute right-6 top-8 text-xl"
+          initial={{ scale: 0, rotate: 45, opacity: 0 }}
+          animate={{ scale: [0, 1.25, 1], rotate: 0, opacity: 1 }}
+          transition={{ delay: 0.35, duration: 0.5 }}
+        >
+          ✦
+        </motion.div>
+
+        <motion.div
+          initial={{ rotate: -12, scale: 0.8 }}
+          animate={{ rotate: 0, scale: 1 }}
+          transition={{ delay: 0.15, type: "spring", stiffness: 260, damping: 14 }}
+          className={`relative mx-auto mb-4 flex h-28 w-28 items-center justify-center rounded-full border-[5px] ${style.border} bg-gradient-to-br ${style.metal} text-5xl shadow-[inset_0_5px_12px_rgba(255,255,255,0.75),inset_0_-12px_16px_rgba(0,0,0,0.16),0_18px_30px_rgba(45,41,34,0.22)]`}
+        >
+          <div className="absolute inset-3 rounded-full border border-white/60" />
+          <motion.span animate={{ scale: [1, 1.25, 1] }} transition={{ delay: 0.45, duration: 0.5 }}>
+            ★
+          </motion.span>
+        </motion.div>
+
+        <h3 className="relative font-serif text-3xl font-bold tracking-[0.08em] text-[#332c24]">
+          {title.name}
+        </h3>
+
+        <p className="relative mt-2 text-sm font-semibold text-[#746855]">{title.description}</p>
+
+        <p className={`relative mt-4 text-xs font-black tracking-[0.22em] ${style.text}`}>{style.star}</p>
+      </motion.div>
+    </motion.div>
   );
 }
 
