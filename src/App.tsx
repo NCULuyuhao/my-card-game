@@ -944,8 +944,8 @@ function ReportPreviewModal({
           </div>
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <DetectiveEvidenceBox badge="QUESTIONING" title="案件想法" content={summary.studentThought} />
-            <DetectiveEvidenceBox badge="EXPLORATION" title="行動規劃" content={summary.studentPlan} />
+            <DetectiveEvidenceBox badge="QUESTIONING" title="在想什麼呢?" content={summary.studentThought} />
+            <DetectiveEvidenceBox badge="EXPLORATION" title="規劃什麼行動呢?" content={summary.studentPlan} />
           </div>
 
           <div className="relative my-5 rounded-2xl border border-[#d2bf99] bg-[#f7ecd5] p-4 shadow-sm">
@@ -953,7 +953,7 @@ function ReportPreviewModal({
               EVIDENCE
             </div>
             <div className="mb-3 flex items-center justify-between pt-2">
-              <p className="text-xs font-bold tracking-[0.18em] text-[#6d5e49]">線索卡片</p>
+              <p className="text-xs font-bold tracking-[0.18em] text-[#6d5e49]">證據</p>
               <p className="text-xs font-bold text-[#6d5e49]">{summary.evidenceCards.length} 張</p>
             </div>
 
