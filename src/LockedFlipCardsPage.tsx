@@ -51,6 +51,10 @@ type LockedFlipCardsPageProps = {
   studentPlan: string;
   onSubmitSummary: (summary: FinalSummary) => void;
   onTitleRewardsChange?: (titles: TitleReward[]) => void;
+  unlockedCardIds: Array<string | { id: string; content?: string; unlockedAt?: number | null }>;
+  setUnlockedCardIds: React.Dispatch<
+  React.SetStateAction<Array<string | { id: string; content?: string; unlockedAt?: number | null }>>
+>;
 };
 
 type CollectionSortMode = "latest" | "water" | "land" | "leopard" | "rumor";
@@ -1832,7 +1836,9 @@ export default function LockedFlipCardsPage({
   studentPlan,
   onSubmitSummary,
   onTitleRewardsChange,
-}: LockedFlipCardsPageProps) {
+  unlockedCardIds,
+  setUnlockedCardIds,
+}: LockedFlipCardsPageProps){
   const [isFinished, setIsFinished] = useState(false);
   const [finalDiscovery, setFinalDiscovery] = useState("");
   const [showFinishConfirm, setShowFinishConfirm] = useState(false);
@@ -1842,7 +1848,35 @@ export default function LockedFlipCardsPage({
   const [confirmedEvidenceIds, setConfirmedEvidenceIds] = useState<string[]>(
     [],
   );
+  const [currentRoundCardIds, setCurrentRoundCardIds] = useState<string[]>([]);
   const [cards, setCards] = useState<GameCard[]>(createAllCards);
+ useEffect(() => {
+  if (unlockedCardIds.length === 0) return;
+
+  setCards((prev) =>
+    prev.map((card) => {
+      const savedCard = unlockedCardIds.find((item) =>
+        typeof item === "string" ? item === card.id : item.id === card.id,
+      );
+
+      if (!savedCard) return card;
+
+      return {
+        ...card,
+        unlocked: true,
+        content:
+          typeof savedCard === "string"
+            ? card.content
+            : savedCard.content ?? card.content,
+        unlockedAt:
+          typeof savedCard === "string"
+            ? card.unlockedAt ?? Date.now()
+            : savedCard.unlockedAt ?? card.unlockedAt ?? Date.now(),
+      };
+    }),
+  );
+}, [unlockedCardIds]);
+
   const [activeCategory, setActiveCategory] = useState<CategoryKey | null>(
     null,
   );
@@ -1862,6 +1896,8 @@ export default function LockedFlipCardsPage({
   const [previewCard, setPreviewCard] = useState<GameCard | null>(null);
   const [hasNewCollectedContent, setHasNewCollectedContent] = useState(false);
   const [hasNewTitleReward, setHasNewTitleReward] = useState(false);
+  const hasInitializedTitleRewardsRef = useRef(false);
+  const shouldShowTitleRewardAnimationRef = useRef(false);
   const rewardTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [showFallingLock, setShowFallingLock] = useState(false);
   const [showUnlockBurst, setShowUnlockBurst] = useState(false);
@@ -1900,29 +1936,35 @@ export default function LockedFlipCardsPage({
   const activeCategoryMeta = activeCategory
     ? categoryMetaMap[activeCategory]
     : null;
+
   const totalUnlockedCount = cards.filter((card) => card.unlocked).length;
   const totalCardCount = cards.length;
 
   useEffect(() => {
-    onTitleRewardsChange?.(earnedTitles);
-  }, [earnedTitles, onTitleRewardsChange]);
+  onTitleRewardsChange?.(earnedTitles);
+}, [earnedTitles, onTitleRewardsChange]);
+
   useEffect(() => {
-    const rewardChecks = getRewardChecks(unlockedCountByCategory);
+  const rewardChecks = getRewardChecks(unlockedCountByCategory);
 
-    const newlyEarned = rewardChecks.filter(({ reward, isUnlocked }) => {
-      const alreadyHas = earnedTitles.some((title) => title.id === reward.id);
-      return isUnlocked && !alreadyHas;
-    });
+  const newlyEarned = rewardChecks.filter(({ reward, isUnlocked }) => {
+    const alreadyHas = earnedTitles.some((title) => title.id === reward.id);
+    return isUnlocked && !alreadyHas;
+  });
 
-    if (newlyEarned.length > 0) {
-      setEarnedTitles((prev) => [
-        ...prev,
-        ...newlyEarned.map((item) => item.reward),
-      ]);
-      setPendingReward(newlyEarned[0].reward);
-      setHasNewTitleReward(true);
-    }
-  }, [earnedTitles, unlockedCountByCategory]);
+  if (newlyEarned.length === 0) return;
+
+  setEarnedTitles((prev) => [
+    ...prev,
+    ...newlyEarned.map((item) => item.reward),
+  ]);
+
+  if (shouldShowTitleRewardAnimationRef.current) {
+    setPendingReward(newlyEarned[0].reward);
+    setHasNewTitleReward(true);
+    shouldShowTitleRewardAnimationRef.current = false;
+  }
+}, [earnedTitles, unlockedCountByCategory]);
 
   useEffect(() => {
     if (!pendingReward) return;
@@ -2021,15 +2063,35 @@ export default function LockedFlipCardsPage({
           : card,
       ),
     );
+    setUnlockedCardIds((prev) => {
+    const next = prev.filter((item) =>
+      typeof item === "string" ? item !== targetCard.id : item.id !== targetCard.id,
+    );
+
+    return [
+      ...next,
+      {
+        id: targetCard.id,
+        content,
+        unlockedAt: wasUnlocked ? targetCard.unlockedAt ?? Date.now() : Date.now(),
+      },
+    ];
+  });
 
     if (!wasUnlocked) {
+      shouldShowTitleRewardAnimationRef.current = true;
+
       const effect = getBalanceEffect(targetCard.category);
       setDevelopmentScore((prev) => prev + effect.development);
       setConservationScore((prev) => prev + effect.conservation);
     }
 
+    setCurrentRoundCardIds((prev) =>
+      prev.includes(targetCard.id) ? prev : [...prev, targetCard.id],
+    );
+
     setHasNewCollectedContent(true);
-  }, []);
+  }, [setUnlockedCardIds]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -2058,7 +2120,24 @@ export default function LockedFlipCardsPage({
       setInputValue(content);
       setNewInputValue("");
       setIsUnlocking(false);
+      setCurrentRoundCardIds((prev) =>
+        prev.includes(latestCard.id) ? prev : [...prev, latestCard.id],
+      );
       setHasNewCollectedContent(true);
+      setUnlockedCardIds((prev) => {
+      const next = prev.filter((item) =>
+        typeof item === "string" ? item !== latestCard.id : item.id !== latestCard.id,
+      );
+
+      return [
+        ...next,
+        {
+          id: latestCard.id,
+          content,
+          unlockedAt: latestCard.unlockedAt ?? Date.now(),
+        },
+      ];
+    });
       return;
     }
     if (!inputValue.trim()) return;
@@ -2092,8 +2171,8 @@ export default function LockedFlipCardsPage({
   };
 
   const unlockedCards = cards.filter((card) => card.unlocked);
-  const unlockedCardsWithContent = unlockedCards.filter((card) =>
-    card.content.trim(),
+  const unlockedCardsWithContent = unlockedCards.filter(
+  (card) => card.content.trim() && currentRoundCardIds.includes(card.id),
   );
 
   const confirmedEvidenceCards = unlockedCardsWithContent.filter((card) =>

@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import {  useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import LockedFlipCardsPage from "./LockedFlipCardsPage";
 import MiaoliMapPage, { labelPositions, regions } from "./MiaoliMapPage";
+import AuthPage from "./AuthPage";
 
 type Page = "home" | "question1" | "question2" | "ready" | "cards" | "map";
 type MapChoice = "保育" | "開發";
@@ -25,6 +26,12 @@ type TitleReward = {
   id: string;
   name: string;
   description: string;
+};
+
+type AuthUser = {
+  id: number;
+  username: string;
+  email: string;
 };
 
 const GAME_BTN =
@@ -115,6 +122,25 @@ function getMedalStyle(title: TitleReward) {
 }
 
 export default function App() {
+  const [token, setToken] = useState<string | null>(() =>
+    localStorage.getItem("cityauncel_token"),
+  );
+    const [currentUser, setCurrentUser] = useState<AuthUser | null>(() => {
+    try {
+      const savedUser = localStorage.getItem("cityauncel_user");
+      return savedUser ? JSON.parse(savedUser) : null;
+    } catch {
+      return null;
+    }
+  });
+  type UnlockedCardData =
+  | string
+  | {
+      id: string;
+      content?: string;
+      unlockedAt?: number | null;
+    };
+  const [unlockedCards, setUnlockedCards] = useState<UnlockedCardData[]>([])
   const [page, setPage] = useState<Page>("home");
   const [studentThought, setStudentThought] = useState("");
   const [studentPlan, setStudentPlan] = useState("");
@@ -125,6 +151,8 @@ export default function App() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [earnedHomeTitles, setEarnedHomeTitles] = useState<TitleReward[]>([]);
   const [titleRewardToast, setTitleRewardToast] = useState<TitleReward | null>(null);
+  const isLoadingUserDataRef = useRef(false);
+  const hasLoadedUserDataRef = useRef(false);
 
   const canUseFullscreen =
     typeof document !== "undefined" && Boolean(document.documentElement.requestFullscreen);
@@ -136,33 +164,7 @@ export default function App() {
   const reportPageCount = finalSummaries.length + 1;
   const openedReport = openedReportIndex === null ? null : finalSummaries[openedReportIndex] ?? null;
 
-  useEffect(() => {
-    const completedCount = finalSummaries.length;
-
-    setEarnedHomeTitles((prev) => {
-      const existingIds = new Set(prev.map((title) => title.id));
-      const nextTitles = [...prev];
-
-      const addTitle = (id: string) => {
-        if (existingIds.has(id)) return;
-
-        const reward = HOME_TITLE_REWARDS.find((title) => title.id === id);
-        if (reward) {
-          existingIds.add(id);
-          nextTitles.push(reward);
-          setTitleRewardToast(reward);
-        }
-      };
-
-      if (completedCount >= 1) addTitle("investigation_novice");
-      if (completedCount >= 5) addTitle("investigation_advanced");
-      if (completedCount >= 10) addTitle("investigation_master");
-
-      return nextTitles;
-    });
-  }, [finalSummaries.length]);
-
-  useEffect(() => {
+    useEffect(() => {
     if (!titleRewardToast) return;
 
     const timer = window.setTimeout(() => {
@@ -203,6 +205,60 @@ export default function App() {
     return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
   }, []);
 
+useEffect(() => {
+  if (!token || !currentUser) return;
+
+  async function loadUserData() {
+    isLoadingUserDataRef.current = true;
+
+    try {
+      const res = await fetch("http://localhost:3001/api/user-data", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        console.error(data.message);
+        return;
+      }
+
+      // 🔥 這裡要對應你原本的 state
+      setStudentThought(data.studentThought || "");
+      setStudentPlan(data.studentPlan || "");
+      setFinalSummaries(data.finalSummaries || []);
+      setEarnedHomeTitles(data.earnedTitles || []);
+      setUnlockedCards(data.unlockedCards || []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      window.setTimeout(() => {
+        isLoadingUserDataRef.current = false;
+        hasLoadedUserDataRef.current = true;
+      }, 0);
+    }
+  }
+
+  loadUserData();
+}, [token, currentUser]);
+
+
+
+  function handleLoginSuccess(nextToken: string, user: AuthUser) {
+    setToken(nextToken);
+    setCurrentUser(user);
+  }
+
+  function handleLogout() {
+    localStorage.removeItem("cityauncel_token");
+    localStorage.removeItem("cityauncel_user");
+    setToken(null);
+    setCurrentUser(null);
+    setPage("home");
+  }
+
   function goPage(nextPage: Page) {
     window.history.pushState({ page: nextPage }, "", window.location.href);
     setPage(nextPage);
@@ -230,23 +286,117 @@ export default function App() {
     }
   }
 
-  function updateHomeTitles(titles: TitleReward[]) {
-    setEarnedHomeTitles((prev) => {
-      const rewardMap = new Map(prev.map((title) => [title.id, title]));
+  const updateHomeTitles = useCallback((titles: TitleReward[]) => {
+  setEarnedHomeTitles((prev) => {
+    const rewardMap = new Map(prev.map((title) => [title.id, title]));
 
-      // LOCKEDFLIPCARDSPAGE 已經會自己判斷並播放「卡牌稱號」獲得特效。
-      // 這裡只負責把那些稱號同步到首頁收藏，不再重播首頁特效，避免機制互相干擾。
-      titles.forEach((title) => rewardMap.set(title.id, title));
+    titles.forEach((title) => rewardMap.set(title.id, title));
 
-      return Array.from(rewardMap.values());
-    });
+    const nextTitles = Array.from(rewardMap.values());
+
+    const isSame =
+      nextTitles.length === prev.length &&
+      nextTitles.every((title, index) => title.id === prev[index]?.id);
+
+    if (isSame) return prev;
+
+    return nextTitles;
+  });
+}, []);
+
+  useEffect(() => {
+  if (!token || !currentUser) return;
+  if (isLoadingUserDataRef.current) return;
+  if (!hasLoadedUserDataRef.current) return;
+
+  async function saveUserData() {
+    try {
+      const res = await fetch("http://localhost:3001/api/user-data", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          studentThought,
+          studentPlan,
+          finalSummaries,
+          earnedTitles: earnedHomeTitles,
+          unlockedCards,
+          mapState: {},
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        console.error("儲存失敗：", data);
+        return;
+      }
+
+      console.log("儲存成功：", data);
+    } catch (err) {
+      console.error("儲存發生錯誤：", err);
+    }
   }
+
+  saveUserData();
+}, [
+  studentThought,
+  studentPlan,
+  finalSummaries,
+  earnedHomeTitles,
+  unlockedCards,
+  token,
+  currentUser,
+]);
 
   function handleSubmitSummary(summary: FinalSummary) {
-    setFinalSummaries((prev) => [...prev, summary]);
-    setReportPageIndex(finalSummaries.length);
-    goPage("home");
-  }
+  setFinalSummaries((prev) => {
+    const next = [...prev, summary];
+    const completedCount = next.length;
+
+    setEarnedHomeTitles((titlePrev) => {
+      let reward: TitleReward | null = null;
+
+      if (completedCount >= 10) {
+        reward = {
+          id: "investigation_master",
+          name: "首席調查官",
+          description: "完成 10 份探究調查成果",
+        };
+      } else if (completedCount >= 5) {
+        reward = {
+          id: "investigation_advanced",
+          name: "資深調查員",
+          description: "完成 5 份探究調查成果",
+        };
+      } else if (completedCount >= 1) {
+        reward = {
+          id: "investigation_novice",
+          name: "見習調查員",
+          description: "完成 1 份探究調查成果",
+        };
+      }
+
+      if (!reward) return titlePrev;
+
+      const alreadyHasReward = titlePrev.some(
+        (title) => title.id === reward.id,
+      );
+
+      if (alreadyHasReward) return titlePrev;
+      setTitleRewardToast(reward);
+      return [...titlePrev, reward];
+    });
+
+    setReportPageIndex(next.length - 1);
+
+    return next;
+  });
+
+  goPage("home");
+}
 
   function renderHomePage() {
     return (
@@ -270,6 +420,17 @@ export default function App() {
               </div>
 
               <div className="flex flex-col items-center gap-3 lg:items-end">
+                <div className="text-sm font-bold text-stone-600">
+                  {currentUser?.username} 已登入
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className={`${GAME_BTN} ${GAME_BTN_BLUE}`}
+                >
+                  登出
+                </button>
                 {canUseFullscreen ? (
                   <button
                     type="button"
@@ -698,6 +859,10 @@ export default function App() {
     );
   }
 
+if (!token || !currentUser) {
+  return <AuthPage onLoginSuccess={handleLoginSuccess} />;
+}
+
   return (
     <>
       <AnimatePresence>
@@ -752,6 +917,8 @@ export default function App() {
           studentPlan={studentPlan}
           onTitleRewardsChange={updateHomeTitles}
           onSubmitSummary={handleSubmitSummary}
+          unlockedCardIds={unlockedCards}
+          setUnlockedCardIds={setUnlockedCards}
         />
       ) : null}
 
@@ -1137,6 +1304,7 @@ function QuestionPage({
   onBack?: () => void;
   nextDisabled: boolean;
 }) {
+    
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#f3efe6] p-6">
       <div className="w-full max-w-xl rounded-3xl bg-white p-8 shadow-xl">
