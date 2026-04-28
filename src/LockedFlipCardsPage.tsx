@@ -1896,7 +1896,6 @@ export default function LockedFlipCardsPage({
   const [previewCard, setPreviewCard] = useState<GameCard | null>(null);
   const [hasNewCollectedContent, setHasNewCollectedContent] = useState(false);
   const [hasNewTitleReward, setHasNewTitleReward] = useState(false);
-  const hasInitializedTitleRewardsRef = useRef(false);
   const shouldShowTitleRewardAnimationRef = useRef(false);
   const rewardTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [showFallingLock, setShowFallingLock] = useState(false);
