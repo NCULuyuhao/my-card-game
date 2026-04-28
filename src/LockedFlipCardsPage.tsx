@@ -882,19 +882,20 @@ function CategoryTabs({
   onRequestFinish: () => void;
 }) {
   return (
-    <div className="relative mb-8 overflow-hidden rounded-[30px] border border-slate-200 bg-white/75 p-5 shadow-[0_12px_30px_rgba(15,23,42,0.06)] backdrop-blur-md">
-      <div className="pointer-events-none absolute inset-0 opacity-25">
-        <div className="absolute left-[8%] top-2 h-24 w-24 rounded-full bg-emerald-200/30 blur-2xl" />
-        <div className="absolute right-[12%] top-8 h-20 w-20 rounded-full bg-lime-200/25 blur-2xl" />
+    <div className="relative mb-8 overflow-hidden rounded-[34px] border border-stone-200/90 bg-white/72 p-6 shadow-[0_22px_70px_rgba(45,41,34,0.10)] backdrop-blur-xl">
+      <div className="pointer-events-none absolute inset-0 opacity-70">
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(120,92,58,0.07)_1px,transparent_1px),linear-gradient(rgba(120,92,58,0.05)_1px,transparent_1px)] bg-[size:28px_28px]" />
+        <div className="absolute -left-16 top-8 h-52 w-52 rounded-full bg-[#8b6f47]/10 blur-[70px]" />
       </div>
 
       <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-3">
-          <div className="rounded-full bg-emerald-50 p-2">
-            <Leaf className="h-5 w-5 text-emerald-600" />
+          <div className="mt-1 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-[#bdb294] bg-[#f7f1e3] shadow-sm">
+            <Leaf className="h-6 w-6 text-[#6f7d5f]" />
           </div>
           <div>
-            <p className="text-2xl font-bold tracking-[0.2em] text-slate-600">
+            <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-[#bbb296] bg-[#f7f1e3]/85 px-3 py-1 text-[11px] font-black tracking-[0.26em] text-[#68614f]"><span className="h-1.5 w-1.5 rounded-full bg-[#7d8b6f]" />DATA EXPLORATION</div>
+            <p className="font-serif text-3xl font-semibold tracking-[0.12em] text-stone-800">
               數據探究選單
             </p>
           </div>
@@ -904,15 +905,15 @@ function CategoryTabs({
           <Button
             type="button"
             onClick={onRequestFinish}
-            className="rounded-2xl bg-rose-500 px-5 py-3 text-white hover:bg-rose-400"
+            className="rounded-xl border border-[#8f2f2f] bg-[#7f2f2f] px-5 py-3 text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#9b3b3b] active:translate-y-0"
           >
             結束數據探究
           </Button>
 
-          <div className="flex w-fit items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-slate-700 shadow-sm">
-            <BookOpen className="h-4 w-4 text-emerald-600" />
+          <div className="flex w-fit items-center gap-3 rounded-2xl border border-[#c8b48f] bg-[#fffaf0]/80 px-4 py-3 text-sm text-[#5f5545] shadow-sm">
+            <BookOpen className="h-4 w-4 text-[#6f7d5f]" />
             總體已解鎖：
-            <span className="rounded-full border border-emerald-200 bg-white px-3 py-1 font-semibold text-emerald-700">
+            <span className="rounded-full border border-[#c8b48f] bg-white px-3 py-1 font-semibold text-[#6f7d5f]">
               {totalUnlockedCount} / {totalCardCount}
             </span>
           </div>
@@ -932,12 +933,12 @@ function CategoryTabs({
               whileTap={{ scale: 0.98 }}
               onClick={() => onChange(key)}
               className={[
-                "relative overflow-hidden rounded-[26px] border px-4 py-4 text-left transition",
+                "relative overflow-hidden rounded-[26px] border px-4 py-4 text-left shadow-sm transition hover:shadow-md",
                 active ? theme.active : theme.inactive,
               ].join(" ")}
             >
               <div className="flex items-center justify-between gap-3">
-                <div className="rounded-full bg-slate-100 p-2 text-slate-600">
+                <div className="rounded-full border border-stone-200 bg-white/80 p-2 text-stone-600 shadow-sm">
                   {item.icon}
                 </div>
                 <div className="flex items-center gap-2">
@@ -948,7 +949,7 @@ function CategoryTabs({
                     {CATEGORY_TOTAL_COUNTS[key]}
                   </span>
                   {active ? (
-                    <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
+                    <span className="rounded-full border border-[#c8b48f] bg-[#fffaf0] px-3 py-1 text-xs font-medium text-[#6d5e49]">
                       目前分類
                     </span>
                   ) : null}
@@ -956,8 +957,8 @@ function CategoryTabs({
               </div>
 
               <div className="mt-4">
-                <p className="text-lg font-bold text-slate-800">{item.label}</p>
-                <p className="mt-2 text-sm leading-6 text-slate-600">
+                <p className="font-serif text-xl font-semibold tracking-[0.06em] text-stone-800">{item.label}</p>
+                <p className="mt-2 text-sm leading-6 text-stone-600">
                   {item.subtitle}
                 </p>
               </div>
@@ -1895,9 +1896,6 @@ export default function LockedFlipCardsPage({
   const activeCategoryMeta = activeCategory
     ? categoryMetaMap[activeCategory]
     : null;
-  const activeBackground = activeCategory
-    ? categoryBackgroundMap[activeCategory]
-    : categoryBackgroundMap.water;
   const totalUnlockedCount = cards.filter((card) => card.unlocked).length;
   const totalCardCount = cards.length;
 
@@ -2136,7 +2134,12 @@ export default function LockedFlipCardsPage({
 
   if (isFinished) {
     return (
-      <div className="min-h-screen bg-slate-100 p-6 text-slate-800">
+      <div className="relative min-h-screen overflow-hidden bg-[#f3efe6] p-6 text-stone-800">
+        <div className="pointer-events-none absolute inset-0 opacity-70">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.9),transparent_35%),radial-gradient(circle_at_85%_15%,rgba(173,163,138,0.22),transparent_30%),linear-gradient(135deg,rgba(68,64,60,0.06)_0_1px,transparent_1px_32px)]" />
+          <div className="absolute left-10 top-10 h-72 w-72 rounded-full bg-stone-300/20 blur-[90px]" />
+          <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-[#b6c1ad]/25 blur-[110px]" />
+        </div>
         <AnimatePresence>
           {showSubmitConfirm ? (
             <motion.div
@@ -2184,8 +2187,8 @@ export default function LockedFlipCardsPage({
             </motion.div>
           ) : null}
         </AnimatePresence>
-        <div className="mx-auto max-w-5xl rounded-[32px] bg-white p-8 shadow-xl">
-          <h1 className="mb-8 text-3xl font-black text-slate-800">
+        <div className="relative z-10 mx-auto max-w-5xl overflow-hidden rounded-[34px] border border-stone-200/90 bg-white/72 p-8 shadow-[0_22px_70px_rgba(45,41,34,0.10)] backdrop-blur-xl">
+          <h1 className="mb-8 font-serif text-4xl font-semibold tracking-[0.12em] text-stone-800">
             數據探究總結
           </h1>
 
@@ -2385,8 +2388,13 @@ export default function LockedFlipCardsPage({
 
   return (
     <div
-      className={`relative min-h-screen overflow-hidden text-slate-800 transition-colors duration-700 ${activeBackground.pageBg}`}
+      className="relative min-h-screen overflow-hidden bg-[#f3efe6] text-stone-800 transition-colors duration-700"
     >
+      <div className="pointer-events-none absolute inset-0 opacity-70">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.9),transparent_35%),radial-gradient(circle_at_85%_15%,rgba(173,163,138,0.22),transparent_30%),linear-gradient(135deg,rgba(68,64,60,0.06)_0_1px,transparent_1px_32px)]" />
+        <div className="absolute left-10 top-10 h-72 w-72 rounded-full bg-stone-300/20 blur-[90px]" />
+        <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-[#b6c1ad]/25 blur-[110px]" />
+      </div>
       {!activeCard ? (
         <>
           <MemoizedBalanceScaleBackground
