@@ -2171,9 +2171,8 @@ export default function LockedFlipCardsPage({
                 <div className="mt-6 flex justify-end gap-3">
                   <Button
                     type="button"
-                    variant="ghost"
                     onClick={() => setShowSubmitConfirm(false)}
-                    className="rounded-2xl"
+                    className="rounded-xl border border-[#8f2f2f] bg-[#7f2f2f] px-5 py-3 text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#9b3b3b] active:translate-y-0"
                   >
                     取消
                   </Button>
@@ -2184,7 +2183,7 @@ export default function LockedFlipCardsPage({
                       setShowSubmitConfirm(false);
                       submitFinalSummary();
                     }}
-                    className="rounded-2xl border border-[#63513f] bg-[#4a382b] text-[#fffaf0] shadow-[0_8px_0_rgba(74,56,43,0.22)] hover:bg-[#5b4635]"
+                  className="rounded-xl border border-[#8f2f2f] bg-[#7f2f2f] px-5 py-3 text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#9b3b3b] active:translate-y-0"
                   >
                     確認送出
                   </Button>
@@ -2197,7 +2196,7 @@ export default function LockedFlipCardsPage({
           <div className="mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-[#d8cbb3]/80 pb-6">
             <div>
               <p className="mb-2 inline-flex rounded-full border border-[#d8cbb3] bg-[#fffaf0] px-4 py-1 text-xs font-black tracking-[0.18em] text-[#7b5b37]">
-                INVESTIGATION FILE
+                INQUIRY CONCLUSION
               </p>
               <h1 className="font-serif text-4xl font-semibold tracking-[0.12em] text-[#332c24]">
                 數據探究總結
@@ -2240,7 +2239,7 @@ export default function LockedFlipCardsPage({
 
             <section className="rounded-[28px] border border-[#d8cbb3] bg-[#fffaf0]/86 p-6 shadow-[0_14px_36px_rgba(45,41,34,0.08)]">
               <h2 className="mb-4 font-serif text-xl font-semibold tracking-[0.06em] text-[#332c24]">
-                3. 你探究並解鎖的卡牌
+                3. 探究並解鎖的卡牌(選取卡牌作為證據)
               </h2>
 
               {unlockedCardsWithContent.length > 0 ? (
@@ -2296,7 +2295,7 @@ export default function LockedFlipCardsPage({
                               : "bg-[#fffaf0] text-[#7b5b37]"
                           }`}
                         >
-                          {isSelected ? "目前已選取這張證據卡" : "選擇此卡牌"}
+                          {isSelected ? "目前已選取這張卡牌" : "選擇此卡牌"}
                         </div>
                       </button>
                     );
@@ -2317,7 +2316,7 @@ export default function LockedFlipCardsPage({
                   }
                   className="rounded-2xl border border-[#7d6a51] bg-[#8a765c] px-5 py-3 font-black text-[#fffaf0] shadow-[0_7px_0_rgba(74,56,43,0.18)] hover:bg-[#9a8365] disabled:opacity-40"
                 >
-                  {confirmedEvidenceIds.length > 0 ? "已確定選擇" : "確定選擇"}
+                  {confirmedEvidenceIds.length > 0 ? "已鎖定選擇" : "鎖定選取"}
                 </Button>
               </div>
             </section>
@@ -2514,17 +2513,16 @@ export default function LockedFlipCardsPage({
               </h2>
 
               <p className="mt-3 text-sm font-medium leading-7 text-stone-600">
-                結束後會進入「數據探究總結」頁面，請確認你已完成目前想解鎖與蒐集的數據卡牌。
+                結束後會進入「數據探究總結」畫面，請確認您已完成目前想解鎖與蒐集的數據卡牌。
               </p>
 
               <div className="mt-6 flex justify-end gap-3">
                 <Button
                   type="button"
-                  variant="ghost"
                   onClick={() => setShowFinishConfirm(false)}
-                  className="rounded-2xl"
-                >
-                  取消
+                  className="rounded-xl border border-[#8f2f2f] bg-[#7f2f2f] px-5 py-3 text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#9b3b3b] active:translate-y-0"
+          >
+                繼續探究
                 </Button>
 
                 <Button
@@ -2533,8 +2531,8 @@ export default function LockedFlipCardsPage({
                     setShowFinishConfirm(false);
                     setIsFinished(true);
                   }}
-                  className="rounded-2xl bg-rose-500 text-white hover:bg-rose-400"
-                >
+                  className="rounded-xl border border-[#8f2f2f] bg-[#7f2f2f] px-5 py-3 text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#9b3b3b] active:translate-y-0"
+          >
                   確認結束
                 </Button>
               </div>

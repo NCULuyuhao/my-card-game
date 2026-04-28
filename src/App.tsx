@@ -36,23 +36,23 @@ const GAME_BTN_DISABLED =
 
 const HOME_TITLE_REWARDS: TitleReward[] = [
   { id: "water_novice", name: "水資源新手", description: "蒐集 3 張水資源卡牌" },
-  { id: "water_advanced", name: "水資源老手", description: "蒐集 7 張水資源卡牌" },
-  { id: "water_master", name: "水資源大師", description: "蒐集 10 張水資源卡牌" },
+  { id: "water_advanced", name: "水資源菁英", description: "蒐集 7 張水資源卡牌" },
+  { id: "water_master", name: "水資源專家", description: "蒐集 10 張水資源卡牌" },
   { id: "land_novice", name: "土地資料新手", description: "蒐集 3 張土地資料卡牌" },
-  { id: "land_advanced", name: "土地資料老手", description: "蒐集 7 張土地資料卡牌" },
-  { id: "land_master", name: "土地資料大師", description: "蒐集 10 張土地資料卡牌" },
+  { id: "land_advanced", name: "土地資料菁英", description: "蒐集 7 張土地資料卡牌" },
+  { id: "land_master", name: "土地資料專家", description: "蒐集 10 張土地資料卡牌" },
   { id: "leopard_novice", name: "石虎相關資料新手", description: "蒐集 3 張石虎相關資料卡牌" },
-  { id: "leopard_advanced", name: "石虎相關資料老手", description: "蒐集 7 張石虎相關資料卡牌" },
-  { id: "leopard_master", name: "石虎相關資料大師", description: "蒐集 10 張石虎相關資料卡牌" },
+  { id: "leopard_advanced", name: "石虎相關資料菁英", description: "蒐集 7 張石虎相關資料卡牌" },
+  { id: "leopard_master", name: "石虎相關資料專家", description: "蒐集 10 張石虎相關資料卡牌" },
   { id: "rumor_novice", name: "NPC謠言新手", description: "蒐集 3 張 NPC 謠言卡牌" },
-  { id: "rumor_advanced", name: "NPC謠言老手", description: "蒐集 7 張 NPC 謠言卡牌" },
-  { id: "rumor_master", name: "NPC謠言大師", description: "蒐集 10 張 NPC 謠言卡牌" },
+  { id: "rumor_advanced", name: "NPC謠言菁英", description: "蒐集 7 張 NPC 謠言卡牌" },
+  { id: "rumor_master", name: "NPC謠言專家", description: "蒐集 10 張 NPC 謠言卡牌" },
   { id: "cross_novice", name: "跨領域新手", description: "每個分類都至少蒐集 2 張卡牌" },
-  { id: "cross_advanced", name: "跨領域老手", description: "每個分類都至少蒐集 4 張卡牌" },
-  { id: "cross_master", name: "跨領域大師", description: "每個分類都至少蒐集 6 張卡牌" },
-  { id: "investigation_novice", name: "探究新手", description: "完成 1 份調查書" },
-  { id: "investigation_advanced", name: "探究老手", description: "完成 5 份調查書" },
-  { id: "investigation_master", name: "探究大師", description: "完成 10 份調查書" },
+  { id: "cross_advanced", name: "跨領域菁英", description: "每個分類都至少蒐集 4 張卡牌" },
+  { id: "cross_master", name: "跨領域專家", description: "每個分類都至少蒐集 6 張卡牌" },
+  { id: "investigation_novice", name: "見習調查員", description: "完成 1 份調查書" },
+  { id: "investigation_advanced", name: "資深調查員", description: "完成 5 份調查書" },
+  { id: "investigation_master", name: "首席調查官", description: "完成 10 份調查書" },
 ];
 
 const MAP_STORAGE_KEY = "miaoli-puzzle-map-v1";
@@ -493,7 +493,7 @@ export default function App() {
                 <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full border border-[#c8b48f] bg-[#efe5d1] text-3xl">
                   🔒
                 </div>
-                <p className="text-lg font-semibold text-stone-700">苗栗地圖任務尚未開啟</p>
+                <p className="text-lg font-semibold text-stone-700">繪製地圖任務尚未開啟</p>
                 <p className="mt-2 text-sm leading-6 text-stone-500">請等待教師開啟第二回合任務</p>
               </div>
             </div>
@@ -710,7 +710,7 @@ export default function App() {
 
       {page === "question1" ? (
         <QuestionPage
-          title="你在想什麼？"
+          title="看完劇情之後，你/妳覺得石虎的生存危機有甚麼呢？"
           value={studentThought}
           placeholder="請輸入你的想法..."
           onChange={setStudentThought}
@@ -721,9 +721,9 @@ export default function App() {
 
       {page === "question2" ? (
         <QuestionPage
-          title="你對於你的想法有什麼規劃的解決方法嗎？"
+          title="請你/妳想想看，要怎麼規劃並驗證想法是對的呢？"
           value={studentPlan}
-          placeholder="請輸入你的解決方法..."
+          placeholder="請輸入你的規劃..."
           onChange={setStudentPlan}
           nextDisabled={!studentPlan.trim()}
           onBack={() => goPage("question1")}
@@ -734,7 +734,7 @@ export default function App() {
       {page === "ready" ? (
         <div className="flex min-h-screen items-center justify-center bg-[#f3efe6] p-6">
           <div className="w-full max-w-xl rounded-3xl bg-white p-8 text-center shadow-xl">
-            <h2 className="mb-4 text-2xl font-semibold">準備好開始當一位數據探究大師了嗎？</h2>
+            <h2 className="mb-4 text-2xl font-semibold">準備好成為一位優秀的調查員了嗎？</h2>
             <button
               type="button"
               onClick={() => goPage("cards")}
@@ -843,8 +843,8 @@ function ReportPage({
         </div>
 
         <div className="relative mb-4 grid grid-cols-1 gap-4 text-xs md:grid-cols-2">
-          <DetectiveEvidenceBox badge="QUESTIONING" title="案件想法" content={summary.studentThought} />
-          <DetectiveEvidenceBox badge="EXPLORATION" title="行動規劃" content={summary.studentPlan} />
+          <DetectiveEvidenceBox badge="QUESTIONING" title="在想什麼呢?" content={summary.studentThought} />
+          <DetectiveEvidenceBox badge="EXPLORATION" title="規劃什麼行動呢?" content={summary.studentPlan} />
         </div>
 
         <div className="relative mb-4 rounded-2xl border border-[#d2bf99] bg-[#f7ecd5] p-4 shadow-sm">
@@ -852,7 +852,7 @@ function ReportPage({
             EVIDENCE
           </div>
           <div className="mb-3 flex items-center justify-between pt-2">
-            <p className="text-xs font-bold tracking-[0.18em] text-[#6d5e49]">線索卡片</p>
+            <p className="text-xs font-bold tracking-[0.18em] text-[#6d5e49]">證據</p>
             <p className="text-xs font-bold text-[#6d5e49]">{summary.evidenceCards.length} 張</p>
           </div>
 
