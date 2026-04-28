@@ -1,5 +1,11 @@
-
-import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Lock,
@@ -46,12 +52,7 @@ type LockedFlipCardsPageProps = {
   onSubmitSummary: (summary: FinalSummary) => void;
 };
 
-type CollectionSortMode =
-  | "latest"
-  | "water"
-  | "land"
-  | "leopard"
-  | "rumor";
+type CollectionSortMode = "latest" | "water" | "land" | "leopard" | "rumor";
 
 const CATEGORY_KEYS: CategoryKey[] = ["water", "land", "leopard", "rumor"];
 
@@ -69,17 +70,22 @@ const CARD_GROUPS: Array<{
 }> = [
   { category: "water", startImageId: 1, count: CATEGORY_TOTAL_COUNTS.water },
   { category: "land", startImageId: 31, count: CATEGORY_TOTAL_COUNTS.land },
-  { category: "leopard", startImageId: 61, count: CATEGORY_TOTAL_COUNTS.leopard },
+  {
+    category: "leopard",
+    startImageId: 61,
+    count: CATEGORY_TOTAL_COUNTS.leopard,
+  },
   { category: "rumor", startImageId: 91, count: CATEGORY_TOTAL_COUNTS.rumor },
 ];
 
-const COLLECTION_SORT_CATEGORY: Record<CollectionSortMode, CategoryKey | null> = {
-  latest: null,
-  water: "water",
-  land: "land",
-  leopard: "leopard",
-  rumor: "rumor",
-};
+const COLLECTION_SORT_CATEGORY: Record<CollectionSortMode, CategoryKey | null> =
+  {
+    latest: null,
+    water: "water",
+    land: "land",
+    leopard: "leopard",
+    rumor: "rumor",
+  };
 
 const COLLECTION_SORT_OPTIONS: Array<{
   mode: CollectionSortMode;
@@ -142,14 +148,16 @@ const categoryMetaMap: Record<CategoryKey, CategoryMeta> = {
     subtitle: "村民、NPC、地方傳聞與線索",
     icon: <MessageCircle className="h-4 w-4" />,
   },
-
 };
 
-const categoryTabThemeMap: Record<CategoryKey, {
-  active: string;
-  inactive: string;
-  badge: string;
-}> = {
+const categoryTabThemeMap: Record<
+  CategoryKey,
+  {
+    active: string;
+    inactive: string;
+    badge: string;
+  }
+> = {
   water: {
     active: "border-sky-300 bg-sky-50 text-sky-800",
     inactive: "border-sky-100 bg-white hover:bg-sky-50",
@@ -327,7 +335,8 @@ const categoryBackgroundMap: Record<
       "bg-[linear-gradient(90deg,rgba(56,189,248,0.02),rgba(186,230,253,0.045),rgba(56,189,248,0.02))]",
     wave4:
       "bg-[linear-gradient(90deg,rgba(14,165,233,0.025),rgba(224,242,254,0.05),rgba(14,165,233,0.025))]",
-    lightBeam: "bg-gradient-to-r from-transparent via-sky-200/10 to-transparent",
+    lightBeam:
+      "bg-gradient-to-r from-transparent via-sky-200/10 to-transparent",
   },
   land: {
     pageBg:
@@ -340,7 +349,8 @@ const categoryBackgroundMap: Record<
       "bg-[linear-gradient(90deg,rgba(163,230,53,0.02),rgba(254,240,138,0.045),rgba(163,230,53,0.02))]",
     wave4:
       "bg-[linear-gradient(90deg,rgba(132,204,22,0.025),rgba(254,252,232,0.05),rgba(132,204,22,0.025))]",
-    lightBeam: "bg-gradient-to-r from-transparent via-lime-200/10 to-transparent",
+    lightBeam:
+      "bg-gradient-to-r from-transparent via-lime-200/10 to-transparent",
   },
   leopard: {
     pageBg:
@@ -353,7 +363,8 @@ const categoryBackgroundMap: Record<
       "bg-[linear-gradient(90deg,rgba(34,197,94,0.02),rgba(187,247,208,0.045),rgba(34,197,94,0.02))]",
     wave4:
       "bg-[linear-gradient(90deg,rgba(249,115,22,0.025),rgba(255,237,213,0.05),rgba(249,115,22,0.025))]",
-    lightBeam: "bg-gradient-to-r from-transparent via-orange-200/10 to-transparent",
+    lightBeam:
+      "bg-gradient-to-r from-transparent via-orange-200/10 to-transparent",
   },
   rumor: {
     pageBg:
@@ -366,7 +377,8 @@ const categoryBackgroundMap: Record<
       "bg-[linear-gradient(90deg,rgba(192,132,252,0.02),rgba(244,114,182,0.04),rgba(192,132,252,0.02))]",
     wave4:
       "bg-[linear-gradient(90deg,rgba(168,85,247,0.025),rgba(250,245,255,0.05),rgba(168,85,247,0.025))]",
-    lightBeam: "bg-gradient-to-r from-transparent via-fuchsia-200/10 to-transparent",
+    lightBeam:
+      "bg-gradient-to-r from-transparent via-fuchsia-200/10 to-transparent",
   },
 };
 
@@ -427,7 +439,8 @@ const writtenCardStateMap: Record<
     iconBg: "border border-sky-200 bg-sky-100/80",
     iconText: "text-sky-500",
     hintText: "text-sky-600",
-    badge: "rounded-full border border-sky-200 bg-sky-100 px-3 py-1 text-xs font-medium text-sky-700",
+    badge:
+      "rounded-full border border-sky-200 bg-sky-100 px-3 py-1 text-xs font-medium text-sky-700",
     hoverGlow: "group-hover:shadow-[0_12px_28px_rgba(14,165,233,0.18)]",
     previewBox: "border border-sky-200 bg-sky-50/80",
     collectionItem: "border border-sky-200 bg-sky-50 hover:bg-sky-100/70",
@@ -441,7 +454,8 @@ const writtenCardStateMap: Record<
     iconBg: "border border-lime-200 bg-lime-100/80",
     iconText: "text-lime-600",
     hintText: "text-lime-700",
-    badge: "rounded-full border border-lime-200 bg-lime-100 px-3 py-1 text-xs font-medium text-lime-700",
+    badge:
+      "rounded-full border border-lime-200 bg-lime-100 px-3 py-1 text-xs font-medium text-lime-700",
     hoverGlow: "group-hover:shadow-[0_12px_28px_rgba(132,204,22,0.18)]",
     previewBox: "border border-lime-200 bg-lime-50/80",
     collectionItem: "border border-lime-200 bg-lime-50 hover:bg-lime-100/70",
@@ -455,10 +469,12 @@ const writtenCardStateMap: Record<
     iconBg: "border border-orange-200 bg-orange-100/80",
     iconText: "text-orange-500",
     hintText: "text-orange-700",
-    badge: "rounded-full border border-orange-200 bg-orange-100 px-3 py-1 text-xs font-medium text-orange-700",
+    badge:
+      "rounded-full border border-orange-200 bg-orange-100 px-3 py-1 text-xs font-medium text-orange-700",
     hoverGlow: "group-hover:shadow-[0_12px_28px_rgba(249,115,22,0.18)]",
     previewBox: "border border-orange-200 bg-orange-50/80",
-    collectionItem: "border border-orange-200 bg-orange-50 hover:bg-orange-100/70",
+    collectionItem:
+      "border border-orange-200 bg-orange-50 hover:bg-orange-100/70",
     collectionLabel: "bg-orange-100 text-orange-700",
     collectionHint: "text-orange-700",
     collectionArrow: "text-orange-500",
@@ -469,10 +485,12 @@ const writtenCardStateMap: Record<
     iconBg: "border border-violet-200 bg-violet-100/80",
     iconText: "text-violet-500",
     hintText: "text-violet-700",
-    badge: "rounded-full border border-violet-200 bg-violet-100 px-3 py-1 text-xs font-medium text-violet-700",
+    badge:
+      "rounded-full border border-violet-200 bg-violet-100 px-3 py-1 text-xs font-medium text-violet-700",
     hoverGlow: "group-hover:shadow-[0_12px_28px_rgba(139,92,246,0.18)]",
     previewBox: "border border-violet-200 bg-violet-50/80",
-    collectionItem: "border border-violet-200 bg-violet-50 hover:bg-violet-100/70",
+    collectionItem:
+      "border border-violet-200 bg-violet-50 hover:bg-violet-100/70",
     collectionLabel: "bg-violet-100 text-violet-700",
     collectionHint: "text-violet-700",
     collectionArrow: "text-violet-500",
@@ -482,7 +500,7 @@ const writtenCardStateMap: Record<
 function createCardsByCategory(
   category: CategoryKey,
   startImageId: number,
-  count: number
+  count: number,
 ): GameCard[] {
   return Array.from({ length: count }, (_, i) => {
     const globalImageId = startImageId + i;
@@ -493,7 +511,8 @@ function createCardsByCategory(
       category,
       title: `${categoryMetaMap[category].label}卡 ${i + 1}`,
       revealedTitle:
-        revealedTitlesByCategory[category][i] ?? `${categoryMetaMap[category].label}資料卡 ${i + 1}`,
+        revealedTitlesByCategory[category][i] ??
+        `${categoryMetaMap[category].label}資料卡 ${i + 1}`,
       content: "",
       unlocked: false,
       unlockedAt: null,
@@ -504,7 +523,7 @@ function createCardsByCategory(
 
 function createAllCards(): GameCard[] {
   return CARD_GROUPS.flatMap(({ category, startImageId, count }) =>
-    createCardsByCategory(category, startImageId, count)
+    createCardsByCategory(category, startImageId, count),
   );
 }
 
@@ -606,13 +625,7 @@ function getTitleTierCardClasses(tier: TitleTier) {
   }
 }
 
-function TitleEmblem({
-  tier,
-  theme,
-}: {
-  tier: TitleTier;
-  theme: TitleTheme;
-}) {
+function TitleEmblem({ tier, theme }: { tier: TitleTier; theme: TitleTheme }) {
   const themeStyle = getTitleThemeClasses(theme);
   const tierStyle = getTitleTierCardClasses(tier);
 
@@ -621,7 +634,9 @@ function TitleEmblem({
       <div
         className={`relative flex h-16 w-16 items-center justify-center rounded-[40%_60%_55%_45%/45%_40%_60%_55%] ${tierStyle.emblem}`}
       >
-        <div className={`absolute inset-0 rounded-[inherit] blur-xl ${themeStyle.glow}`} />
+        <div
+          className={`absolute inset-0 rounded-[inherit] blur-xl ${themeStyle.glow}`}
+        />
         <Crown className={`relative z-10 h-8 w-8 ${themeStyle.accent}`} />
       </div>
     );
@@ -656,10 +671,16 @@ function TitleBadgeCard({ title }: { title: TitleReward }) {
     <div
       className={`relative min-w-[260px] max-w-[260px] overflow-hidden rounded-[24px] p-[1px] ${tierClasses.shell}`}
     >
-      <div className={`relative h-full rounded-[23px] px-4 py-4 backdrop-blur-xl ${tierClasses.inner}`}>
+      <div
+        className={`relative h-full rounded-[23px] px-4 py-4 backdrop-blur-xl ${tierClasses.inner}`}
+      >
         <div className="absolute inset-0 opacity-20">
-          <div className={`absolute -left-6 top-2 h-20 w-20 rounded-full blur-2xl ${themeClasses.glow}`} />
-          <div className={`absolute right-0 top-10 h-16 w-16 rounded-full blur-2xl ${themeClasses.glow}`} />
+          <div
+            className={`absolute -left-6 top-2 h-20 w-20 rounded-full blur-2xl ${themeClasses.glow}`}
+          />
+          <div
+            className={`absolute right-0 top-10 h-16 w-16 rounded-full blur-2xl ${themeClasses.glow}`}
+          />
         </div>
 
         <div className={`absolute right-3 top-3 ${tierClasses.deco}`}>
@@ -680,23 +701,33 @@ function TitleBadgeCard({ title }: { title: TitleReward }) {
               <span
                 className={`rounded-full border px-2.5 py-1 text-[11px] font-medium ${themeClasses.chip}`}
               >
-                {tier === "novice" ? "新手" : tier === "advanced" ? "老手" : "大師"}
+                {tier === "novice"
+                  ? "新手"
+                  : tier === "advanced"
+                    ? "老手"
+                    : "大師"}
               </span>
               <span className="text-xs text-white/75">
                 {theme === "water"
                   ? "水資源"
                   : theme === "land"
-                  ? "土地資料"
-                  : theme === "leopard"
-                  ? "石虎相關"
-                  : theme === "rumor"
-                  ? "NPC謠言"
-                  : "跨領域"}
+                    ? "土地資料"
+                    : theme === "leopard"
+                      ? "石虎相關"
+                      : theme === "rumor"
+                        ? "NPC謠言"
+                        : "跨領域"}
               </span>
             </div>
 
-            <p className={`text-sm font-bold tracking-wide ${tierClasses.name}`}>{title.name}</p>
-            <p className={`mt-1 text-xs leading-5 ${tierClasses.desc}`}>{title.description}</p>
+            <p
+              className={`text-sm font-bold tracking-wide ${tierClasses.name}`}
+            >
+              {title.name}
+            </p>
+            <p className={`mt-1 text-xs leading-5 ${tierClasses.desc}`}>
+              {title.description}
+            </p>
           </div>
         </div>
       </div>
@@ -730,13 +761,11 @@ function BalanceScaleBackground({
 
   return (
     <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-
       <div className="absolute left-[-14%] top-[6%] h-[560px] w-[560px] rounded-full bg-emerald-200/18 blur-[100px]" />
       <div className="absolute right-[-14%] top-[8%] h-[600px] w-[600px] rounded-full bg-orange-200/18 blur-[100px]" />
       <div className="absolute left-1/2 top-1/2 h-[520px] w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber-100/24 blur-[120px]" />
 
       <div className="absolute left-1/2 top-1/2 h-[700px] w-[1160px] origin-center -translate-x-1/2 -translate-y-1/2 scale-[0.42] opacity-[0.23] sm:scale-[0.55] md:scale-[0.72] lg:scale-[0.88] xl:scale-100">
-
         <div className="absolute bottom-[22px] left-1/2 h-20 w-[620px] -translate-x-1/2 rounded-full bg-amber-950/18 blur-2xl" />
 
         <div className="absolute bottom-[96px] left-1/2 h-12 w-[330px] -translate-x-1/2 rounded-[50%] bg-[linear-gradient(180deg,#fde68a,#d97706,#78350f)] shadow-[0_14px_30px_rgba(120,53,15,0.28)]" />
@@ -754,24 +783,23 @@ function BalanceScaleBackground({
         </div>
 
         <motion.div
-            animate={{ rotate }}
-            transition={{ type: "spring", stiffness: 95, damping: 16 }}
-            className="absolute left-1/2 top-[194px] h-[330px] w-[920px] -translate-x-1/2 transform-gpu will-change-transform"
+          animate={{ rotate }}
+          transition={{ type: "spring", stiffness: 95, damping: 16 }}
+          className="absolute left-1/2 top-[194px] h-[330px] w-[920px] -translate-x-1/2 transform-gpu will-change-transform"
+          style={{ transformOrigin: "50% 26px" }}
+        >
+          <motion.div
+            className="absolute inset-0 transform-gpu will-change-transform"
+            animate={{
+              rotate: [-0.7, -0.35, 0.3, 0.7, 0.35, -0.3, -0.7],
+            }}
+            transition={{
+              duration: 6.5,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
             style={{ transformOrigin: "50% 26px" }}
-            >
-            <motion.div
-                className="absolute inset-0 transform-gpu will-change-transform"
-                animate={{
-                rotate: [-0.7, -0.35, 0.3, 0.7, 0.35, -0.3, -0.7],
-                }}
-                transition={{
-                duration: 6.5,
-                repeat: Infinity,
-                ease: "easeInOut",
-                }}
-                style={{ transformOrigin: "50% 26px" }}
-            >
-
+          >
             <div className="absolute left-0 top-0 h-10 w-full rounded-full bg-[linear-gradient(180deg,#fff7c2_0%,#facc15_18%,#d97706_44%,#92400e_75%,#451a03_100%)] shadow-[0_22px_55px_rgba(120,53,15,0.3)]">
               <div className="absolute left-12 right-12 top-1.5 h-2 rounded-full bg-[linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,0.9),rgba(255,255,255,0))]" />
               <div className="absolute bottom-1 left-10 right-10 h-1 rounded-full bg-amber-950/35" />
@@ -795,7 +823,6 @@ function BalanceScaleBackground({
 
             <div className="absolute left-[70px] top-[176px] flex w-[300px] flex-col items-center">
               <div className="relative h-[72px] w-[286px]">
-
                 <div className="absolute left-1/2 top-0 h-14 w-[286px] -translate-x-1/2 rounded-[50%] bg-[linear-gradient(180deg,#fffbe6_0%,#facc15_24%,#b45309_62%,#451a03_100%)] shadow-[0_16px_34px_rgba(120,53,15,0.28)]">
                   <div className="absolute left-1/2 top-1 h-6 w-[246px] -translate-x-1/2 rounded-[50%] bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(255,255,255,0.22))]" />
                   <div className="absolute bottom-1 left-1/2 h-3 w-[230px] -translate-x-1/2 rounded-[50%] bg-amber-950/25" />
@@ -803,20 +830,18 @@ function BalanceScaleBackground({
 
                 <div className="absolute left-1/2 top-[9px] h-9 w-[242px] -translate-x-1/2 rounded-[50%] border border-emerald-300/70 bg-[radial-gradient(ellipse_at_center,rgba(236,253,245,0.96)_0%,rgba(110,231,183,0.62)_52%,rgba(6,95,70,0.42)_100%)] shadow-inner" />
                 <div className="absolute left-1/2 top-[16px] z-10 -translate-x-1/2 text-3xl font-black tracking-[0.18em] text-emerald-800 drop-shadow-[0_2px_3px_rgba(255,255,255,0.75)]">
-                保育
+                  保育
                 </div>
 
                 <div className="absolute left-1/2 top-[14px] h-2 w-[170px] -translate-x-1/2 rounded-full bg-white/75 blur-[1px]" />
                 <div className="absolute left-[72px] top-[22px] h-5 w-14 rounded-full bg-white/20 blur-md" />
 
                 <div className="absolute left-1/2 top-[41px] h-4 w-[232px] -translate-x-1/2 rounded-[50%] bg-[linear-gradient(180deg,#b45309_0%,#78350f_72%,#451a03_100%)] opacity-80 shadow-[0_10px_20px_rgba(120,53,15,0.22)]" />
-
               </div>
             </div>
 
             <div className="absolute right-[70px] top-[176px] flex w-[300px] flex-col items-center">
               <div className="relative h-[72px] w-[286px]">
-
                 <div className="absolute left-1/2 top-0 h-14 w-[286px] -translate-x-1/2 rounded-[50%] bg-[linear-gradient(180deg,#fffbe6_0%,#facc15_24%,#b45309_62%,#451a03_100%)] shadow-[0_16px_34px_rgba(120,53,15,0.28)]">
                   <div className="absolute left-1/2 top-1 h-6 w-[246px] -translate-x-1/2 rounded-[50%] bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(255,255,255,0.22))]" />
                   <div className="absolute bottom-1 left-1/2 h-3 w-[230px] -translate-x-1/2 rounded-[50%] bg-amber-950/25" />
@@ -825,7 +850,7 @@ function BalanceScaleBackground({
                 <div className="absolute left-1/2 top-[9px] h-9 w-[242px] -translate-x-1/2 rounded-[50%] border border-orange-300/70 bg-[radial-gradient(ellipse_at_center,rgba(255,247,237,0.96)_0%,rgba(253,186,116,0.62)_52%,rgba(194,65,12,0.42)_100%)] shadow-inner" />
 
                 <div className="absolute left-1/2 top-[16px] z-10 -translate-x-1/2 text-3xl font-black tracking-[0.18em] text-orange-800 drop-shadow-[0_2px_3px_rgba(255,255,255,0.75)]">
-                開發
+                  開發
                 </div>
 
                 <div className="absolute left-1/2 top-[14px] h-2 w-[170px] -translate-x-1/2 rounded-full bg-white/75 blur-[1px]" />
@@ -847,14 +872,15 @@ function CategoryTabs({
   unlockedCountByCategory,
   totalUnlockedCount,
   totalCardCount,
+  onRequestFinish,
 }: {
   activeCategory: CategoryKey;
   onChange: (category: CategoryKey) => void;
   unlockedCountByCategory: Record<CategoryKey, number>;
   totalUnlockedCount: number;
   totalCardCount: number;
+  onRequestFinish: () => void;
 }) {
-
   return (
     <div className="relative mb-8 overflow-hidden rounded-[30px] border border-slate-200 bg-white/75 p-5 shadow-[0_12px_30px_rgba(15,23,42,0.06)] backdrop-blur-md">
       <div className="pointer-events-none absolute inset-0 opacity-25">
@@ -863,23 +889,36 @@ function CategoryTabs({
       </div>
 
       <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-  <div className="flex items-center gap-3">
-    <div className="rounded-full bg-emerald-50 p-2">
-      <Leaf className="h-5 w-5 text-emerald-600" />
-    </div>
-    <div>
-      <p className="text-2xl font-bold tracking-[0.2em] text-slate-600"> 數據探究選單  </p>
-    </div>
-  </div>
+        <div className="flex items-center gap-3">
+          <div className="rounded-full bg-emerald-50 p-2">
+            <Leaf className="h-5 w-5 text-emerald-600" />
+          </div>
+          <div>
+            <p className="text-2xl font-bold tracking-[0.2em] text-slate-600">
+              {" "}
+              數據探究選單{" "}
+            </p>
+          </div>
+        </div>
 
-  <div className="flex w-fit items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-slate-700 shadow-sm">
-    <BookOpen className="h-4 w-4 text-emerald-600" />
-    總體已解鎖：
-    <span className="rounded-full border border-emerald-200 bg-white px-3 py-1 font-semibold text-emerald-700">
-      {totalUnlockedCount} / {totalCardCount}
-    </span>
-  </div>
-</div>
+        <div className="flex flex-wrap items-center gap-3">
+          <Button
+            type="button"
+            onClick={onRequestFinish}
+            className="rounded-2xl bg-rose-500 px-5 py-3 text-white hover:bg-rose-400"
+          >
+            結束數據探究
+          </Button>
+
+          <div className="flex w-fit items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-slate-700 shadow-sm">
+            <BookOpen className="h-4 w-4 text-emerald-600" />
+            總體已解鎖：
+            <span className="rounded-full border border-emerald-200 bg-white px-3 py-1 font-semibold text-emerald-700">
+              {totalUnlockedCount} / {totalCardCount}
+            </span>
+          </div>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
         {CATEGORY_KEYS.map((key) => {
@@ -896,13 +935,18 @@ function CategoryTabs({
               className={[
                 "relative overflow-hidden rounded-[26px] border px-4 py-4 text-left transition",
                 active ? theme.active : theme.inactive,
-                ].join(" ")}
+              ].join(" ")}
             >
               <div className="flex items-center justify-between gap-3">
-                <div className="rounded-full bg-slate-100 p-2 text-slate-600">{item.icon}</div>
+                <div className="rounded-full bg-slate-100 p-2 text-slate-600">
+                  {item.icon}
+                </div>
                 <div className="flex items-center gap-2">
-                  <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${theme.badge}`}>
-                    {unlockedCountByCategory[key]} / {CATEGORY_TOTAL_COUNTS[key]}
+                  <span
+                    className={`rounded-full px-2.5 py-1 text-xs font-medium ${theme.badge}`}
+                  >
+                    {unlockedCountByCategory[key]} /{" "}
+                    {CATEGORY_TOTAL_COUNTS[key]}
                   </span>
                   {active ? (
                     <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
@@ -914,7 +958,9 @@ function CategoryTabs({
 
               <div className="mt-4">
                 <p className="text-lg font-bold text-slate-800">{item.label}</p>
-                <p className="mt-2 text-sm leading-6 text-slate-600">{item.subtitle}</p>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  {item.subtitle}
+                </p>
               </div>
             </motion.button>
           );
@@ -963,8 +1009,12 @@ function TrophyPanel({
   const minPanelWidth = 360;
 
   const columnCount = Math.max(1, Math.ceil(titles.length / rowsPerColumn));
-  const contentWidth = columnCount * cardWidth + Math.max(0, columnCount - 1) * columnGap;
-  const desiredPanelWidth = Math.max(minPanelWidth, contentWidth + panelPaddingX);
+  const contentWidth =
+    columnCount * cardWidth + Math.max(0, columnCount - 1) * columnGap;
+  const desiredPanelWidth = Math.max(
+    minPanelWidth,
+    contentWidth + panelPaddingX,
+  );
 
   return (
     <div
@@ -988,7 +1038,9 @@ function TrophyPanel({
                 <Trophy className="h-5 w-5 text-amber-600" />
               </div>
               <div>
-                <p className="text-lg uppercase tracking-[0.28em] text-amber-600">稱號收藏</p>
+                <p className="text-lg uppercase tracking-[0.28em] text-amber-600">
+                  稱號收藏
+                </p>
               </div>
             </div>
 
@@ -1050,7 +1102,11 @@ function TrophyPanel({
           />
         ) : null}
 
-        {open ? <ChevronDown className="h-6 w-6" /> : <Trophy className="h-7 w-7" />}
+        {open ? (
+          <ChevronDown className="h-6 w-6" />
+        ) : (
+          <Trophy className="h-7 w-7" />
+        )}
       </motion.button>
     </div>
   );
@@ -1153,7 +1209,10 @@ function CollectedCardsPanel({
                 <BookOpen className="h-5 w-5 text-sky-600" />
               </div>
               <div>
-                <p className="text-lg font-bold tracking-[0.2em] text-sky-700">  數據卡牌收藏 </p>
+                <p className="text-lg font-bold tracking-[0.2em] text-sky-700">
+                  {" "}
+                  數據卡牌收藏{" "}
+                </p>
               </div>
             </div>
 
@@ -1193,14 +1252,18 @@ function CollectedCardsPanel({
                             {categoryMetaMap[card.category].label}
                           </span>
                           {isPriorityCard(card) ? (
-                            <span className={`text-xs ${theme.collectionHint}`}>排序優先</span>
+                            <span className={`text-xs ${theme.collectionHint}`}>
+                              排序優先
+                            </span>
                           ) : null}
                         </div>
                         <div className="truncate text-sm font-semibold text-slate-800">
                           {card.revealedTitle}
                         </div>
                       </div>
-                      <ChevronRight className={`h-4 w-4 shrink-0 ${theme.collectionArrow}`} />
+                      <ChevronRight
+                        className={`h-4 w-4 shrink-0 ${theme.collectionArrow}`}
+                      />
                     </button>
                   );
                 })
@@ -1248,53 +1311,56 @@ function CollectedCardsPanel({
             transition={{ duration: 1, repeat: Infinity, ease: "easeInOut" }}
           />
         ) : null}
-        {open ? <ChevronDown className="h-6 w-6" /> : <BookOpen className="h-7 w-7" />}
+        {open ? (
+          <ChevronDown className="h-6 w-6" />
+        ) : (
+          <BookOpen className="h-7 w-7" />
+        )}
       </motion.button>
     </div>
   );
 }
 
-function TitleRewardCelebration({
-  reward,
-}: {
-  reward: TitleReward | null;
-}) {
-
-
-    const tier = reward ? getTitleTier(reward.id) : "novice";
-    const theme = reward ? getTitleTheme(reward.id) : "cross";
-    const themeClasses = getTitleThemeClasses(theme);
-    const tierClasses = getTitleTierCardClasses(tier);  
+function TitleRewardCelebration({ reward }: { reward: TitleReward | null }) {
+  const tier = reward ? getTitleTier(reward.id) : "novice";
+  const theme = reward ? getTitleTheme(reward.id) : "cross";
+  const themeClasses = getTitleThemeClasses(theme);
+  const tierClasses = getTitleTierCardClasses(tier);
 
   return (
-  <AnimatePresence>
-    {reward ? (
-      <motion.div
-        className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/10 p-4"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 1 }}
-        transition={{ duration: 0.55 }}
-      >
+    <AnimatePresence>
+      {reward ? (
         <motion.div
-          initial={{ scale: 0.85, y: 24, opacity: 0 }}
-          animate={{ scale: 1, y: 0, opacity: 1 }}
-          exit={{
-            scale: 0.08,
-            x: "42vw",
-            y: "38vh",
-            opacity: 0,
-          }}
-          transition={{
-            duration: 0.55,
-            ease: [0.22, 1, 0.36, 1],
-          }}
-          className="relative w-full max-w-md origin-center"
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/10 p-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 1 }}
+          transition={{ duration: 0.55 }}
         >
+          <motion.div
+            initial={{ scale: 0.85, y: 24, opacity: 0 }}
+            animate={{ scale: 1, y: 0, opacity: 1 }}
+            exit={{
+              scale: 0.08,
+              x: "42vw",
+              y: "38vh",
+              opacity: 0,
+            }}
+            transition={{
+              duration: 0.55,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+            className="relative w-full max-w-md origin-center"
+          >
             <motion.div
               animate={{ rotate: 10, opacity: 1, scale: 1.08 }}
               initial={{ rotate: 0, opacity: 0.5, scale: 0.9 }}
-              transition={{ duration: 1.1, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
+              transition={{
+                duration: 1.1,
+                repeat: Infinity,
+                repeatType: "reverse",
+                ease: "easeInOut",
+              }}
               className={`absolute -left-6 top-8 ${themeClasses.accent}`}
             >
               <Sparkles className="h-8 w-8" />
@@ -1303,39 +1369,70 @@ function TitleRewardCelebration({
             <motion.div
               animate={{ rotate: -12, opacity: 1, scale: 1.12 }}
               initial={{ rotate: 0, opacity: 0.45, scale: 0.9 }}
-              transition={{ duration: 1.2, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
+              transition={{
+                duration: 1.2,
+                repeat: Infinity,
+                repeatType: "reverse",
+                ease: "easeInOut",
+              }}
               className={`absolute -right-4 top-10 ${themeClasses.accent}`}
             >
-              {tier === "master" ? <Crown className="h-7 w-7" /> : <Sparkles className="h-7 w-7" />}
+              {tier === "master" ? (
+                <Crown className="h-7 w-7" />
+              ) : (
+                <Sparkles className="h-7 w-7" />
+              )}
             </motion.div>
 
             <motion.div
               animate={{ y: -6, opacity: 1 }}
               initial={{ y: 0, opacity: 0.55 }}
-              transition={{ duration: 1.4, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
+              transition={{
+                duration: 1.4,
+                repeat: Infinity,
+                repeatType: "reverse",
+                ease: "easeInOut",
+              }}
               className={`absolute left-1/2 top-[-18px] -translate-x-1/2 ${themeClasses.accent}`}
             >
-              {tier === "advanced" ? <Stars className="h-9 w-9" /> : <Sparkles className="h-9 w-9" />}
+              {tier === "advanced" ? (
+                <Stars className="h-9 w-9" />
+              ) : (
+                <Sparkles className="h-9 w-9" />
+              )}
             </motion.div>
 
-            <div className={`relative overflow-hidden rounded-[32px] p-[1px] ${tierClasses.shell}`}>
+            <div
+              className={`relative overflow-hidden rounded-[32px] p-[1px] ${tierClasses.shell}`}
+            >
               <div className="relative overflow-hidden rounded-[31px] bg-white/10 px-7 py-8 backdrop-blur-xl">
                 <div className="absolute inset-0 opacity-20">
-                  <div className={`absolute left-1/2 top-4 h-40 w-40 -translate-x-1/2 rounded-full blur-3xl ${themeClasses.glow}`} />
+                  <div
+                    className={`absolute left-1/2 top-4 h-40 w-40 -translate-x-1/2 rounded-full blur-3xl ${themeClasses.glow}`}
+                  />
                 </div>
 
                 <div className="relative flex flex-col items-center text-center">
                   <TitleEmblem tier={tier} theme={theme} />
 
                   <div className="mb-2 mt-5 flex flex-wrap items-center justify-center gap-2">
-                    <span className={`rounded-full border px-3 py-1 text-xs font-medium ${themeClasses.chip}`}>
-                      {tier === "novice" ? "新手稱號" : tier === "advanced" ? "老手稱號" : "大師稱號"}
+                    <span
+                      className={`rounded-full border px-3 py-1 text-xs font-medium ${themeClasses.chip}`}
+                    >
+                      {tier === "novice"
+                        ? "新手稱號"
+                        : tier === "advanced"
+                          ? "老手稱號"
+                          : "大師稱號"}
                     </span>
                   </div>
 
-                  <h2 className={`mt-2 text-3xl font-bold ${tierClasses.name}`}>{reward.name}</h2>
-                  <p className={`mt-3 text-sm leading-6 ${tierClasses.desc}`}>{reward.description}</p>
-                  
+                  <h2 className={`mt-2 text-3xl font-bold ${tierClasses.name}`}>
+                    {reward.name}
+                  </h2>
+                  <p className={`mt-3 text-sm leading-6 ${tierClasses.desc}`}>
+                    {reward.description}
+                  </p>
                 </div>
               </div>
             </div>
@@ -1380,16 +1477,22 @@ function CollectedCardPreview({
               <div className="mb-6 flex items-start justify-between gap-4">
                 <div>
                   <div className="mt-3 flex items-start gap-3">
-                    <span className={`mt-1 h-7 w-7 shrink-0 ${writtenTheme?.iconText ?? "text-slate-600"}`}>
-                    {categoryMetaMap[card.category].icon}
+                    <span
+                      className={`mt-1 h-7 w-7 shrink-0 ${writtenTheme?.iconText ?? "text-slate-600"}`}
+                    >
+                      {categoryMetaMap[card.category].icon}
                     </span>
                     <div>
                       <div className="mb-2">
-                        <span className={`rounded-full px-3 py-1 text-sm font-medium ${writtenTheme?.badge ?? "border border-slate-200 bg-slate-50 text-slate-700"}`}>
+                        <span
+                          className={`rounded-full px-3 py-1 text-sm font-medium ${writtenTheme?.badge ?? "border border-slate-200 bg-slate-50 text-slate-700"}`}
+                        >
                           {categoryMetaMap[card.category].label}
                         </span>
                       </div>
-                      <h3 className="text-3xl font-bold text-slate-800">{card.revealedTitle}</h3>
+                      <h3 className="text-3xl font-bold text-slate-800">
+                        {card.revealedTitle}
+                      </h3>
                     </div>
                   </div>
                 </div>
@@ -1406,32 +1509,34 @@ function CollectedCardPreview({
 
               <div
                 className={`rounded-[24px] p-6 shadow-sm ${
-                    writtenTheme?.previewBox ?? "border border-slate-200 bg-slate-50"
+                  writtenTheme?.previewBox ??
+                  "border border-slate-200 bg-slate-50"
                 }`}
-                >
+              >
                 <div className="flex flex-col gap-5 md:flex-row md:items-start">
-
-                    <div className="flex shrink-0 justify-center md:w-[280px]">
+                  <div className="flex shrink-0 justify-center md:w-[280px]">
                     <img
-                        src={card.imageSrc}
-                        alt={card.revealedTitle}
-                        className="max-h-[260px] w-full object-contain rounded-2xl bg-white"
+                      src={card.imageSrc}
+                      alt={card.revealedTitle}
+                      className="max-h-[260px] w-full object-contain rounded-2xl bg-white"
                     />
-                    </div>
+                  </div>
 
-                    <div className="min-w-0 flex-1">
-                    <p className={`text-sm font-semibold ${writtenTheme?.hintText ?? "text-slate-500"}`}>
-                        卡牌完整內容
+                  <div className="min-w-0 flex-1">
+                    <p
+                      className={`text-sm font-semibold ${writtenTheme?.hintText ?? "text-slate-500"}`}
+                    >
+                      卡牌完整內容
                     </p>
 
                     <div className="mt-4 max-h-[360px] overflow-y-auto pr-2">
-                        <p className="whitespace-pre-wrap break-words break-all text-lg leading-8 text-slate-700">
+                      <p className="whitespace-pre-wrap break-words break-all text-lg leading-8 text-slate-700">
                         {card.content || "尚未輸入內容"}
-                        </p>
+                      </p>
                     </div>
-                    </div>
+                  </div>
                 </div>
-                </div>
+              </div>
             </div>
           </motion.div>
         </motion.div>
@@ -1483,20 +1588,21 @@ const GameCardGrid = memo(function GameCardGrid({
             <div className="relative h-full [perspective:1200px]">
               <motion.div
                 initial={{
-                    rotateY:
-                        card.unlocked &&
-                        card.id !== justUnlockedId &&
-                        card.category !== categoryFlipKey
-                        ? 180
-                        : 0,
-                    }}
-                    animate={{ rotateY: card.unlocked ? 180 : 0 }}
-                    transition={{
-                    duration:
-                        card.id === justUnlockedId || card.category === categoryFlipKey
-                        ? 0.8
-                        : 0,
-                    }}
+                  rotateY:
+                    card.unlocked &&
+                    card.id !== justUnlockedId &&
+                    card.category !== categoryFlipKey
+                      ? 180
+                      : 0,
+                }}
+                animate={{ rotateY: card.unlocked ? 180 : 0 }}
+                transition={{
+                  duration:
+                    card.id === justUnlockedId ||
+                    card.category === categoryFlipKey
+                      ? 0.8
+                      : 0,
+                }}
                 className="relative h-full w-full rounded-[28px] transform-gpu will-change-transform"
                 style={{ transformStyle: "preserve-3d" }}
               >
@@ -1593,35 +1699,60 @@ function WaterBackground({ category }: { category: CategoryKey }) {
       <motion.div
         animate={{ x: 160 }}
         initial={{ x: 0 }}
-        transition={{ duration: 9, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
+        transition={{
+          duration: 9,
+          repeat: Infinity,
+          repeatType: "reverse",
+          ease: "easeInOut",
+        }}
         className={`absolute bottom-28 left-[-20%] h-16 w-[160%] rounded-[100%] ${bg.wave1}`}
       />
 
       <motion.div
         animate={{ x: -140 }}
         initial={{ x: 0 }}
-        transition={{ duration: 11, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
+        transition={{
+          duration: 11,
+          repeat: Infinity,
+          repeatType: "reverse",
+          ease: "easeInOut",
+        }}
         className={`absolute bottom-20 left-[-18%] h-20 w-[155%] rounded-[100%] ${bg.wave2}`}
       />
 
       <motion.div
         animate={{ x: 180 }}
         initial={{ x: 0 }}
-        transition={{ duration: 8, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
+        transition={{
+          duration: 8,
+          repeat: Infinity,
+          repeatType: "reverse",
+          ease: "easeInOut",
+        }}
         className={`absolute bottom-12 left-[-22%] h-24 w-[165%] rounded-[100%] ${bg.wave3}`}
       />
 
       <motion.div
         animate={{ x: -120 }}
         initial={{ x: 0 }}
-        transition={{ duration: 10, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
+        transition={{
+          duration: 10,
+          repeat: Infinity,
+          repeatType: "reverse",
+          ease: "easeInOut",
+        }}
         className={`absolute bottom-4 left-[-16%] h-28 w-[150%] rounded-[100%] ${bg.wave4}`}
       />
 
       <motion.div
         animate={{ x: 260, opacity: 0.12 }}
         initial={{ x: 0, opacity: 0.05 }}
-        transition={{ duration: 10, repeat: Infinity, repeatType: "reverse", ease: "linear" }}
+        transition={{
+          duration: 10,
+          repeat: Infinity,
+          repeatType: "reverse",
+          ease: "linear",
+        }}
         className={`absolute bottom-0 left-[-10%] h-[34%] w-[60%] skew-x-[-18deg] blur-xl ${bg.lightBeam}`}
       />
     </div>
@@ -1650,7 +1781,7 @@ function getRewardChecks(unlockedCountByCategory: Record<CategoryKey, number>) {
   ].map(({ reward, threshold }) => ({
     reward,
     isUnlocked: CATEGORY_KEYS.every(
-      (category) => unlockedCountByCategory[category] >= threshold
+      (category) => unlockedCountByCategory[category] >= threshold,
     ),
   }));
 
@@ -1672,9 +1803,13 @@ export default function LockedFlipCardsPage({
 }: LockedFlipCardsPageProps) {
   const [isFinished, setIsFinished] = useState(false);
   const [finalDiscovery, setFinalDiscovery] = useState("");
+  const [showFinishConfirm, setShowFinishConfirm] = useState(false);
+  const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
   const [flippedEvidenceIds, setFlippedEvidenceIds] = useState<string[]>([]);
   const [selectedEvidenceIds, setSelectedEvidenceIds] = useState<string[]>([]);
-  const [confirmedEvidenceIds, setConfirmedEvidenceIds] = useState<string[]>([]);
+  const [confirmedEvidenceIds, setConfirmedEvidenceIds] = useState<string[]>(
+    [],
+  );
   const [cards, setCards] = useState<GameCard[]>(createAllCards);
   const [activeCategory, setActiveCategory] = useState<CategoryKey>("water");
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -1683,7 +1818,9 @@ export default function LockedFlipCardsPage({
   const [newInputValue, setNewInputValue] = useState("");
   const [isUnlocking, setIsUnlocking] = useState(false);
   const [justUnlockedId, setJustUnlockedId] = useState<string | null>(null);
-  const [categoryFlipKey, setCategoryFlipKey] = useState<CategoryKey | null>(null);
+  const [categoryFlipKey, setCategoryFlipKey] = useState<CategoryKey | null>(
+    null,
+  );
   const [developmentScore, setDevelopmentScore] = useState(0);
   const [conservationScore, setConservationScore] = useState(0);
   const [earnedTitles, setEarnedTitles] = useState<TitleReward[]>([]);
@@ -1698,26 +1835,29 @@ export default function LockedFlipCardsPage({
     targetCard: GameCard;
     content: string;
     wasUnlocked: boolean;
-    }>(null);
+  }>(null);
 
   const categoryCards = useMemo(
     () => cards.filter((card) => card.category === activeCategory),
-    [cards, activeCategory]
+    [cards, activeCategory],
   );
 
   const activeCard = useMemo(
     () => cards.find((card) => card.id === activeId) ?? null,
-    [cards, activeId]
+    [cards, activeId],
   );
   const unlockedCountByCategory = useMemo(
     () =>
-      CATEGORY_KEYS.reduce((counts, category) => {
-        counts[category] = cards.filter(
-          (card) => card.category === category && card.unlocked
-        ).length;
-        return counts;
-      }, {} as Record<CategoryKey, number>),
-    [cards]
+      CATEGORY_KEYS.reduce(
+        (counts, category) => {
+          counts[category] = cards.filter(
+            (card) => card.category === category && card.unlocked,
+          ).length;
+          return counts;
+        },
+        {} as Record<CategoryKey, number>,
+      ),
+    [cards],
   );
 
   const activeCategoryMeta = categoryMetaMap[activeCategory];
@@ -1734,7 +1874,10 @@ export default function LockedFlipCardsPage({
     });
 
     if (newlyEarned.length > 0) {
-      setEarnedTitles((prev) => [...prev, ...newlyEarned.map((item) => item.reward)]);
+      setEarnedTitles((prev) => [
+        ...prev,
+        ...newlyEarned.map((item) => item.reward),
+      ]);
       setPendingReward(newlyEarned[0].reward);
       setHasNewTitleReward(true);
     }
@@ -1758,130 +1901,133 @@ export default function LockedFlipCardsPage({
     };
   }, [pendingReward]);
 
-    const openCollectedPreview = useCallback((card: GameCard) => {
+  const openCollectedPreview = useCallback((card: GameCard) => {
     setPreviewCard(card);
-    }, []);
+  }, []);
 
-    const closeCollectedPreview = useCallback(() => {
+  const closeCollectedPreview = useCallback(() => {
     setPreviewCard(null);
-    }, []);
-    
-    const handleChangeCategory = useCallback((category: CategoryKey) => {
-    if (category === activeCategory) return;
+  }, []);
 
-    setActiveCategory(category);
-    setCategoryFlipKey(category);
+  const handleChangeCategory = useCallback(
+    (category: CategoryKey) => {
+      if (category === activeCategory) return;
 
-    window.setTimeout(() => {
+      setActiveCategory(category);
+      setCategoryFlipKey(category);
+
+      window.setTimeout(() => {
         setCategoryFlipKey(null);
-    }, 900);
-    }, [activeCategory]);
-
-    const openCard = useCallback((card: GameCard) => {
-        setIsModalReady(false);
-        setActiveId(card.id);
-        setIsUnlocking(false);
-
-        requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-            setInputValue(card.content || "");
-            setNewInputValue("");
-            setIsModalReady(true);
-            });
-        });
-        }, []);
-
-    const closeCard = useCallback(() => {
-        if (isUnlocking) return;
-        setActiveId(null);
-        setInputValue("");
-        setNewInputValue("");
-        }, [isUnlocking]);
-
-    const handleOpenCollectedPanel = useCallback(() => {
-    setHasNewCollectedContent(false);
-    }, []);
-
-    const handleOpenTrophyPanel = useCallback(() => {
-    setHasNewTitleReward(false);
-    }, []);
-
-    const applyPendingCardUpdate = useCallback(() => {
-  const pending = pendingCardUpdateRef.current;
-  if (!pending) return;
-
-  pendingCardUpdateRef.current = null;
-
-  const { targetCard, content, wasUnlocked } = pending;
-
-        if (!wasUnlocked) {
-        setJustUnlockedId(targetCard.id);
-
-        window.setTimeout(() => {
-            setJustUnlockedId(null);
-        }, 900);
-        }
-
-        setCards((prev) =>
-    prev.map((card) =>
-      card.id === targetCard.id
-        ? {
-            ...card,
-            content,
-            unlocked: true,
-            unlockedAt: wasUnlocked ? card.unlockedAt : Date.now(),
-          }
-        : card
-    )
+      }, 900);
+    },
+    [activeCategory],
   );
 
-  if (!wasUnlocked) {
-    const effect = getBalanceEffect(targetCard.category);
-    setDevelopmentScore((prev) => prev + effect.development);
-    setConservationScore((prev) => prev + effect.conservation);
-  }
+  const openCard = useCallback((card: GameCard) => {
+    setIsModalReady(false);
+    setActiveId(card.id);
+    setIsUnlocking(false);
 
-  setHasNewCollectedContent(true);
-}, []);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setInputValue(card.content || "");
+        setNewInputValue("");
+        setIsModalReady(true);
+      });
+    });
+  }, []);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
-  if (!activeCard) return;
+  const closeCard = useCallback(() => {
+    if (isUnlocking) return;
+    setActiveId(null);
+    setInputValue("");
+    setNewInputValue("");
+  }, [isUnlocking]);
 
-  const latestCard = cards.find((card) => card.id === activeCard.id);
-  if (!latestCard) return;
+  const handleOpenCollectedPanel = useCallback(() => {
+    setHasNewCollectedContent(false);
+  }, []);
 
-  // ✅ 用 cards 裡最新狀態判斷，不用 activeCard.unlocked
-  if (latestCard.unlocked) {
-    if (!newInputValue.trim()) return;
+  const handleOpenTrophyPanel = useCallback(() => {
+    setHasNewTitleReward(false);
+  }, []);
 
-    const content = `${latestCard.content}\n—— 更新內容 ——\n${newInputValue.trim()}`;
+  const applyPendingCardUpdate = useCallback(() => {
+    const pending = pendingCardUpdateRef.current;
+    if (!pending) return;
+
+    pendingCardUpdateRef.current = null;
+
+    const { targetCard, content, wasUnlocked } = pending;
+
+    if (!wasUnlocked) {
+      setJustUnlockedId(targetCard.id);
+
+      window.setTimeout(() => {
+        setJustUnlockedId(null);
+      }, 900);
+    }
 
     setCards((prev) =>
       prev.map((card) =>
-        card.id === latestCard.id
+        card.id === targetCard.id
           ? {
               ...card,
               content,
               unlocked: true,
-              unlockedAt: card.unlockedAt,
+              unlockedAt: wasUnlocked ? card.unlockedAt : Date.now(),
             }
-          : card
-      )
+          : card,
+      ),
     );
 
-    setInputValue(content);
-    setNewInputValue("");
-    setIsUnlocking(false);
+    if (!wasUnlocked) {
+      const effect = getBalanceEffect(targetCard.category);
+      setDevelopmentScore((prev) => prev + effect.development);
+      setConservationScore((prev) => prev + effect.conservation);
+    }
+
     setHasNewCollectedContent(true);
-    return;
-  }
+  }, []);
 
-  // ✅ 只有真正未解鎖才關閉彈窗
-  if (!inputValue.trim()) return;
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!activeCard) return;
 
-  const targetCard = latestCard;
-  const content = inputValue.trim();
+    const latestCard = cards.find((card) => card.id === activeCard.id);
+    if (!latestCard) return;
+
+    // ✅ 用 cards 裡最新狀態判斷，不用 activeCard.unlocked
+    if (latestCard.unlocked) {
+      if (!newInputValue.trim()) return;
+
+      const content = `${latestCard.content}\n—— 更新內容 ——\n${newInputValue.trim()}`;
+
+      setCards((prev) =>
+        prev.map((card) =>
+          card.id === latestCard.id
+            ? {
+                ...card,
+                content,
+                unlocked: true,
+                unlockedAt: card.unlockedAt,
+              }
+            : card,
+        ),
+      );
+
+      setInputValue(content);
+      setNewInputValue("");
+      setIsUnlocking(false);
+      setHasNewCollectedContent(true);
+      return;
+    }
+
+    // ✅ 只有真正未解鎖才關閉彈窗
+    if (!inputValue.trim()) return;
+
+    const targetCard = latestCard;
+    const content = inputValue.trim();
 
     setIsUnlocking(true);
     setShowFallingLock(true);
@@ -1901,9 +2047,9 @@ export default function LockedFlipCardsPage({
     await new Promise((resolve) => setTimeout(resolve, 650));
 
     pendingCardUpdateRef.current = {
-    targetCard,
-    content,
-    wasUnlocked: false,
+      targetCard,
+      content,
+      wasUnlocked: false,
     };
 
     setShowFallingLock(false);
@@ -1912,522 +2058,631 @@ export default function LockedFlipCardsPage({
     setActiveId(null);
     setInputValue("");
     setNewInputValue("");
-};
+  };
 
-const unlockedCards = cards.filter((card) => card.unlocked);
-const unlockedCardsWithContent = unlockedCards.filter((card) =>
-  card.content.trim()
-);
-
-const confirmedEvidenceCards = unlockedCardsWithContent.filter((card) =>
-  confirmedEvidenceIds.includes(card.id)
-);
-
-function toggleEvidenceCard(cardId: string) {
-  setSelectedEvidenceIds((prev) =>
-    prev.includes(cardId)
-      ? prev.filter((id) => id !== cardId)
-      : [...prev, cardId]
+  const unlockedCards = cards.filter((card) => card.unlocked);
+  const unlockedCardsWithContent = unlockedCards.filter((card) =>
+    card.content.trim(),
   );
-}
 
-function confirmEvidenceCards() {
-  setConfirmedEvidenceIds(selectedEvidenceIds);
-}
-function toggleEvidenceFlip(cardId: string) {
-  setFlippedEvidenceIds((prev) =>
-    prev.includes(cardId)
-      ? prev.filter((id) => id !== cardId)
-      : [...prev, cardId]
+  const confirmedEvidenceCards = unlockedCardsWithContent.filter((card) =>
+    confirmedEvidenceIds.includes(card.id),
   );
-}
 
-function submitFinalSummary() {
-  if (!finalDiscovery.trim()) return;
-  if (confirmedEvidenceCards.length === 0) return;
+  function toggleEvidenceCard(cardId: string) {
+    setSelectedEvidenceIds((prev) =>
+      prev.includes(cardId)
+        ? prev.filter((id) => id !== cardId)
+        : [...prev, cardId],
+    );
+  }
 
-  onSubmitSummary({
-    studentThought,
-    studentPlan,
-    evidenceCards: confirmedEvidenceCards.map((card) => ({
-      id: card.id,
-      title: card.revealedTitle,
-      imageSrc: card.imageSrc,
-      content: card.content,
-    })),
-    finalDiscovery: finalDiscovery.trim(),
-  });
-}
+  function confirmEvidenceCards() {
+    setConfirmedEvidenceIds(selectedEvidenceIds);
+  }
+  function toggleEvidenceFlip(cardId: string) {
+    setFlippedEvidenceIds((prev) =>
+      prev.includes(cardId)
+        ? prev.filter((id) => id !== cardId)
+        : [...prev, cardId],
+    );
+  }
 
-if (isFinished) {
-  return (
-    <div className="min-h-screen bg-slate-100 p-6 text-slate-800">
-      <div className="mx-auto max-w-5xl rounded-[32px] bg-white p-8 shadow-xl">
-        <h1 className="mb-8 text-3xl font-black text-slate-800">
-          數據探究總結
-        </h1>
+  function submitFinalSummary() {
+    if (!finalDiscovery.trim()) return;
+    if (confirmedEvidenceCards.length === 0) return;
 
-        <div className="space-y-6">
-          <div className="grid gap-6 md:grid-cols-2">
-            {/* 1 */}
-            <section className="rounded-3xl border border-slate-200 bg-slate-50 p-6">
-                <h2 className="mb-3 text-xl font-bold text-slate-700">
-                1. 你在想什麼？
-                </h2>
+    onSubmitSummary({
+      studentThought,
+      studentPlan,
+      evidenceCards: confirmedEvidenceCards.map((card) => ({
+        id: card.id,
+        title: card.revealedTitle,
+        imageSrc: card.imageSrc,
+        content: card.content,
+      })),
+      finalDiscovery: finalDiscovery.trim(),
+    });
+  }
 
-                <div className="rounded-2xl border border-slate-200 bg-white p-4 text-slate-700">
-                {studentThought || "尚未填寫"}
-                </div>
-            </section>
-
-            {/* 2 */}
-            <section className="rounded-3xl border border-slate-200 bg-slate-50 p-6">
-                <h2 className="mb-3 text-xl font-bold text-slate-700">
-                2. 你對於你的想法有什麼規劃的解決方法嗎？
-                </h2>
-
-                <div className="rounded-2xl border border-slate-200 bg-white p-4 text-slate-700">
-                {studentPlan || "尚未填寫"}
-                </div>
-            </section>
-            </div>
-
-          <section className="rounded-3xl border border-slate-200 bg-slate-50 p-6">
-            <h2 className="mb-4 text-xl font-bold text-slate-700">
-              3. 你探究並解鎖的卡牌
-            </h2>
-
-            {unlockedCardsWithContent.length > 0 ? (
-              <div className="flex flex-wrap gap-4">
-                {unlockedCardsWithContent.map((card) => {
-                const isSelected = selectedEvidenceIds.includes(card.id);
-
-                return (
-                    <button
-                    key={card.id}
-                    type="button"
-                    disabled={confirmedEvidenceIds.length > 0}
-                    onClick={() => toggleEvidenceCard(card.id)}
-                    className={`w-[320px] rounded-2xl border bg-white p-3 text-left transition ${
-                        isSelected
-                        ? "border-emerald-400 ring-2 ring-emerald-200"
-                        : "border-slate-200 hover:border-emerald-300"
-                    }`}
-                    >
-                    <div className="mb-2 flex items-center gap-2">
-                        <span className="rounded-full bg-sky-100 px-2 py-0.5 text-xs font-bold text-sky-700">
-                        {categoryMetaMap[card.category].label}
-                        </span>
-
-                        <h3 className="text-sm font-bold text-slate-800">
-                        {card.revealedTitle}
-                        </h3>
-                    </div>
-
-                    <div className="flex items-start gap-3">
-                        <img
-                        src={card.imageSrc}
-                        alt={card.revealedTitle}
-                        className="h-24 w-24 flex-shrink-0 rounded-xl bg-slate-50 object-contain"
-                        />
-
-                        <p className="line-clamp-3 whitespace-pre-wrap text-xs leading-5 text-slate-600">
-                        {card.content}
-                        </p>
-                    </div>
-
-                    <div className="mt-3 text-right text-xs font-bold text-emerald-600">
-                        {isSelected ? "已選擇" : "選擇此卡牌"}
-                    </div>
-                    </button>
-                );
-                })}
-              </div>
-            ) : (
-              <div className="rounded-2xl border border-slate-200 bg-white p-4 text-slate-500">
-                尚未解鎖任何卡牌
-              </div>
-            )}
-            <div className="mt-5 flex justify-end">
-            <Button
-            type="button"
-            onClick={confirmEvidenceCards}
-            disabled={selectedEvidenceIds.length === 0 || confirmedEvidenceIds.length > 0}
-            className="rounded-2xl bg-emerald-500 px-5 py-3 text-white hover:bg-emerald-400 disabled:opacity-40"
+  if (isFinished) {
+    return (
+      <div className="min-h-screen bg-slate-100 p-6 text-slate-800">
+        <AnimatePresence>
+          {showSubmitConfirm ? (
+            <motion.div
+              className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-900/35 p-4 backdrop-blur-sm"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
             >
-            {confirmedEvidenceIds.length > 0 ? "已確定選擇" : "確定選擇"}
-            </Button>
+              <motion.div
+                initial={{ scale: 0.92, y: 18, opacity: 0 }}
+                animate={{ scale: 1, y: 0, opacity: 1 }}
+                exit={{ scale: 0.96, y: 10, opacity: 0 }}
+                className="w-full max-w-md rounded-[28px] bg-white p-6 shadow-2xl"
+              >
+                <h2 className="text-2xl font-black text-slate-800">
+                  確認送出數據探究總結？
+                </h2>
+
+                <p className="mt-3 text-sm leading-7 text-slate-600">
+                  送出後，這份數據探究總結會存到首頁的調查書紀錄中。
+                </p>
+
+                <div className="mt-6 flex justify-end gap-3">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => setShowSubmitConfirm(false)}
+                    className="rounded-2xl"
+                  >
+                    取消
+                  </Button>
+
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      setShowSubmitConfirm(false);
+                      submitFinalSummary();
+                    }}
+                    className="rounded-2xl bg-blue-600 text-white hover:bg-blue-500"
+                  >
+                    確認送出
+                  </Button>
+                </div>
+              </motion.div>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
+        <div className="mx-auto max-w-5xl rounded-[32px] bg-white p-8 shadow-xl">
+          <h1 className="mb-8 text-3xl font-black text-slate-800">
+            數據探究總結
+          </h1>
+
+          <div className="space-y-6">
+            <div className="grid gap-6 md:grid-cols-2">
+              {/* 1 */}
+              <section className="rounded-3xl border border-slate-200 bg-slate-50 p-6">
+                <h2 className="mb-3 text-xl font-bold text-slate-700">
+                  1. 你在想什麼？
+                </h2>
+
+                <div className="rounded-2xl border border-slate-200 bg-white p-4 text-slate-700">
+                  {studentThought || "尚未填寫"}
+                </div>
+              </section>
+
+              {/* 2 */}
+              <section className="rounded-3xl border border-slate-200 bg-slate-50 p-6">
+                <h2 className="mb-3 text-xl font-bold text-slate-700">
+                  2. 你對於你的想法有什麼規劃的解決方法嗎？
+                </h2>
+
+                <div className="rounded-2xl border border-slate-200 bg-white p-4 text-slate-700">
+                  {studentPlan || "尚未填寫"}
+                </div>
+              </section>
             </div>
-          </section>
+
+            <section className="rounded-3xl border border-slate-200 bg-slate-50 p-6">
+              <h2 className="mb-4 text-xl font-bold text-slate-700">
+                3. 你探究並解鎖的卡牌
+              </h2>
+
+              {unlockedCardsWithContent.length > 0 ? (
+                <div className="flex flex-wrap gap-4">
+                  {unlockedCardsWithContent.map((card) => {
+                    const isSelected = selectedEvidenceIds.includes(card.id);
+
+                    return (
+                      <button
+                        key={card.id}
+                        type="button"
+                        disabled={confirmedEvidenceIds.length > 0}
+                        onClick={() => toggleEvidenceCard(card.id)}
+                        className={`w-[320px] rounded-2xl border bg-white p-3 text-left transition ${
+                          isSelected
+                            ? "border-emerald-400 ring-2 ring-emerald-200"
+                            : "border-slate-200 hover:border-emerald-300"
+                        }`}
+                      >
+                        <div className="mb-2 flex items-center gap-2">
+                          <span className="rounded-full bg-sky-100 px-2 py-0.5 text-xs font-bold text-sky-700">
+                            {categoryMetaMap[card.category].label}
+                          </span>
+
+                          <h3 className="text-sm font-bold text-slate-800">
+                            {card.revealedTitle}
+                          </h3>
+                        </div>
+
+                        <div className="flex items-start gap-3">
+                          <img
+                            src={card.imageSrc}
+                            alt={card.revealedTitle}
+                            className="h-24 w-24 flex-shrink-0 rounded-xl bg-slate-50 object-contain"
+                          />
+
+                          <p className="line-clamp-3 whitespace-pre-wrap text-xs leading-5 text-slate-600">
+                            {card.content}
+                          </p>
+                        </div>
+
+                        <div className="mt-3 text-right text-xs font-bold text-emerald-600">
+                          {isSelected ? "已選擇" : "選擇此卡牌"}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="rounded-2xl border border-slate-200 bg-white p-4 text-slate-500">
+                  尚未解鎖任何卡牌
+                </div>
+              )}
+              <div className="mt-5 flex justify-end">
+                <Button
+                  type="button"
+                  onClick={confirmEvidenceCards}
+                  disabled={
+                    selectedEvidenceIds.length === 0 ||
+                    confirmedEvidenceIds.length > 0
+                  }
+                  className="rounded-2xl bg-emerald-500 px-5 py-3 text-white hover:bg-emerald-400 disabled:opacity-40"
+                >
+                  {confirmedEvidenceIds.length > 0 ? "已確定選擇" : "確定選擇"}
+                </Button>
+              </div>
+            </section>
 
             <section className="rounded-3xl border border-amber-200 bg-amber-50 p-6">
-            <h2 className="mb-4 text-xl font-bold text-slate-700">
+              <h2 className="mb-4 text-xl font-bold text-slate-700">
                 4. 你選定的證據
-            </h2>
+              </h2>
 
-            {confirmedEvidenceCards.length > 0 ? (
+              {confirmedEvidenceCards.length > 0 ? (
                 <div className="flex flex-wrap gap-4">
-                {confirmedEvidenceCards.map((card) => {
-  const isFlipped = flippedEvidenceIds.includes(card.id);
+                  {confirmedEvidenceCards.map((card) => {
+                    const isFlipped = flippedEvidenceIds.includes(card.id);
 
-  return (
-    <button
-      key={card.id}
-      type="button"
-      onClick={() => toggleEvidenceFlip(card.id)}
-      className="h-[210px] w-[220px] rounded-2xl text-left [perspective:1000px]"
-    >
-        <motion.div
-            animate={{ rotateY: isFlipped ? 180 : 0 }}
-            transition={{ duration: 0.45 }}
-            className="relative h-full w-full rounded-2xl transform-gpu"
-            style={{ transformStyle: "preserve-3d" }}
-        >
-            {/* 正面：圖片 + 標題 */}
-            <div
-            className="absolute inset-0 rounded-2xl border border-amber-200 bg-white p-3"
-            style={{ backfaceVisibility: "hidden" }}
-            >
-            <img
-                src={card.imageSrc}
-                alt={card.revealedTitle}
-                className="mb-3 h-28 w-full rounded-xl bg-slate-50 object-contain"
-            />
+                    return (
+                      <button
+                        key={card.id}
+                        type="button"
+                        onClick={() => toggleEvidenceFlip(card.id)}
+                        className="h-[210px] w-[220px] rounded-2xl text-left [perspective:1000px]"
+                      >
+                        <motion.div
+                          animate={{ rotateY: isFlipped ? 180 : 0 }}
+                          transition={{ duration: 0.45 }}
+                          className="relative h-full w-full rounded-2xl transform-gpu"
+                          style={{ transformStyle: "preserve-3d" }}
+                        >
+                          {/* 正面：圖片 + 標題 */}
+                          <div
+                            className="absolute inset-0 rounded-2xl border border-amber-200 bg-white p-3"
+                            style={{ backfaceVisibility: "hidden" }}
+                          >
+                            <img
+                              src={card.imageSrc}
+                              alt={card.revealedTitle}
+                              className="mb-3 h-28 w-full rounded-xl bg-slate-50 object-contain"
+                            />
 
-            <h3 className="w-full text-center text-sm font-bold text-slate-800">
-                {card.revealedTitle}
-            </h3>
+                            <h3 className="w-full text-center text-sm font-bold text-slate-800">
+                              {card.revealedTitle}
+                            </h3>
 
-            <p className="mt-2 text-center text-xs text-slate-400">
-                點擊查看內容
-            </p>
-            </div>
+                            <p className="mt-2 text-center text-xs text-slate-400">
+                              點擊查看內容
+                            </p>
+                          </div>
 
-            {/* 背面：學生撰寫內容 */}
-            <div
-            className="absolute inset-0 rounded-2xl border border-amber-200 bg-amber-50 p-4"
-            style={{
-                transform: "rotateY(180deg)",
-                backfaceVisibility: "hidden",
-            }}
-            >
-            <p className="mb-2 text-center text-xs font-bold text-amber-700">
-                學生撰寫內容
-            </p>
+                          {/* 背面：學生撰寫內容 */}
+                          <div
+                            className="absolute inset-0 rounded-2xl border border-amber-200 bg-amber-50 p-4"
+                            style={{
+                              transform: "rotateY(180deg)",
+                              backfaceVisibility: "hidden",
+                            }}
+                          >
+                            <p className="mb-2 text-center text-xs font-bold text-amber-700">
+                              學生撰寫內容
+                            </p>
 
-            <div className="h-[145px] overflow-y-auto rounded-xl bg-white p-3">
-                <p className="whitespace-pre-wrap break-words text-xs leading-5 text-slate-700">
-                {card.content || "尚未輸入內容"}
-                </p>
-            </div>
-            </div>
-        </motion.div>
-        </button>
-    );
-    })}
+                            <div className="h-[145px] overflow-y-auto rounded-xl bg-white p-3">
+                              <p className="whitespace-pre-wrap break-words text-xs leading-5 text-slate-700">
+                                {card.content || "尚未輸入內容"}
+                              </p>
+                            </div>
+                          </div>
+                        </motion.div>
+                      </button>
+                    );
+                  })}
                 </div>
-            ) : (
+              ) : (
                 <div className="rounded-2xl border border-amber-200 bg-white p-4 text-slate-500">
-                尚未選定證據
+                  尚未選定證據
                 </div>
-            )}
+              )}
             </section>
 
-          <section className="rounded-3xl border border-emerald-200 bg-emerald-50 p-6">
-            <h2 className="mb-3 text-xl font-bold text-slate-700">
-              5. 所以你發現了什麼？
-            </h2>
+            <section className="rounded-3xl border border-emerald-200 bg-emerald-50 p-6">
+              <h2 className="mb-3 text-xl font-bold text-slate-700">
+                5. 所以你發現了什麼？
+              </h2>
 
-            <textarea
-              value={finalDiscovery}
-              onChange={(e) => setFinalDiscovery(e.target.value)}
-              placeholder="請輸入你的最後發現..."
-              rows={8}
-              className="w-full rounded-2xl border border-emerald-200 bg-white p-4 text-base text-slate-800 outline-none focus:border-emerald-400"
-            />
-          </section>
-          <div className="flex justify-end">
-            <Button
+              <textarea
+                value={finalDiscovery}
+                onChange={(e) => setFinalDiscovery(e.target.value)}
+                placeholder="請輸入你的最後發現..."
+                rows={8}
+                className="w-full rounded-2xl border border-emerald-200 bg-white p-4 text-base text-slate-800 outline-none focus:border-emerald-400"
+              />
+            </section>
+            <div className="flex justify-end">
+              <Button
                 type="button"
-                onClick={submitFinalSummary}
-                disabled={!finalDiscovery.trim() || confirmedEvidenceCards.length === 0}
+                onClick={() => setShowSubmitConfirm(true)}
+                disabled={
+                  !finalDiscovery.trim() || confirmedEvidenceCards.length === 0
+                }
                 className="rounded-2xl bg-blue-600 px-6 py-4 text-white hover:bg-blue-500 disabled:opacity-40"
-            >
+              >
                 送出數據探究總結
-            </Button>
+              </Button>
             </div>
+          </div>
         </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
   return (
     <div
       className={`relative min-h-screen overflow-hidden text-slate-800 transition-colors duration-700 ${activeBackground.pageBg}`}
     >
-    {!activeCard ? (
-    <>
-    <MemoizedBalanceScaleBackground
-      developmentScore={developmentScore}
-      conservationScore={conservationScore}
-    />
+      {!activeCard ? (
+        <>
+          <MemoizedBalanceScaleBackground
+            developmentScore={developmentScore}
+            conservationScore={conservationScore}
+          />
 
-    <MemoizedWaterBackground category={activeCategory} />
-    </>
-    ) : null}
+          <MemoizedWaterBackground category={activeCategory} />
+        </>
+      ) : null}
 
-    {!activeCard ? (
-  <>
-    <MemoizedCollectedCardsPanel
-      cards={cards}
-      onOpenCard={openCollectedPreview}
-      hasNewContent={hasNewCollectedContent}
-      onOpenPanel={handleOpenCollectedPanel}
-    />
+      {!activeCard ? (
+        <>
+          <MemoizedCollectedCardsPanel
+            cards={cards}
+            onOpenCard={openCollectedPreview}
+            hasNewContent={hasNewCollectedContent}
+            onOpenPanel={handleOpenCollectedPanel}
+          />
 
-    <MemoizedTrophyPanel
-      titles={earnedTitles}
-      hasNewTitle={hasNewTitleReward}
-      onOpenPanel={handleOpenTrophyPanel}
-    />
-  </>
-) : null}
+          <MemoizedTrophyPanel
+            titles={earnedTitles}
+            hasNewTitle={hasNewTitleReward}
+            onOpenPanel={handleOpenTrophyPanel}
+          />
+        </>
+      ) : null}
 
-    <MemoizedTitleRewardCelebration
-  reward={pendingReward}
-/>
+      <MemoizedTitleRewardCelebration reward={pendingReward} />
 
-    <MemoizedCollectedCardPreview
-    card={previewCard}
-    onClose={closeCollectedPreview}
-    />
-
-        <div
-        className={`relative z-10 mx-auto max-w-7xl px-6 pb-12 pt-10 ${
-            activeCard ? "pointer-events-none" : ""
-        }`}
-        >
-        <div className="mb-8 flex flex-col gap-4">
-        <div className="flex justify-end">
-            <Button
-            type="button"
-            onClick={() => setIsFinished(true)}
-            className="rounded-2xl bg-rose-500 px-5 py-3 text-white hover:bg-rose-400"
+      <MemoizedCollectedCardPreview
+        card={previewCard}
+        onClose={closeCollectedPreview}
+      />
+      <AnimatePresence>
+        {showFinishConfirm ? (
+          <motion.div
+            className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-900/35 p-4 backdrop-blur-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              initial={{ scale: 0.92, y: 18, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.96, y: 10, opacity: 0 }}
+              className="w-full max-w-md rounded-[28px] bg-white p-6 shadow-2xl"
             >
-            結束數據探究
-            </Button>
-        </div>
-        </div>
+              <h2 className="text-2xl font-black text-slate-800">
+                確認結束數據探究？
+              </h2>
 
+              <p className="mt-3 text-sm leading-7 text-slate-600">
+                結束後會進入「數據探究總結」頁面，請確認你已完成目前想解鎖與蒐集的數據卡牌。
+              </p>
+
+              <div className="mt-6 flex justify-end gap-3">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => setShowFinishConfirm(false)}
+                  className="rounded-2xl"
+                >
+                  取消
+                </Button>
+
+                <Button
+                  type="button"
+                  onClick={() => {
+                    setShowFinishConfirm(false);
+                    setIsFinished(true);
+                  }}
+                  className="rounded-2xl bg-rose-500 text-white hover:bg-rose-400"
+                >
+                  確認結束
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+      <div
+        className={`relative z-10 mx-auto max-w-7xl px-6 pb-12 pt-10 ${
+          activeCard ? "pointer-events-none" : ""
+        }`}
+      >
         <MemoizedCategoryTabs
-        activeCategory={activeCategory}
-        onChange={handleChangeCategory}
-        unlockedCountByCategory={unlockedCountByCategory}
-        totalUnlockedCount={totalUnlockedCount}
-        totalCardCount={totalCardCount}
+          activeCategory={activeCategory}
+          onChange={handleChangeCategory}
+          unlockedCountByCategory={unlockedCountByCategory}
+          totalUnlockedCount={totalUnlockedCount}
+          totalCardCount={totalCardCount}
+          onRequestFinish={() => setShowFinishConfirm(true)}
         />
 
         <div className="mb-6" />
 
         <GameCardGrid
-        categoryCards={categoryCards}
-        activeId={activeId}
-        activeCategoryMeta={activeCategoryMeta}
-        onOpenCard={openCard}
-        justUnlockedId={justUnlockedId}
-        categoryFlipKey={categoryFlipKey}
+          categoryCards={categoryCards}
+          activeId={activeId}
+          activeCategoryMeta={activeCategoryMeta}
+          onOpenCard={openCard}
+          justUnlockedId={justUnlockedId}
+          categoryFlipKey={categoryFlipKey}
         />
-    </div>
+      </div>
 
       <AnimatePresence
         onExitComplete={() => {
-            setIsModalReady(false);
-            applyPendingCardUpdate();
+          setIsModalReady(false);
+          applyPendingCardUpdate();
         }}
-        >
+      >
         {activeCard ? (
           <motion.div
-            className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/30 p-4"
+           className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-slate-900/30 p-4"
             onClick={closeCard}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
             <motion.div
-                className="relative mx-auto my-8 w-full max-w-5xl transform-gpu will-change-transform"
-                onClick={(e) => e.stopPropagation()}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.35, ease: "easeOut" }}
-            >          
+              className="relative w-full max-w-5xl transform-gpu will-change-transform"
+              onClick={(e) => e.stopPropagation()}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+            >
               {isModalReady ? (
-                <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-                <div className="relative flex h-[520px] items-center justify-center overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.14)]">
-
+                <div className="grid max-h-[calc(100vh-2rem)] gap-6 overflow-y-auto lg:grid-cols-[1.1fr_0.9fr]">
+                  <div className="relative flex h-[520px] items-center justify-center overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.14)]">
                     <div className="flex max-h-full max-w-full items-center justify-center">
-                       <img
-                            src={activeCard.imageSrc}
-                            alt={activeCard.title}
-                            loading="eager"
-                            decoding="sync"
-                            className="max-h-full max-w-full object-contain transform-gpu will-change-transform"
-                        />
+                      <img
+                        src={activeCard.imageSrc}
+                        alt={activeCard.title}
+                        loading="eager"
+                        decoding="sync"
+                        className="max-h-full max-w-full object-contain transform-gpu will-change-transform"
+                      />
                     </div>
 
                     <AnimatePresence>
-                    {showFallingLock && !showUnlockBurst ? (
+                      {showFallingLock && !showUnlockBurst ? (
                         <motion.div
-                        className="absolute left-1/2 top-[3%] z-20 flex h-24 w-24 -translate-x-1/2 items-center justify-center rounded-full border border-sky-200 bg-sky-100 shadow-[0_0_34px_rgba(56,189,248,0.45)]"
-                        initial={{ y: 0, scale: 1, rotate: -8, opacity: 1 }}
-                        animate={{ y: 205, scale: 1.25, rotate: 0, opacity: 1 }}
-                        exit={{ opacity: 0, scale: 1.45 }}
-                        transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+                          className="absolute left-1/2 top-[3%] z-20 flex h-24 w-24 -translate-x-1/2 items-center justify-center rounded-full border border-sky-200 bg-sky-100 shadow-[0_0_34px_rgba(56,189,248,0.45)]"
+                          initial={{ y: 0, scale: 1, rotate: -8, opacity: 1 }}
+                          animate={{
+                            y: 205,
+                            scale: 1.25,
+                            rotate: 0,
+                            opacity: 1,
+                          }}
+                          exit={{ opacity: 0, scale: 1.45 }}
+                          transition={{
+                            duration: 0.75,
+                            ease: [0.22, 1, 0.36, 1],
+                          }}
                         >
-                        <Lock className={`h-12 w-12 ${writtenCardStateMap[activeCard.category].iconText}`} />
+                          <Lock
+                            className={`h-12 w-12 ${writtenCardStateMap[activeCard.category].iconText}`}
+                          />
                         </motion.div>
-                    ) : null}
+                      ) : null}
                     </AnimatePresence>
 
                     <AnimatePresence>
-                    {showUnlockBurst ? (
+                      {showUnlockBurst ? (
                         <motion.div
-                        className="absolute left-1/2 top-1/2 z-30 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center"
-                        initial={{ opacity: 0, scale: 0.75 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 1.25 }}
-                        transition={{ duration: 0.35, ease: "easeOut" }}
+                          className="absolute left-1/2 top-1/2 z-30 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center"
+                          initial={{ opacity: 0, scale: 0.75 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 1.25 }}
+                          transition={{ duration: 0.35, ease: "easeOut" }}
                         >
-                        <motion.div
+                          <motion.div
                             className={`flex h-28 w-28 items-center justify-center rounded-full border shadow-[0_0_48px_rgba(56,189,248,0.55)] ${writtenCardStateMap[activeCard.category].iconBg}`}
                             animate={{
-                            scale: [1, 1.18, 1],
-                            rotate: [0, -8, 8, 0],
+                              scale: [1, 1.18, 1],
+                              rotate: [0, -8, 8, 0],
                             }}
                             transition={{ duration: 0.65, ease: "easeOut" }}
-                        >
-                            <Unlock className={`h-14 w-14 ${writtenCardStateMap[activeCard.category].iconText}`} />
-                        </motion.div>
+                          >
+                            <Unlock
+                              className={`h-14 w-14 ${writtenCardStateMap[activeCard.category].iconText}`}
+                            />
+                          </motion.div>
 
-                        <motion.div
+                          <motion.div
                             className="absolute h-40 w-40 rounded-full border-4 border-sky-200/70"
                             initial={{ scale: 0.5, opacity: 0.9 }}
                             animate={{ scale: 1.45, opacity: 0 }}
                             transition={{ duration: 0.65, ease: "easeOut" }}
-                        />
+                          />
 
-                        <motion.div
+                          <motion.div
                             className="absolute h-56 w-56 rounded-full bg-sky-200/20 blur-2xl"
                             initial={{ scale: 0.4, opacity: 0.8 }}
                             animate={{ scale: 1.4, opacity: 0 }}
                             transition={{ duration: 0.65, ease: "easeOut" }}
-                        />
+                          />
                         </motion.div>
-                    ) : null}
+                      ) : null}
                     </AnimatePresence>
-                    </div>
-                    
-                <Card className="border-slate-200 bg-white/92 text-slate-800 shadow-2xl backdrop-blur-xl">
-                  <CardContent className="p-6 md:p-7">
-                    <div className="mb-6 flex items-start justify-between gap-4">
-                      <div>
-                        <h1 className="mt-2 text-2xl font-bold">輸入卡牌資料</h1>
+                  </div>
+
+                  <Card className="border-slate-200 bg-white/92 text-slate-800 shadow-2xl backdrop-blur-xl">
+                    <CardContent className="p-6 md:p-7">
+                      <div className="mb-6 flex items-start justify-between gap-4">
+                        <div>
+                          <h1 className="mt-2 text-2xl font-bold">
+                            輸入卡牌資料
+                          </h1>
                         </div>
 
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        onClick={closeCard}
-                        disabled={isUnlocking}
-                        className="rounded-full text-black hover:bg-slate-100 hover:text-black"
-                      >
-                        <X className="h-5 w-5 text-black" />
-                      </Button>
-                    </div>
-
-                    <form
-                    onSubmit={handleSubmit}
-                    onClick={(e) => e.stopPropagation()}
-                    className="flex h-full flex-col space-y-5"
-                    >
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium text-slate-700">卡牌分類</label>
-                        <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
-                          {categoryMetaMap[activeCard.category].label}
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium text-slate-700">卡牌標題</label>
-                        <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
-                          {activeCard.unlocked ? activeCard.revealedTitle : activeCard.title}
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium text-slate-500">內容輸入</label>
-
-                            {activeCard.unlocked ? (
-                                <div className="mt-2 space-y-4">
-
-                                <textarea
-                                    value={inputValue}
-                                    readOnly
-                                    rows={6}
-                                    className="w-full rounded-2xl border border-slate-200 bg-slate-100 px-4 py-4 text-base text-slate-700 outline-none"
-                                />
-
-                                <textarea
-                                    value={newInputValue}
-                                    onChange={(e) => setNewInputValue(e.target.value)}
-                                    placeholder="請輸入要新增的內容..."
-                                    rows={5}
-                                    className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 text-base text-slate-800 outline-none placeholder:text-slate-400 focus:border-sky-300"
-                                />
-                                </div>
-                            ) : (
-                                <textarea
-                                value={inputValue}
-                                onChange={(e) => setInputValue(e.target.value)}
-                                placeholder="請輸入這張卡牌要顯示的內容..."
-                                rows={10}
-                                className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 text-base text-slate-800 outline-none placeholder:text-slate-400 focus:border-sky-300"
-                                />
-                            )}
-                      </div>
-
-                      <div className="mt-auto flex justify-end gap-3">
                         <Button
+                          type="button"
+                          variant="ghost"
+                          onClick={closeCard}
+                          disabled={isUnlocking}
+                          className="rounded-full text-black hover:bg-slate-100 hover:text-black"
+                        >
+                          <X className="h-5 w-5 text-black" />
+                        </Button>
+                      </div>
+
+                      <form
+                        onSubmit={handleSubmit}
+                        onClick={(e) => e.stopPropagation()}
+                        className="flex h-full flex-col space-y-5"
+                      >
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium text-slate-700">
+                            卡牌分類
+                          </label>
+                          <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+                            {categoryMetaMap[activeCard.category].label}
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium text-slate-700">
+                            卡牌標題
+                          </label>
+                          <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+                            {activeCard.unlocked
+                              ? activeCard.revealedTitle
+                              : activeCard.title}
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium text-slate-500">
+                            內容輸入
+                          </label>
+
+                          {activeCard.unlocked ? (
+                            <div className="mt-2 space-y-4">
+                              <textarea
+                                value={inputValue}
+                                readOnly
+                                rows={6}
+                                className="w-full rounded-2xl border border-slate-200 bg-slate-100 px-4 py-4 text-base text-slate-700 outline-none"
+                              />
+
+                              <textarea
+                                value={newInputValue}
+                                onChange={(e) =>
+                                  setNewInputValue(e.target.value)
+                                }
+                                placeholder="請輸入你/妳的新看法..."
+                                rows={5}
+                                className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 text-base text-slate-800 outline-none placeholder:text-slate-400 focus:border-sky-300"
+                              />
+                            </div>
+                          ) : (
+                            <textarea
+                              value={inputValue}
+                              onChange={(e) => setInputValue(e.target.value)}
+                              placeholder="請告訴我，你/妳看到了甚麼..."
+                              rows={10}
+                              className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 text-base text-slate-800 outline-none placeholder:text-slate-400 focus:border-sky-300"
+                            />
+                          )}
+                        </div>
+
+                        <div className="mt-auto flex justify-end gap-3">
+                          <Button
                             type="submit"
                             onClick={(e) => e.stopPropagation()}
-                          disabled={
-                            isUnlocking ||
-                            (activeCard.unlocked ? !newInputValue.trim() : !inputValue.trim())
+                            disabled={
+                              isUnlocking ||
+                              (activeCard.unlocked
+                                ? !newInputValue.trim()
+                                : !inputValue.trim())
                             }
-                          className="rounded-2xl bg-sky-500 px-5 py-6 text-white hover:bg-sky-400"
-                        >
-                          <Send className="mr-2 h-4 w-4" />
-                          {isUnlocking
-                            ? activeCard.unlocked
-                            ? "更新中..."
-                            : "解鎖中..."
-                            : activeCard.unlocked
-                            ? "更新內容"
-                            : "送出並解鎖"}
-                        </Button>
+                            className="rounded-2xl bg-sky-500 px-5 py-6 text-white hover:bg-sky-400"
+                          >
+                            <Send className="mr-2 h-4 w-4" />
+                            {isUnlocking
+                              ? activeCard.unlocked
+                                ? "更新中..."
+                                : "解鎖中..."
+                              : activeCard.unlocked
+                                ? "更新內容"
+                                : "送出並解鎖"}
+                          </Button>
                         </div>
-                    </form>
-                  </CardContent>
-                </Card>
-              </div>
-              ) : (
-            <div className="flex h-[520px] items-center justify-center rounded-[32px] bg-white shadow-[0_20px_60px_rgba(15,23,42,0.14)]">
-                <div className="text-sm font-medium text-slate-500">
-                載入卡牌中...
+                      </form>
+                    </CardContent>
+                  </Card>
                 </div>
-            </div>
-            )}
+              ) : (
+                <div className="flex h-[520px] items-center justify-center rounded-[32px] bg-white shadow-[0_20px_60px_rgba(15,23,42,0.14)]">
+                  <div className="text-sm font-medium text-slate-500">
+                    載入卡牌中...
+                  </div>
+                </div>
+              )}
             </motion.div>
           </motion.div>
         ) : null}
