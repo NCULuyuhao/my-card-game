@@ -181,6 +181,35 @@ function parseJSON(data, fallback) {
   }
 }
 
+const BARRAGE_MAX_LENGTH = 20;
+
+const BAD_WORDS = [
+  "幹", "靠", "操", "淦", "肏", "屌", "雞掰", "機掰", "靠北", "靠杯", "靠腰",
+  "媽的", "他媽", "他媽的", "三小", "殺小", "白癡", "智障", "腦殘", "低能",
+  "垃圾", "廢物", "去死", "王八蛋", "混蛋", "爛人", "醜八怪", "北七", "87",
+  "哭爸", "哭夭", "賤", "賤人", "死胖子", "死矮子", "臭三八", "破麻",
+  "fuck", "fuk", "fck", "shit", "bitch", "asshole", "idiot", "stupid", "damn",
+  "trash", "loser", "kill yourself", "kys",
+];
+
+function normalizeBarrageText(text) {
+  return String(text || "")
+    .toLowerCase()
+    .replace(/\s+/g, "")
+    .replace(/[~!@#$%^&*()_+\-={}\[\]:";'<>?,.\/\\|，。！？、；：「」『』（）【】《》]/g, "")
+    .replace(/0/g, "o")
+    .replace(/1/g, "i")
+    .replace(/3/g, "e")
+    .replace(/4/g, "a")
+    .replace(/5/g, "s")
+    .replace(/@/g, "a");
+}
+
+function containsBadWords(text) {
+  const normalized = normalizeBarrageText(text);
+  return BAD_WORDS.some((word) => normalized.includes(normalizeBarrageText(word)));
+}
+
 async function insertMapActionLog({
   userId,
   username,
@@ -519,7 +548,8 @@ app.get("/api/user-data", authenticateToken, async (req, res) => {
         final_summaries,
         earned_titles,
         unlocked_cards,
-        map_state
+        map_state,
+        barrage_coins
       FROM user_game_data
       WHERE user_id = ?`,
       [req.user.id],
@@ -533,6 +563,7 @@ app.get("/api/user-data", authenticateToken, async (req, res) => {
         earnedTitles: [],
         unlockedCards: [],
         mapState: {},
+        barrageCoins: 0,
       });
     }
 
@@ -543,6 +574,7 @@ app.get("/api/user-data", authenticateToken, async (req, res) => {
       earnedTitles: parseJSON(rows[0].earned_titles, []),
       unlockedCards: parseJSON(rows[0].unlocked_cards, []),
       mapState: parseJSON(rows[0].map_state, {}),
+      barrageCoins: rows[0].barrage_coins || 0,
     });
   } catch (error) {
     console.error(error);
@@ -628,6 +660,19 @@ app.put("/api/user-data", authenticateToken, async (req, res) => {
     // 否則 textarea 每打一個字都會產生一筆「學生打字」紀錄。
     // 文字歷程改由前端在學生按「下一步／完成」時呼叫 /api/activity-log 記一筆完整內容。
     if (finalSummarySubmitted) {
+      await pool.query(
+        "UPDATE user_game_data SET barrage_coins = LEAST(COALESCE(barrage_coins, 0) + 3, 10) WHERE user_id = ?",
+        [userId],
+      );
+
+      await insertActivityLog({
+        ...actor,
+        eventType: "coin_reward",
+        eventLabel: "完成探究調查書獲得 3 coin",
+        targetType: "barrage_coin",
+        newValue: { amount: 3 },
+      });
+
       await insertActivityLog({
         ...actor,
         eventType: "final_summary_submit",
@@ -667,7 +712,15 @@ app.put("/api/user-data", authenticateToken, async (req, res) => {
       });
     }
 
-    res.json({ message: "儲存成功" });
+    const [coinRows] = await pool.query(
+      "SELECT barrage_coins FROM user_game_data WHERE user_id = ?",
+      [userId],
+    );
+
+    res.json({
+      message: "儲存成功",
+      barrageCoins: coinRows[0]?.barrage_coins || 0,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "伺服器錯誤" });
@@ -1335,6 +1388,157 @@ app.put(
     }
   },
 );
+
+app.get("/api/barrage-status", authenticateToken, async (req, res) => {
+  try {
+    await pool.query(
+      `INSERT INTO user_game_data (user_id, barrage_coins, map_state)
+       VALUES (?, 0, JSON_OBJECT())
+       ON DUPLICATE KEY UPDATE barrage_coins = LEAST(COALESCE(barrage_coins, 0), 10)`,
+      [req.user.id],
+    );
+
+    const [rows] = await pool.query(
+      "SELECT barrage_coins FROM user_game_data WHERE user_id = ?",
+      [req.user.id],
+    );
+
+    res.json({ coins: rows[0]?.barrage_coins || 0 });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "讀取彈幕 coin 失敗" });
+  }
+});
+
+app.get("/api/barrages/latest-id", authenticateToken, async (req, res) => {
+  try {
+    const [rows] = await pool.query(
+      "SELECT COALESCE(MAX(id), 0) AS latestId FROM barrages",
+    );
+
+    res.json({ latestId: Number(rows[0]?.latestId) || 0 });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "讀取最新彈幕 ID 失敗" });
+  }
+});
+
+app.get("/api/barrages", authenticateToken, async (req, res) => {
+  try {
+    const afterId = Math.max(Number(req.query.afterId) || 0, 0);
+
+    const [rows] = await pool.query(
+      `SELECT
+         id,
+         user_id AS userId,
+         username,
+         content,
+         created_at AS createdAt
+       FROM barrages
+       WHERE id > ?
+       ORDER BY id ASC
+       LIMIT 20`,
+      [afterId],
+    );
+
+    res.json({ barrages: rows });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "讀取彈幕失敗" });
+  }
+});
+
+app.post("/api/barrages", authenticateToken, async (req, res) => {
+  const connection = await pool.getConnection();
+
+  try {
+    const content = String(req.body?.content || "").trim();
+
+    if (!content) {
+      return res.status(400).json({ message: "請輸入彈幕內容" });
+    }
+
+    if (content.length > BARRAGE_MAX_LENGTH) {
+      return res.status(400).json({ message: "彈幕最多 20 個字" });
+    }
+
+    if (containsBadWords(content)) {
+      return res.status(400).json({
+        message: "彈幕內容包含不適當字詞，請重新輸入",
+      });
+    }
+
+    await connection.beginTransaction();
+
+    const [userRows] = await connection.query(
+      `SELECT u.username, u.role, u.group_id, g.barrage_coins
+       FROM users u
+       LEFT JOIN user_game_data g ON u.id = g.user_id
+       WHERE u.id = ?
+       FOR UPDATE`,
+      [req.user.id],
+    );
+
+    const user = userRows[0];
+    const role = user?.role || req.user.role || "student";
+
+    if (role === "teacher") {
+      await connection.rollback();
+      return res.status(403).json({ message: "教師不能使用學生彈幕 coin" });
+    }
+
+    const coins = user?.barrage_coins || 0;
+
+    if (coins < 1) {
+      await connection.rollback();
+      return res.status(400).json({
+        message: "coin 不足，完成探究調查書可以獲得 3 coin",
+      });
+    }
+
+    await connection.query(
+      "UPDATE user_game_data SET barrage_coins = barrage_coins - 1 WHERE user_id = ?",
+      [req.user.id],
+    );
+
+    const [result] = await connection.query(
+      "INSERT INTO barrages (user_id, username, content) VALUES (?, ?, ?)",
+      [req.user.id, user?.username || req.user.username || null, content],
+    );
+
+    await insertActivityLog({
+      userId: req.user.id,
+      username: user?.username || req.user.username || null,
+      role,
+      groupId: user?.group_id || null,
+      eventType: "barrage_send",
+      eventLabel: "送出彈幕",
+      targetType: "barrage",
+      targetId: String(result.insertId),
+      newValue: { content, cost: 1, coinsAfter: coins - 1 },
+    });
+
+    await connection.commit();
+
+    res.json({
+      message: "彈幕已送出",
+      coins: coins - 1,
+      barrage: {
+        id: result.insertId,
+        userId: req.user.id,
+        username: user?.username || req.user.username || null,
+        content,
+        createdAt: new Date().toISOString(),
+      },
+    });
+  } catch (error) {
+    await connection.rollback();
+    console.error(error);
+    res.status(500).json({ message: "送出彈幕失敗" });
+  } finally {
+    connection.release();
+  }
+});
 
 app.post("/api/activity-log", authenticateToken, async (req, res) => {
   try {

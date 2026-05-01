@@ -5,6 +5,7 @@ import MiaoliMap, { labelPositions, regions } from "./MiaoliMap";
 import AuthPage from "../AuthPage";
 import ControlPage from "./ControlPage";
 import BehaviorRecord from "./BehaviorRecord";
+import BarrageLayer from "./BarrageLayer";
 
 type Page =
   | "home"
@@ -1871,6 +1872,8 @@ export default function HomePage() {
 
   return (
     <>
+      <BarrageLayer token={token} />
+
       <AnimatePresence>
         {titleRewardToast ? (
           <TitleRewardToast
