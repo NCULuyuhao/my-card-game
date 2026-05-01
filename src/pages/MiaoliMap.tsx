@@ -1383,27 +1383,7 @@ export default function MiaoliMap({
     });
   }
 
-  function clearAll() {
-    if (activeMode === "personal") {
-      setPersonalState((prev) => {
-        if (Object.keys(prev).length === 0) return prev;
 
-        notifyChange({});
-        return {};
-      });
-      return;
-    }
-
-    Object.keys(manualDecisionState).forEach((districtName) => {
-      onManualDecisionChange?.({
-        mode: activeMode,
-        districtName,
-        choice: "",
-      });
-    });
-
-    setManualDecisionState({});
-  }
 
   function changeMode(nextMode: MapMode) {
     setActiveMode(nextMode);
