@@ -46,15 +46,32 @@ type FinalSummary = {
   finalDiscovery: string;
 };
 
-type LockedFlipCardsPageProps = {
+type ActivityLogPayload = {
+  eventType: string;
+  eventLabel?: string;
+  targetType?: string;
+  targetId?: string;
+  previousValue?: unknown;
+  newValue?: unknown;
+  metadata?: Record<string, unknown>;
+};
+
+type InquiryDataProps = {
   studentThought: string;
   studentPlan: string;
   onSubmitSummary: (summary: FinalSummary) => void;
   onTitleRewardsChange?: (titles: TitleReward[]) => void;
-  unlockedCardIds: Array<string | { id: string; content?: string; unlockedAt?: number | null }>;
+  onActivityLog?: (payload: ActivityLogPayload) => void;
+  unlockedCardIds: Array<
+    string | { id: string; content?: string; unlockedAt?: number | null }
+  >;
   setUnlockedCardIds: React.Dispatch<
-  React.SetStateAction<Array<string | { id: string; content?: string; unlockedAt?: number | null }>>
->;
+    React.SetStateAction<
+      Array<
+        string | { id: string; content?: string; unlockedAt?: number | null }
+      >
+    >
+  >;
 };
 
 type CollectionSortMode = "latest" | "water" | "land" | "leopard" | "rumor";
@@ -1831,14 +1848,15 @@ const MemoizedTrophyPanel = memo(TrophyPanel);
 const MemoizedTitleRewardCelebration = memo(TitleRewardCelebration);
 const MemoizedCollectedCardPreview = memo(CollectedCardPreview);
 
-export default function LockedFlipCardsPage({
+export default function InquiryData({
   studentThought,
   studentPlan,
   onSubmitSummary,
   onTitleRewardsChange,
   unlockedCardIds,
   setUnlockedCardIds,
-}: LockedFlipCardsPageProps){
+  onActivityLog,
+}: InquiryDataProps) {
   const [isFinished, setIsFinished] = useState(false);
   const [finalDiscovery, setFinalDiscovery] = useState("");
   const [showFinishConfirm, setShowFinishConfirm] = useState(false);
@@ -1850,32 +1868,32 @@ export default function LockedFlipCardsPage({
   );
   const [currentRoundCardIds, setCurrentRoundCardIds] = useState<string[]>([]);
   const [cards, setCards] = useState<GameCard[]>(createAllCards);
- useEffect(() => {
-  if (unlockedCardIds.length === 0) return;
+  useEffect(() => {
+    if (unlockedCardIds.length === 0) return;
 
-  setCards((prev) =>
-    prev.map((card) => {
-      const savedCard = unlockedCardIds.find((item) =>
-        typeof item === "string" ? item === card.id : item.id === card.id,
-      );
+    setCards((prev) =>
+      prev.map((card) => {
+        const savedCard = unlockedCardIds.find((item) =>
+          typeof item === "string" ? item === card.id : item.id === card.id,
+        );
 
-      if (!savedCard) return card;
+        if (!savedCard) return card;
 
-      return {
-        ...card,
-        unlocked: true,
-        content:
-          typeof savedCard === "string"
-            ? card.content
-            : savedCard.content ?? card.content,
-        unlockedAt:
-          typeof savedCard === "string"
-            ? card.unlockedAt ?? Date.now()
-            : savedCard.unlockedAt ?? card.unlockedAt ?? Date.now(),
-      };
-    }),
-  );
-}, [unlockedCardIds]);
+        return {
+          ...card,
+          unlocked: true,
+          content:
+            typeof savedCard === "string"
+              ? card.content
+              : (savedCard.content ?? card.content),
+          unlockedAt:
+            typeof savedCard === "string"
+              ? (card.unlockedAt ?? Date.now())
+              : (savedCard.unlockedAt ?? card.unlockedAt ?? Date.now()),
+        };
+      }),
+    );
+  }, [unlockedCardIds]);
 
   const [activeCategory, setActiveCategory] = useState<CategoryKey | null>(
     null,
@@ -1940,30 +1958,30 @@ export default function LockedFlipCardsPage({
   const totalCardCount = cards.length;
 
   useEffect(() => {
-  onTitleRewardsChange?.(earnedTitles);
-}, [earnedTitles, onTitleRewardsChange]);
+    onTitleRewardsChange?.(earnedTitles);
+  }, [earnedTitles, onTitleRewardsChange]);
 
   useEffect(() => {
-  const rewardChecks = getRewardChecks(unlockedCountByCategory);
+    const rewardChecks = getRewardChecks(unlockedCountByCategory);
 
-  const newlyEarned = rewardChecks.filter(({ reward, isUnlocked }) => {
-    const alreadyHas = earnedTitles.some((title) => title.id === reward.id);
-    return isUnlocked && !alreadyHas;
-  });
+    const newlyEarned = rewardChecks.filter(({ reward, isUnlocked }) => {
+      const alreadyHas = earnedTitles.some((title) => title.id === reward.id);
+      return isUnlocked && !alreadyHas;
+    });
 
-  if (newlyEarned.length === 0) return;
+    if (newlyEarned.length === 0) return;
 
-  setEarnedTitles((prev) => [
-    ...prev,
-    ...newlyEarned.map((item) => item.reward),
-  ]);
+    setEarnedTitles((prev) => [
+      ...prev,
+      ...newlyEarned.map((item) => item.reward),
+    ]);
 
-  if (shouldShowTitleRewardAnimationRef.current) {
-    setPendingReward(newlyEarned[0].reward);
-    setHasNewTitleReward(true);
-    shouldShowTitleRewardAnimationRef.current = false;
-  }
-}, [earnedTitles, unlockedCountByCategory]);
+    if (shouldShowTitleRewardAnimationRef.current) {
+      setPendingReward(newlyEarned[0].reward);
+      setHasNewTitleReward(true);
+      shouldShowTitleRewardAnimationRef.current = false;
+    }
+  }, [earnedTitles, unlockedCountByCategory]);
 
   useEffect(() => {
     if (!pendingReward) return;
@@ -1997,15 +2015,35 @@ export default function LockedFlipCardsPage({
 
       setActiveCategory(category);
       setCategoryFlipKey(category);
+      onActivityLog?.({
+        eventType: "card_category_change",
+        eventLabel: "切換卡牌分類",
+        targetType: "cardCategory",
+        targetId: category,
+        previousValue: activeCategory,
+        newValue: category,
+      });
 
       window.setTimeout(() => {
         setCategoryFlipKey(null);
       }, 900);
     },
-    [activeCategory],
+    [activeCategory, onActivityLog],
   );
 
   const openCard = useCallback((card: GameCard) => {
+    onActivityLog?.({
+      eventType: "card_open",
+      eventLabel: "打開數據卡牌",
+      targetType: "card",
+      targetId: card.id,
+      metadata: {
+        title: card.revealedTitle,
+        category: card.category,
+        unlocked: card.unlocked,
+      },
+    });
+
     setIsModalReady(false);
     setActiveId(card.id);
     setIsUnlocking(false);
@@ -2017,7 +2055,7 @@ export default function LockedFlipCardsPage({
         setIsModalReady(true);
       });
     });
-  }, []);
+  }, [onActivityLog]);
 
   const closeCard = useCallback(() => {
     if (isUnlocking) return;
@@ -2028,11 +2066,23 @@ export default function LockedFlipCardsPage({
 
   const handleOpenCollectedPanel = useCallback(() => {
     setHasNewCollectedContent(false);
-  }, []);
+    onActivityLog?.({
+      eventType: "collection_panel_open",
+      eventLabel: "打開卡牌內容收藏",
+      targetType: "panel",
+      targetId: "collectedCards",
+    });
+  }, [onActivityLog]);
 
   const handleOpenTrophyPanel = useCallback(() => {
     setHasNewTitleReward(false);
-  }, []);
+    onActivityLog?.({
+      eventType: "title_panel_open",
+      eventLabel: "打開稱號收藏",
+      targetType: "panel",
+      targetId: "titles",
+    });
+  }, [onActivityLog]);
 
   const applyPendingCardUpdate = useCallback(() => {
     const pending = pendingCardUpdateRef.current;
@@ -2063,19 +2113,23 @@ export default function LockedFlipCardsPage({
       ),
     );
     setUnlockedCardIds((prev) => {
-    const next = prev.filter((item) =>
-      typeof item === "string" ? item !== targetCard.id : item.id !== targetCard.id,
-    );
+      const next = prev.filter((item) =>
+        typeof item === "string"
+          ? item !== targetCard.id
+          : item.id !== targetCard.id,
+      );
 
-    return [
-      ...next,
-      {
-        id: targetCard.id,
-        content,
-        unlockedAt: wasUnlocked ? targetCard.unlockedAt ?? Date.now() : Date.now(),
-      },
-    ];
-  });
+      return [
+        ...next,
+        {
+          id: targetCard.id,
+          content,
+          unlockedAt: wasUnlocked
+            ? (targetCard.unlockedAt ?? Date.now())
+            : Date.now(),
+        },
+      ];
+    });
 
     if (!wasUnlocked) {
       shouldShowTitleRewardAnimationRef.current = true;
@@ -2124,19 +2178,34 @@ export default function LockedFlipCardsPage({
       );
       setHasNewCollectedContent(true);
       setUnlockedCardIds((prev) => {
-      const next = prev.filter((item) =>
-        typeof item === "string" ? item !== latestCard.id : item.id !== latestCard.id,
-      );
+        const next = prev.filter((item) =>
+          typeof item === "string"
+            ? item !== latestCard.id
+            : item.id !== latestCard.id,
+        );
 
-      return [
-        ...next,
-        {
-          id: latestCard.id,
-          content,
-          unlockedAt: latestCard.unlockedAt ?? Date.now(),
+        return [
+          ...next,
+          {
+            id: latestCard.id,
+            content,
+            unlockedAt: latestCard.unlockedAt ?? Date.now(),
+          },
+        ];
+      });
+
+      onActivityLog?.({
+        eventType: "card_content_update",
+        eventLabel: "更新已解鎖卡牌文字",
+        targetType: "card",
+        targetId: latestCard.id,
+        previousValue: latestCard.content,
+        newValue: content,
+        metadata: {
+          title: latestCard.revealedTitle,
+          category: latestCard.category,
         },
-      ];
-    });
+      });
       return;
     }
     if (!inputValue.trim()) return;
@@ -2161,6 +2230,18 @@ export default function LockedFlipCardsPage({
       wasUnlocked: false,
     };
 
+    onActivityLog?.({
+      eventType: "card_unlock",
+      eventLabel: "第一次輸入並解鎖卡牌",
+      targetType: "card",
+      targetId: targetCard.id,
+      newValue: content,
+      metadata: {
+        title: targetCard.revealedTitle,
+        category: targetCard.category,
+      },
+    });
+
     setShowFallingLock(false);
     setShowUnlockBurst(false);
     setIsUnlocking(false);
@@ -2171,7 +2252,7 @@ export default function LockedFlipCardsPage({
 
   const unlockedCards = cards.filter((card) => card.unlocked);
   const unlockedCardsWithContent = unlockedCards.filter(
-  (card) => card.content.trim() && currentRoundCardIds.includes(card.id),
+    (card) => card.content.trim() && currentRoundCardIds.includes(card.id),
   );
 
   const confirmedEvidenceCards = unlockedCardsWithContent.filter((card) =>
@@ -2181,6 +2262,13 @@ export default function LockedFlipCardsPage({
   const isFinalDiscoveryLocked = confirmedEvidenceCards.length === 0;
 
   function toggleEvidenceCard(cardId: string) {
+    onActivityLog?.({
+      eventType: "evidence_card_toggle",
+      eventLabel: "勾選或取消證據卡牌",
+      targetType: "evidenceCard",
+      targetId: cardId,
+    });
+
     setSelectedEvidenceIds((prev) =>
       prev.includes(cardId)
         ? prev.filter((id) => id !== cardId)
@@ -2190,6 +2278,12 @@ export default function LockedFlipCardsPage({
 
   function confirmEvidenceCards() {
     setConfirmedEvidenceIds(selectedEvidenceIds);
+    onActivityLog?.({
+      eventType: "evidence_cards_confirm",
+      eventLabel: "確認數據探究證據卡牌",
+      targetType: "evidenceCards",
+      newValue: selectedEvidenceIds,
+    });
   }
   function toggleEvidenceFlip(cardId: string) {
     setFlippedEvidenceIds((prev) =>
@@ -2202,6 +2296,14 @@ export default function LockedFlipCardsPage({
   function submitFinalSummary() {
     if (!finalDiscovery.trim()) return;
     if (confirmedEvidenceCards.length === 0) return;
+
+    onActivityLog?.({
+      eventType: "final_discovery_submit",
+      eventLabel: "送出最終探究文字",
+      targetType: "finalDiscovery",
+      newValue: finalDiscovery.trim(),
+      metadata: { evidenceCardIds: confirmedEvidenceCards.map((card) => card.id) },
+    });
 
     onSubmitSummary({
       studentThought,
@@ -2261,7 +2363,7 @@ export default function LockedFlipCardsPage({
                       setShowSubmitConfirm(false);
                       submitFinalSummary();
                     }}
-                  className="rounded-xl border border-[#8f2f2f] bg-[#7f2f2f] px-5 py-3 text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#9b3b3b] active:translate-y-0"
+                    className="rounded-xl border border-[#8f2f2f] bg-[#7f2f2f] px-5 py-3 text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#9b3b3b] active:translate-y-0"
                   >
                     確認送出
                   </Button>
@@ -2599,8 +2701,8 @@ export default function LockedFlipCardsPage({
                   type="button"
                   onClick={() => setShowFinishConfirm(false)}
                   className="rounded-xl border border-[#8f2f2f] bg-[#7f2f2f] px-5 py-3 text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#9b3b3b] active:translate-y-0"
-          >
-                繼續探究
+                >
+                  繼續探究
                 </Button>
 
                 <Button
@@ -2610,7 +2712,7 @@ export default function LockedFlipCardsPage({
                     setIsFinished(true);
                   }}
                   className="rounded-xl border border-[#8f2f2f] bg-[#7f2f2f] px-5 py-3 text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#9b3b3b] active:translate-y-0"
-          >
+                >
                   確認結束
                 </Button>
               </div>
