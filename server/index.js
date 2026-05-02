@@ -6,7 +6,7 @@ require("dotenv").config();
 
 const pool = require("./db");
 
-const app = express();
+const app = express(); 
 app.use(cors());
 app.use(express.json({ limit: "2mb" }));
 
@@ -1485,6 +1485,7 @@ app.get("/api/teacher/teacher-activity-logs", authenticateToken, requireTeacher,
     res.status(500).json({ message: "讀取教師活動紀錄失敗" });
   }
 });
+
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

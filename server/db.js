@@ -3,11 +3,25 @@ require("dotenv").config();
 
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
+  port: Number(process.env.DB_PORT), // ⭐ 這一行一定要加
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   waitForConnections: true,
   connectionLimit: 10,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
 
 module.exports = pool;
+
+// 測試連線
+pool.getConnection()
+  .then(conn => {
+    console.log("✅ 成功連到雲端資料庫！");
+    conn.release();
+  })
+  .catch(err => {
+    console.error("❌ 資料庫連線失敗:", err);
+  });
