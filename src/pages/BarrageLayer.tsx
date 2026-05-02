@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:3001";
 const COIN_REFRESH_MS = 3000;
@@ -69,10 +69,7 @@ export default function BarrageLayer({ token }: BarrageLayerProps) {
   const visibleIdsRef = useRef<Set<number>>(new Set());
   const trackBusyUntilRef = useRef<number[]>(Array(MAX_TRACKS).fill(0));
 
-  const canSend = useMemo(
-    () => Boolean(token && text.trim() && coins > 0 && !isSending),
-    [token, text, coins, isSending],
-  );
+  
 
   const resetBarrageState = useCallback(() => {
     lastIdRef.current = 0;
