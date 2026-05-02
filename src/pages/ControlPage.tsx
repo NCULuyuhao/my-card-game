@@ -33,22 +33,55 @@ type ControlPageProps = {
 
 const STORAGE_KEY = "miaoli-teacher-groups-v1";
 const MAX_GROUP_SIZE = 6;
-const API_BASE = "http://localhost:3001";
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:3001";
 
 const GROUPS: Group[] = [
-  { id: "environment", name: "環境保育聯盟", icon: "🌿", color: "border-emerald-300 bg-emerald-50" },
-  { id: "government", name: "地方政府局", icon: "🚧", color: "border-amber-300 bg-amber-50" },
-  { id: "farming", name: "農牧產業協會", icon: "🐄", color: "border-orange-300 bg-orange-50" },
-  { id: "animal", name: "動物保護團體", icon: "🐕", color: "border-rose-300 bg-rose-50" },
-  { id: "greenEnergy", name: "綠能科技企業", icon: "☀️", color: "border-yellow-300 bg-yellow-50" },
-  { id: "education", name: "教育推動單位", icon: "🎓", color: "border-sky-300 bg-sky-50" },
+  {
+    id: "environment",
+    name: "環境保育聯盟",
+    icon: "🌿",
+    color: "border-emerald-300 bg-emerald-50",
+  },
+  {
+    id: "government",
+    name: "地方政府局",
+    icon: "🚧",
+    color: "border-amber-300 bg-amber-50",
+  },
+  {
+    id: "farming",
+    name: "農牧產業協會",
+    icon: "🐄",
+    color: "border-orange-300 bg-orange-50",
+  },
+  {
+    id: "animal",
+    name: "動物保護團體",
+    icon: "🐕",
+    color: "border-rose-300 bg-rose-50",
+  },
+  {
+    id: "greenEnergy",
+    name: "綠能科技企業",
+    icon: "☀️",
+    color: "border-yellow-300 bg-yellow-50",
+  },
+  {
+    id: "education",
+    name: "教育推動單位",
+    icon: "🎓",
+    color: "border-sky-300 bg-sky-50",
+  },
 ];
 
 function loadPlayers(): Player[] {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     const parsed = saved ? (JSON.parse(saved) as Player[]) : [];
-    return parsed.map((player) => ({ ...player, isGroupLeader: Boolean(player.isGroupLeader) }));
+    return parsed.map((player) => ({
+      ...player,
+      isGroupLeader: Boolean(player.isGroupLeader),
+    }));
   } catch {
     return [];
   }
@@ -66,7 +99,12 @@ function normalizePlayers(players: Player[]): Player[] {
   }));
 }
 
-export default function ControlPage({ onBack, token, initialPlayers, onSaveGroups }: ControlPageProps) {
+export default function ControlPage({
+  onBack,
+  token,
+  initialPlayers,
+  onSaveGroups,
+}: ControlPageProps) {
   const [players, setPlayers] = useState<Player[]>(() =>
     initialPlayers ? normalizePlayers(initialPlayers) : loadPlayers(),
   );
@@ -92,8 +130,12 @@ export default function ControlPage({ onBack, token, initialPlayers, onSaveGroup
     return result;
   }, [players]);
 
-  const assignedCount = players.filter((player) => player.groupId !== "unassigned").length;
-  const leaderCount = players.filter((player) => player.groupId !== "unassigned" && player.isGroupLeader).length;
+  const assignedCount = players.filter(
+    (player) => player.groupId !== "unassigned",
+  ).length;
+  const leaderCount = players.filter(
+    (player) => player.groupId !== "unassigned" && player.isGroupLeader,
+  ).length;
 
   useEffect(() => {
     if (!token) {

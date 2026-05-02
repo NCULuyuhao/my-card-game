@@ -18,6 +18,7 @@ type Page =
   | "teacherStudentData";
 type MapChoice = "保育" | "開發" | "我不知道";
 type MapState = Record<string, MapChoice>;
+type SuspectVoteTotals = Record<string, number>;
 
 function stableMapText(map: MapState) {
   return JSON.stringify(
@@ -39,6 +40,12 @@ type FinalSummary = {
   studentPlan: string;
   evidenceCards: EvidenceCardSummary[];
   finalDiscovery: string;
+};
+
+type InquiryPlanRecord = {
+  studentThought: string;
+  studentPlan: string;
+  createdAt: string;
 };
 
 type TitleReward = {
@@ -103,6 +110,18 @@ function getMapDecisionChoice(decision?: RegionDecisionValue): MapChoice | "" {
 
   return decision?.finalChoice || decision?.result || "";
 }
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:3001";
+
+
+const SUSPECT_GROUPS = [
+  { id: "environment", name: "🌿環境保育聯盟", shortName: "環境保育聯盟" },
+  { id: "government", name: "🚧地方政府局", shortName: "地方政府局" },
+  { id: "farming", name: "🐄農牧產業協會", shortName: "農牧產業協會" },
+  { id: "animal", name: "🐕動物保護團體", shortName: "動物保護團體" },
+  { id: "greenEnergy", name: "☀️綠能科技企業", shortName: "綠能科技企業" },
+  { id: "education", name: "🎓教育推動單位", shortName: "教育推動單位" },
+];
 
 const GAME_BTN =
   "relative overflow-hidden rounded-xl border px-5 py-3 text-sm font-semibold tracking-[0.12em] shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:scale-[0.98]";
@@ -277,8 +296,18 @@ export default function HomePage() {
   const [page, setPage] = useState<Page>("home");
   const [studentThought, setStudentThought] = useState("");
   const [studentPlan, setStudentPlan] = useState("");
+  const [inquiryPlans, setInquiryPlans] = useState<InquiryPlanRecord[]>([]);
   const [finalSummaries, setFinalSummaries] = useState<FinalSummary[]>([]);
   const [isMapTaskOpen, setIsMapTaskOpen] = useState(false);
+  const [isInquiryTaskOpen, setIsInquiryTaskOpen] = useState(true);
+  const [isSuspectVotingOpen, setIsSuspectVotingOpen] = useState(false);
+  const [isSuspectVotingFinalized, setIsSuspectVotingFinalized] = useState(false);
+  const [suspectVoteTotals, setSuspectVoteTotals] = useState<SuspectVoteTotals>({});
+  const [suspectTotalVoters, setSuspectTotalVoters] = useState(0);
+  const [suspectTotalEligibleVoters, setSuspectTotalEligibleVoters] = useState(0);
+  const [mySuspectVotes, setMySuspectVotes] = useState<string[]>([]);
+  const [draftSuspectVotes, setDraftSuspectVotes] = useState<string[]>([]);
+  const [suspectVoteMessage, setSuspectVoteMessage] = useState("");
   const [reportPageIndex, setReportPageIndex] = useState(0);
   const [mapPreviewPageIndex, setMapPreviewPageIndex] = useState(0);
   const [reportDragOffset, setReportDragOffset] = useState(0);
@@ -316,6 +345,33 @@ export default function HomePage() {
     {},
   );
   const isTeacher = currentUser?.role === "teacher";
+  const topSuspectVoteCount = Math.max(0, ...Object.values(suspectVoteTotals));
+  const topSuspectGroupIds = topSuspectVoteCount > 0
+    ? Object.entries(suspectVoteTotals)
+        .filter(([, count]) => count === topSuspectVoteCount)
+        .map(([groupId]) => groupId)
+    : [];
+  const shouldShowSuspectVoteModal =
+    Boolean(token) &&
+    currentUser?.role === "student" &&
+    isSuspectVotingOpen &&
+    !isSuspectVotingFinalized &&
+    mySuspectVotes.length === 0;
+  const shouldShowFinalSuspectResult = isSuspectVotingFinalized && topSuspectGroupIds.length > 0;
+  const finalSuspectNames = topSuspectGroupIds
+    .map((groupId) => SUSPECT_GROUPS.find((item) => item.id === groupId)?.shortName)
+    .filter(Boolean) as string[];
+  const finalSuspectCount = finalSuspectNames.length;
+  const finalSuspectColumnCount =
+    finalSuspectCount <= 1 ? 1 :
+    finalSuspectCount <= 4 ? 2 : 3;
+  const finalSuspectFontSize =
+    finalSuspectCount <= 1 ? 24 :
+    finalSuspectCount === 2 ? 20 :
+    finalSuspectCount <= 4 ? 16 : 12;
+  const finalSuspectLineHeight =
+    finalSuspectCount <= 2 ? 1.18 :
+    finalSuspectCount <= 4 ? 1.12 : 1.05;
   const markedMapCount = Object.values(mapState).filter(
     (value) => value === "保育" || value === "開發" || value === "我不知道",
   ).length;
@@ -455,7 +511,7 @@ export default function HomePage() {
     if (!token) return;
 
     try {
-      const res = await fetch("http://localhost:3001/api/me", {
+      const res = await fetch(`${API_BASE}/api/me`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -498,7 +554,7 @@ export default function HomePage() {
     if (!token) return;
 
     try {
-      const res = await fetch("http://localhost:3001/api/group-personal-maps", {
+      const res = await fetch(`${API_BASE}/api/group-personal-maps`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -531,7 +587,7 @@ export default function HomePage() {
       }
 
       const classRes = await fetch(
-        "http://localhost:3001/api/class-group-decisions",
+        `${API_BASE}/api/class-group-decisions`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -555,7 +611,7 @@ export default function HomePage() {
           setClassFinalChoices(classData.classFinalChoices);
         } else {
           const finalRes = await fetch(
-            "http://localhost:3001/api/class-final-decisions",
+            `${API_BASE}/api/class-final-decisions`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -598,7 +654,7 @@ export default function HomePage() {
       isLoadingUserDataRef.current = true;
 
       try {
-        const res = await fetch("http://localhost:3001/api/user-data", {
+        const res = await fetch(`${API_BASE}/api/user-data`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -614,11 +670,12 @@ export default function HomePage() {
         // 🔥 /api/user-data 只負責卡牌、稱號、調查書，不再負責地圖
         setStudentThought(data.studentThought || "");
         setStudentPlan(data.studentPlan || "");
+        setInquiryPlans(data.inquiryPlans || []);
         setFinalSummaries(data.finalSummaries || []);
         setEarnedHomeTitles(data.earnedTitles || []);
         setUnlockedCards(data.unlockedCards || []);
 
-        const mapRes = await fetch("http://localhost:3001/api/user-map", {
+        const mapRes = await fetch(`${API_BASE}/api/user-map`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -634,7 +691,7 @@ export default function HomePage() {
         }
 
         const taskRes = await fetch(
-          "http://localhost:3001/api/map-task-status",
+          `${API_BASE}/api/map-task-status`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -647,6 +704,43 @@ export default function HomePage() {
           setIsMapTaskOpen(Boolean(taskData.isOpen));
         } else {
           console.error(taskData.message || "讀取地圖任務狀態失敗");
+        }
+
+        const inquiryTaskRes = await fetch(
+          `${API_BASE}/api/inquiry-task-status`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+        const inquiryTaskData = await inquiryTaskRes.json();
+
+        if (inquiryTaskRes.ok) {
+          setIsInquiryTaskOpen(inquiryTaskData.isOpen !== false);
+        } else {
+          console.error(inquiryTaskData.message || "讀取探究調查狀態失敗");
+        }
+
+        const suspectVoteRes = await fetch(
+          `${API_BASE}/api/suspect-voting-status`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+        const suspectVoteData = await suspectVoteRes.json();
+
+        if (suspectVoteRes.ok) {
+          setIsSuspectVotingOpen(Boolean(suspectVoteData.isOpen));
+          setIsSuspectVotingFinalized(Boolean(suspectVoteData.isFinalized));
+          setSuspectVoteTotals(suspectVoteData.totals || {});
+          setSuspectTotalVoters(Number(suspectVoteData.totalVoters) || 0);
+          setSuspectTotalEligibleVoters(Number(suspectVoteData.totalEligibleVoters) || 0);
+          setMySuspectVotes(Array.isArray(suspectVoteData.myVotes) ? suspectVoteData.myVotes : []);
+        } else {
+          console.error(suspectVoteData.message || "讀取嫌犯投票狀態失敗");
         }
       } catch (err) {
         console.error(err);
@@ -671,6 +765,14 @@ export default function HomePage() {
     setGroupFinalChoices({});
     setClassFinalChoices({});
     setIsMapTaskOpen(false);
+    setIsInquiryTaskOpen(true);
+    setIsSuspectVotingOpen(false);
+    setIsSuspectVotingFinalized(false);
+    setSuspectVoteTotals({});
+    setSuspectTotalVoters(0);
+    setSuspectTotalEligibleVoters(0);
+    setMySuspectVotes([]);
+    setDraftSuspectVotes([]);
     setMapPreviewPageIndex(0);
     setToken(nextToken);
     setCurrentUser(user);
@@ -692,6 +794,14 @@ export default function HomePage() {
     setGroupFinalChoices({});
     setClassFinalChoices({});
     setIsMapTaskOpen(false);
+    setIsInquiryTaskOpen(true);
+    setIsSuspectVotingOpen(false);
+    setIsSuspectVotingFinalized(false);
+    setSuspectVoteTotals({});
+    setSuspectTotalVoters(0);
+    setSuspectTotalEligibleVoters(0);
+    setMySuspectVotes([]);
+    setDraftSuspectVotes([]);
     setMapPreviewPageIndex(0);
     setPage("home");
   }
@@ -701,7 +811,7 @@ export default function HomePage() {
       if (!token) return;
 
       try {
-        await fetch("http://localhost:3001/api/activity-log", {
+        await fetch(`${API_BASE}/api/activity-log`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -716,6 +826,95 @@ export default function HomePage() {
     [token],
   );
 
+  const loadLiveTaskStatus = useCallback(async () => {
+    if (!token) return;
+
+    try {
+      const [mapRes, inquiryRes, suspectRes] = await Promise.all([
+        fetch(`${API_BASE}/api/map-task-status`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        fetch(`${API_BASE}/api/inquiry-task-status`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        fetch(`${API_BASE}/api/suspect-voting-status`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+      ]);
+
+      const [mapData, inquiryData, suspectData] = await Promise.all([
+        mapRes.json(),
+        inquiryRes.json(),
+        suspectRes.json(),
+      ]);
+
+      if (mapRes.ok) {
+        setIsMapTaskOpen(Boolean(mapData.isOpen));
+      } else {
+        console.error(mapData.message || "讀取地圖任務狀態失敗");
+      }
+
+      if (inquiryRes.ok) {
+        setIsInquiryTaskOpen(inquiryData.isOpen !== false);
+      } else {
+        console.error(inquiryData.message || "讀取探究調查狀態失敗");
+      }
+
+      if (suspectRes.ok) {
+        setIsSuspectVotingOpen(Boolean(suspectData.isOpen));
+        setIsSuspectVotingFinalized(Boolean(suspectData.isFinalized));
+        setSuspectVoteTotals(suspectData.totals || {});
+        setSuspectTotalVoters(Number(suspectData.totalVoters) || 0);
+        setSuspectTotalEligibleVoters(Number(suspectData.totalEligibleVoters) || 0);
+        setMySuspectVotes(Array.isArray(suspectData.myVotes) ? suspectData.myVotes : []);
+      } else {
+        console.error(suspectData.message || "讀取嫌犯投票狀態失敗");
+      }
+    } catch (error) {
+      console.error("同步任務狀態發生錯誤：", error);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    if (!token) return;
+
+    loadLiveTaskStatus();
+    const timer = window.setInterval(loadLiveTaskStatus, 2000);
+
+    return () => window.clearInterval(timer);
+  }, [loadLiveTaskStatus, token]);
+
+  async function submitSuspectVote() {
+    if (!token || draftSuspectVotes.length === 0) return;
+
+    setSuspectVoteMessage("正在送出投票...");
+
+    try {
+      const res = await fetch(`${API_BASE}/api/suspect-votes`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ groupIds: draftSuspectVotes }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "送出投票失敗");
+
+      setMySuspectVotes(Array.isArray(data.myVotes) ? data.myVotes : draftSuspectVotes);
+      setIsSuspectVotingOpen(Boolean(data.isOpen));
+      setIsSuspectVotingFinalized(Boolean(data.isFinalized));
+      setSuspectVoteTotals(data.totals || {});
+      setSuspectTotalVoters(Number(data.totalVoters) || 0);
+      setSuspectTotalEligibleVoters(Number(data.totalEligibleVoters) || 0);
+      setSuspectVoteMessage("投票已送出");
+    } catch (error) {
+      console.error(error);
+      setSuspectVoteMessage(error instanceof Error ? error.message : "送出投票失敗");
+    }
+  }
+
   const saveUserMap = useCallback(
     async (nextMapState: MapState) => {
       if (!token) return;
@@ -727,7 +926,7 @@ export default function HomePage() {
       lastSavedMapTextRef.current = nextText;
 
       try {
-        const res = await fetch("http://localhost:3001/api/user-map", {
+        const res = await fetch(`${API_BASE}/api/user-map`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -818,8 +1017,8 @@ export default function HomePage() {
       try {
         const endpoint =
           mode === "group"
-            ? "http://localhost:3001/api/group-final-decision"
-            : "http://localhost:3001/api/class-final-decision";
+            ? `${API_BASE}/api/group-final-decision`
+            : `${API_BASE}/api/class-final-decision`;
 
         const res = await fetch(endpoint, {
           method: mode === "group" ? "PUT" : "POST",
@@ -855,7 +1054,7 @@ export default function HomePage() {
     setIsMapTaskOpen(nextOpen);
 
     try {
-      const res = await fetch("http://localhost:3001/api/map-task-status", {
+      const res = await fetch(`${API_BASE}/api/map-task-status`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -883,8 +1082,129 @@ export default function HomePage() {
     }
   }
 
+  async function toggleInquiryTaskOpen() {
+    if (!isTeacher || !token) return;
+
+    const nextOpen = !isInquiryTaskOpen;
+    setIsInquiryTaskOpen(nextOpen);
+
+    try {
+      const res = await fetch(`${API_BASE}/api/inquiry-task-status`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ isOpen: nextOpen }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        setIsInquiryTaskOpen(!nextOpen);
+        console.error(data.message || "更新探究調查狀態失敗");
+        return;
+      }
+
+      logActivity({
+        eventType: "teacher_inquiry_task_toggle",
+        eventLabel: "教師切換探究調查開關",
+        targetType: "inquiryTask",
+        newValue: { isOpen: nextOpen },
+      });
+    } catch (error) {
+      setIsInquiryTaskOpen(!nextOpen);
+      console.error("更新探究調查狀態發生錯誤：", error);
+    }
+  }
+
+  async function toggleSuspectVotingOpen() {
+    if (!isTeacher || !token || isSuspectVotingOpen) return;
+
+    const nextOpen = true;
+    setIsSuspectVotingOpen(true);
+    setIsSuspectVotingFinalized(false);
+    // 重新開啟投票是延續投票，不清空目前統計與已投票狀態。
+    // 尚未投票的學生會因 mySuspectVotes.length === 0 自動跳出投票視窗。
+    setDraftSuspectVotes([]);
+
+    try {
+      const res = await fetch(`${API_BASE}/api/suspect-voting-status`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ isOpen: nextOpen }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        setIsSuspectVotingOpen(false);
+        console.error(data.message || "更新嫌犯投票狀態失敗");
+        return;
+      }
+
+      setIsSuspectVotingOpen(Boolean(data.isOpen));
+      setIsSuspectVotingFinalized(Boolean(data.isFinalized));
+      setSuspectVoteTotals(data.totals || {});
+      setSuspectTotalVoters(Number(data.totalVoters) || 0);
+      setSuspectTotalEligibleVoters(Number(data.totalEligibleVoters) || 0);
+      setMySuspectVotes(Array.isArray(data.myVotes) ? data.myVotes : []);
+      setDraftSuspectVotes([]);
+      logActivity({
+        eventType: "teacher_suspect_voting_toggle",
+        eventLabel: "教師切換嫌犯投票開關",
+        targetType: "suspectVoting",
+        newValue: { isOpen: nextOpen },
+      });
+    } catch (error) {
+      setIsSuspectVotingOpen(false);
+      setIsSuspectVotingFinalized(false);
+      console.error("更新嫌犯投票狀態發生錯誤：", error);
+    }
+  }
+
+  async function finishSuspectVoting() {
+    if (!isTeacher || !token) return;
+
+    try {
+      const res = await fetch(`${API_BASE}/api/suspect-voting-finish`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        console.error(data.message || "結束嫌犯投票失敗");
+        return;
+      }
+
+      setIsSuspectVotingOpen(false);
+      setIsSuspectVotingFinalized(true);
+      setSuspectVoteTotals(data.totals || {});
+      setSuspectTotalVoters(Number(data.totalVoters) || 0);
+      setSuspectTotalEligibleVoters(Number(data.totalEligibleVoters) || 0);
+      setMySuspectVotes(Array.isArray(data.myVotes) ? data.myVotes : []);
+
+      logActivity({
+        eventType: "teacher_suspect_voting_finish",
+        eventLabel: "教師結束嫌犯投票並公布結果",
+        targetType: "suspectVoting",
+        newValue: { isOpen: false, isFinalized: true },
+      });
+    } catch (error) {
+      console.error("結束嫌犯投票發生錯誤：", error);
+    }
+  }
+
   function goPage(nextPage: Page) {
     if ((nextPage === "teacherGroups" || nextPage === "teacherStudentData") && !isTeacher) {
+      window.history.pushState({ page: "home" }, "", window.location.href);
+      setPage("home");
+      return;
+    }
+
+    if ((nextPage === "question1" || nextPage === "question2" || nextPage === "ready" || nextPage === "cards") && !isInquiryTaskOpen && !isTeacher) {
       window.history.pushState({ page: "home" }, "", window.location.href);
       setPage("home");
       return;
@@ -907,6 +1227,11 @@ export default function HomePage() {
   }
 
   function startNewExploration() {
+    if (!isInquiryTaskOpen && !isTeacher) {
+      setSuspectVoteMessage("探究調查已由教師鎖定，目前只能閱覽已完成的調查書。");
+      return;
+    }
+
     setStudentThought("");
     setStudentPlan("");
     logActivity({
@@ -954,7 +1279,7 @@ export default function HomePage() {
 
     async function saveUserData() {
       try {
-        const res = await fetch("http://localhost:3001/api/user-data", {
+        const res = await fetch(`${API_BASE}/api/user-data`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -963,6 +1288,7 @@ export default function HomePage() {
           body: JSON.stringify({
             studentThought,
             studentPlan,
+            inquiryPlans,
             finalSummaries,
             earnedTitles: earnedHomeTitles,
             unlockedCards,
@@ -986,6 +1312,7 @@ export default function HomePage() {
   }, [
     studentThought,
     studentPlan,
+    inquiryPlans,
     finalSummaries,
     earnedHomeTitles,
     unlockedCards,
@@ -1008,6 +1335,22 @@ export default function HomePage() {
         length: trimmedValue.length,
       },
     });
+  }
+
+  function saveCurrentInquiryPlan() {
+    const trimmedThought = studentThought.trim();
+    const trimmedPlan = studentPlan.trim();
+
+    if (!trimmedThought || !trimmedPlan) return;
+
+    setInquiryPlans((prev) => [
+      ...prev,
+      {
+        studentThought: trimmedThought,
+        studentPlan: trimmedPlan,
+        createdAt: new Date().toISOString(),
+      },
+    ]);
   }
 
   function handleSubmitSummary(summary: FinalSummary) {
@@ -1064,6 +1407,167 @@ export default function HomePage() {
     goPage("home");
   }
 
+  function renderTeacherControlSection() {
+    const maxVoteCount = Math.max(1, ...SUSPECT_GROUPS.map((group) => suspectVoteTotals[group.id] || 0));
+
+    return (
+      <section className="mb-6 grid gap-4 lg:grid-cols-2">
+        <div className="relative overflow-hidden rounded-[34px] border border-[#d7c8ad] bg-[#fffaf0]/88 p-6 shadow-[0_24px_70px_rgba(45,41,34,0.14)] backdrop-blur-md">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(255,255,255,0.85),transparent_34%),radial-gradient(circle_at_90%_80%,rgba(191,160,103,0.16),transparent_34%)]" />
+          <div className="relative">
+            <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <p className="text-xs font-black tracking-[0.26em] text-[#84745c]">MISSION CONTROL</p>
+                <h2 className="mt-2 font-serif text-3xl font-semibold tracking-[0.06em] text-[#2f2a24]">任務開關</h2>
+              </div>
+              <span className="rounded-full border border-stone-200 bg-white/80 px-3 py-1 text-xs font-black text-stone-500">學生端每 2 秒同步</span>
+            </div>
+
+            <div className="grid gap-3 lg:grid-cols-2">
+              <div className="rounded-[24px] border border-[#d7c8ad] bg-white/72 p-3 shadow-sm">
+                <div className="mb-3 flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-xs font-black tracking-[0.22em] text-[#8a7051]">TASK 01</p>
+                    <h3 className="mt-1 text-xl font-black text-[#2f2a24]">探究調查書</h3>
+                    <p className={`mt-2 text-sm font-black ${isInquiryTaskOpen ? "text-emerald-700" : "text-red-700"}`}>
+                      {isInquiryTaskOpen ? "探究任務開啟中" : "探究任務已鎖定，只能閱覽"}
+                    </p>
+                  </div>
+                  <div className={`rounded-full px-3 py-1 text-xs font-black ${isInquiryTaskOpen ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}`}>
+                    {isInquiryTaskOpen ? "開啟中" : "已關閉"}
+                  </div>
+                </div>
+
+                <div className={`mb-3 rounded-2xl border-2 border-dashed px-4 py-3 text-center text-sm font-black ${isInquiryTaskOpen ? "border-[#a9b39a] bg-[#f4f7ef] text-[#46513e]" : "border-stone-300 bg-stone-100 text-stone-500"}`}>
+                  {isInquiryTaskOpen ? "探究任務開啟中" : "🔒 探究任務已鎖定"}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={toggleInquiryTaskOpen}
+                  className={`${GAME_BTN} w-full ${
+                    isInquiryTaskOpen
+                      ? "border-[#d7b8b1] bg-[#fbefed] text-[#8b4a43] hover:border-[#c98f85] hover:bg-[#f7e5e1]"
+                      : "border-[#a9b39a] bg-[#f4f7ef] text-[#46513e] hover:border-[#7d8b6f] hover:bg-[#edf3e6]"
+                  }`}
+                >
+                  {isInquiryTaskOpen ? "關閉探究調查" : "開啟探究調查"}
+                </button>
+              </div>
+
+              <div className="rounded-[24px] border border-[#bdcfbf] bg-white/72 p-3 shadow-sm">
+                <div className="mb-3 flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-xs font-black tracking-[0.22em] text-[#5f765f]">TASK 02</p>
+                    <h3 className="mt-1 text-xl font-black text-[#2f2a24]">繪製地圖</h3>
+                    <p className={`mt-2 text-sm font-black ${isMapTaskOpen ? "text-emerald-700" : "text-red-700"}`}>
+                      {isMapTaskOpen ? "繪製地圖開啟中" : "繪製地圖任務已鎖定"}
+                    </p>
+                  </div>
+                  <div className={`rounded-full px-3 py-1 text-xs font-black ${isMapTaskOpen ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}`}>
+                    {isMapTaskOpen ? "開啟中" : "已關閉"}
+                  </div>
+                </div>
+
+                <div className={`mb-3 rounded-2xl border px-4 py-3 text-center text-sm font-black ${isMapTaskOpen ? "border-[#a9b39a] bg-[#f4f7ef] text-[#46513e]" : "border-stone-300 bg-stone-100 text-stone-500"}`}>
+                  {isMapTaskOpen ? "🗺️ 繪製地圖任務開啟中" : "🔒 繪製地圖任務已鎖定"}
+                </div>
+
+                <div className="grid gap-2 sm:grid-cols-2">
+                  <button
+                    type="button"
+                    onClick={toggleMapTaskOpen}
+                    className={`${GAME_BTN} ${
+                      isMapTaskOpen
+                        ? "border-[#d7b8b1] bg-[#fbefed] text-[#8b4a43] hover:border-[#c98f85] hover:bg-[#f7e5e1]"
+                        : "border-[#a9b39a] bg-[#f4f7ef] text-[#46513e] hover:border-[#7d8b6f] hover:bg-[#edf3e6]"
+                    }`}
+                  >
+                    {isMapTaskOpen ? "關閉任務" : "開啟任務"}
+                  </button>
+                  <button
+                    type="button"
+                    disabled={!isMapTaskOpen}
+                    onClick={() => goPage("map")}
+                    className={`${GAME_BTN} ${isMapTaskOpen ? "border-[#55735e] bg-[#eef7ef] text-[#314d36] hover:border-[#345b3d] hover:bg-[#dff0e1]" : GAME_BTN_DISABLED}`}
+                  >
+                    查看地圖
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-3 rounded-[22px] border border-[#c8b8d7] bg-[#f8f2ff]/72 p-3">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="text-xs font-black tracking-[0.22em] text-[#6c5a7d]">SUSPECT VOTE</p>
+                  <p className="mt-1 text-sm font-black text-[#5b496b]">
+                    嫌犯投票：<span className={isSuspectVotingFinalized ? "text-red-700" : isSuspectVotingOpen ? "text-purple-700" : "text-stone-500"}>{isSuspectVotingFinalized ? "已結束，結果已公布" : isSuspectVotingOpen ? "投票進行中" : "尚未開啟"}</span>
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={toggleSuspectVotingOpen}
+                  disabled={isSuspectVotingOpen}
+                  className={`${GAME_BTN} min-w-[170px] ${
+                    isSuspectVotingOpen
+                      ? "cursor-not-allowed border-[#c8b8d7] bg-white/70 text-[#6c5a7d] opacity-80"
+                      : "border-[#b8a5cf] bg-[#f5effb] text-[#553f72] hover:border-[#9276b5] hover:bg-[#efe4f8]"
+                  }`}
+                >
+                  {isSuspectVotingOpen ? "投票進行中" : isSuspectVotingFinalized ? "重新開啟嫌犯投票" : "開啟嫌犯投票"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="relative flex overflow-hidden rounded-[34px] border border-[#bdcfbf] bg-[#f4fbf2]/88 p-6 shadow-[0_24px_70px_rgba(45,41,34,0.10)] backdrop-blur-md">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(255,255,255,0.85),transparent_34%),radial-gradient(circle_at_90%_80%,rgba(117,85,150,0.13),transparent_34%)]" />
+          <div className="relative flex w-full flex-col">
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <div>
+                <p className="text-xs font-black tracking-[0.26em] text-[#6c5a7d]">LIVE RESULT</p>
+                <h2 className="mt-2 font-serif text-2xl font-semibold tracking-[0.06em] text-[#2f2a24]">嫌犯投票即時統計</h2>
+              </div>
+              <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+                <span className="rounded-full border border-[#c8b8d7] bg-white/90 px-3 py-1 text-xs font-black text-[#5b496b]">
+                  已投票 {suspectTotalVoters} / {suspectTotalEligibleVoters || "—"} 人
+                </span>
+                <span className="rounded-full border border-stone-200 bg-white/80 px-3 py-1 text-xs font-black text-stone-500">每 2 秒同步</span>
+                <button
+                  type="button"
+                  disabled={isSuspectVotingFinalized || topSuspectVoteCount === 0}
+                  onClick={finishSuspectVoting}
+                  className="rounded-full border border-[#9b2f2f] bg-[#fff4ef] px-4 py-2 text-xs font-black tracking-[0.12em] text-[#9b2f2f] transition hover:-translate-y-0.5 hover:bg-[#fbe5dc] disabled:cursor-not-allowed disabled:border-stone-200 disabled:bg-stone-100 disabled:text-stone-400 disabled:hover:translate-y-0"
+                >
+                  {isSuspectVotingFinalized ? "投票已結束" : "投票結束"}
+                </button>
+              </div>
+            </div>
+            <div className="mt-2 flex min-h-[250px] flex-1 flex-col justify-between gap-3 rounded-[26px] border border-[#d8c9e8] bg-[#fbf8ff]/78 p-4">
+              {SUSPECT_GROUPS.map((group) => {
+                const count = suspectVoteTotals[group.id] || 0;
+                const percent = Math.round((count / maxVoteCount) * 100);
+
+                return (
+                  <div key={group.id} className="grid gap-2 sm:grid-cols-[170px_1fr_58px] sm:items-center">
+                    <div className="text-base font-black text-stone-700">{group.name}</div>
+                    <div className="h-9 overflow-hidden rounded-full border border-[#c8b8d7] bg-white shadow-inner">
+                      <div className="flex h-full items-center justify-end rounded-full bg-purple-500 pr-3 text-xs font-black text-white transition-all duration-300" style={{ width: `${percent}%` }}>
+                      </div>
+                    </div>
+                    <div className="text-right text-base font-black text-stone-700">{count} 票</div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   function renderHomePage() {
     if (isTeacher) {
       return (
@@ -1081,58 +1585,30 @@ export default function HomePage() {
                   <p className="text-sm font-black tracking-[0.22em] text-stone-500">TEACHER CONTROL PANEL</p>
                   <h1 className="mt-2 font-serif text-5xl font-semibold tracking-[0.16em] text-stone-800 md:text-7xl">教師管理中心</h1>
                   <p className="mt-4 max-w-2xl text-sm font-semibold leading-7 text-stone-600">
-                    這裡只保留教師需要的功能：開啟任務二繪製地圖、進入小組管理分配學生，或進入學生資料查看每位學生的遊戲歷程。
+                    這裡可以集中管理任務開關、嫌犯投票、小組分配與學生資料。
                   </p>
                 </div>
 
-                <div className="flex flex-col items-stretch gap-4 lg:items-end">
-                  <div className="flex flex-wrap items-center justify-end gap-3">
-                    <div className="rounded-xl border border-stone-200 bg-white/70 px-3 py-2 text-sm font-bold text-stone-600 shadow-sm">
-                      {currentUser?.username} 已登入
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={handleLogout}
-                      className={`${GAME_BTN} ${GAME_BTN_BLUE}`}
-                    >
-                      登出
-                    </button>
-
-                    {canUseFullscreen ? (
-                      <button
-                        type="button"
-                        onClick={toggleFullscreen}
-                        className={`${GAME_BTN} ${GAME_BTN_BLUE}`}
-                      >
-                        {isFullscreen ? "關閉全螢幕" : "鎖定全螢幕"}
-                      </button>
-                    ) : null}
+                <div className="flex flex-wrap items-center justify-end gap-3">
+                  <div className="rounded-xl border border-stone-200 bg-white/70 px-3 py-2 text-sm font-bold text-stone-600 shadow-sm">
+                    {currentUser?.username} 已登入
                   </div>
 
-                  <div className="flex flex-wrap items-center justify-end gap-3">
-                    <button
-                      type="button"
-                      onClick={() => goPage("teacherGroups")}
-                      className={`${GAME_BTN} border-[#bfa067] bg-[#fff7df] text-[#6d4e1f] hover:border-[#9f7a33] hover:bg-[#fff0bd]`}
-                    >
-                      小組管理
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => goPage("teacherStudentData")}
-                      className={`${GAME_BTN} border-[#55735e] bg-[#eef7ef] text-[#314d36] hover:border-[#345b3d] hover:bg-[#dff0e1]`}
-                    >
-                      學生資料
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className={`${GAME_BTN} ${GAME_BTN_BLUE}`}
+                  >
+                    登出
+                  </button>
                 </div>
               </div>
             </header>
 
-            <main className="grid gap-6 lg:grid-cols-[0.86fr_1.14fr]">
-              <section className="grid gap-4">
+            {renderTeacherControlSection()}
+
+            <main className="grid gap-6">
+              <section className="grid gap-4 lg:grid-cols-2">
                 <div className="relative overflow-hidden rounded-[34px] border border-[#d7c8ad] bg-[#fffaf0]/88 p-6 shadow-[0_24px_70px_rgba(45,41,34,0.14)] backdrop-blur-md">
                 <div className="pointer-events-none absolute inset-0 opacity-60">
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(255,255,255,0.9),transparent_35%),radial-gradient(circle_at_80%_80%,rgba(191,160,103,0.16),transparent_34%)]" />
@@ -1179,8 +1655,6 @@ export default function HomePage() {
                   </div>
                 </div>
               </section>
-
-              {renderMapSection()}
             </main>
           </div>
         </div>
@@ -1286,8 +1760,8 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className="relative mb-5 flex items-start justify-between gap-4 border-b border-[#cdbb9c] pb-4">
-          <div className="flex items-start gap-4">
+        <div className="relative mb-5 flex min-w-0 flex-col gap-4 border-b border-[#cdbb9c] pb-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="flex min-w-0 flex-1 items-start gap-4">
             <div className="mt-1 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-[#c9b38e] bg-[#f8f1df] text-3xl shadow-sm">
               🔍
             </div>
@@ -1297,9 +1771,57 @@ export default function HomePage() {
                 DETECTIVE DOSSIER
               </div>
               <h2 className="font-serif text-3xl font-semibold tracking-[0.08em] text-[#2f2a24]">
-                任務一:探究調查
+                任務一:探究書
               </h2>
             </div>
+          </div>
+
+          <div className="flex h-[96px] w-full min-w-0 items-center justify-center sm:h-[122px] sm:w-[clamp(150px,42%,280px)] sm:max-w-[280px] sm:shrink">
+            {shouldShowFinalSuspectResult ? (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="relative flex h-full w-full min-w-0 items-center justify-center overflow-hidden rounded-[24px] border-2 border-[#9b2f2f]/45 bg-[#fff7e6] px-3 py-2 text-center shadow-[inset_0_0_0_1px_rgba(255,255,255,0.55),0_12px_28px_rgba(91,50,34,0.12)] sm:px-4 sm:py-3"
+              >
+                <div
+                  className="relative z-10 grid h-full w-full place-items-center gap-1 overflow-hidden"
+                  style={{
+                    gridTemplateColumns: `repeat(${finalSuspectColumnCount}, minmax(0, 1fr))`,
+                  }}
+                >
+                  {finalSuspectNames.map((name) => (
+                    <div
+                      key={name}
+                      className="flex h-full w-full items-center justify-center overflow-hidden rounded-xl px-1 text-center font-black tracking-[0.04em] text-[#4f3328]"
+                      style={{
+                        fontSize: `${finalSuspectFontSize}px`,
+                        lineHeight: finalSuspectLineHeight,
+                      }}
+                    >
+                      <span className="line-clamp-2 break-words">
+                        {name}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                <motion.div
+                  initial={{ opacity: 0, scale: 2.25, rotate: -18 }}
+                  animate={{ opacity: 1, scale: 1, rotate: -10 }}
+                  transition={{
+                    delay: 0.18,
+                    type: "spring",
+                    stiffness: 260,
+                    damping: 12,
+                  }}
+                  className="pointer-events-none absolute left-1/2 top-1/2 z-20 flex h-[62%] w-[78%] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-[999px] border-[5px] border-[#9b2f2f] bg-[#9b2f2f]/5 text-[clamp(24px,4vw,42px)] font-black tracking-[0.22em] text-[#9b2f2f]/90 mix-blend-multiply shadow-[0_0_0_2px_rgba(155,47,47,0.18)] sm:border-[6px]"
+                >
+                  兇手
+                </motion.div>
+              </motion.div>
+            ) : (
+              <div className="h-full w-full rounded-[24px] border border-dashed border-[#cdbb9c] bg-[#f8f1df]/55" />
+            )}
           </div>
         </div>
 
@@ -1419,6 +1941,7 @@ export default function HomePage() {
                   </div>
                   <button
                     type="button"
+                    disabled={!isInquiryTaskOpen && !isTeacher}
                     onPointerDown={(event) => event.stopPropagation()}
                     onPointerMove={(event) => event.stopPropagation()}
                     onPointerUp={(event) => event.stopPropagation()}
@@ -1427,15 +1950,19 @@ export default function HomePage() {
                       event.stopPropagation();
                       startNewExploration();
                     }}
-                    className="relative mb-5 flex h-24 w-24 items-center justify-center rounded-[28px] border border-[#b8a37d] bg-gradient-to-br from-[#fff8e8] to-[#e9dcc1] text-6xl font-semibold leading-none text-[#4f4333] shadow-[0_14px_30px_rgba(72,56,34,0.18)] transition hover:-translate-y-1 hover:shadow-[0_18px_36px_rgba(72,56,34,0.22)] active:translate-y-0"
+                    className={`relative mb-5 flex h-24 w-24 items-center justify-center rounded-[28px] border border-[#b8a37d] bg-gradient-to-br from-[#fff8e8] to-[#e9dcc1] text-6xl font-semibold leading-none text-[#4f4333] shadow-[0_14px_30px_rgba(72,56,34,0.18)] transition active:translate-y-0 ${
+                      !isInquiryTaskOpen && !isTeacher
+                        ? "cursor-not-allowed grayscale opacity-45"
+                        : "hover:-translate-y-1 hover:shadow-[0_18px_36px_rgba(72,56,34,0.22)]"
+                    }`}
                   >
                     +
                   </button>
                   <p className="relative font-serif text-2xl font-semibold tracking-[0.08em] text-[#332c24]">
-                    建立新的探究調查書
+                    {!isInquiryTaskOpen && !isTeacher ? "探究調查已鎖定" : "建立新的探究調查書"}
                   </p>
                   <p className="relative mt-2 text-sm text-[#756957]">
-                    開啟一份新的案件紀錄
+                    {!isInquiryTaskOpen && !isTeacher ? "目前只能閱覽已完成的案件紀錄" : "開啟一份新的案件紀錄"}
                   </p>
                 </div>
               </div>
@@ -1909,6 +2436,7 @@ export default function HomePage() {
           onBack={() => goPage("question1")}
           onNext={() => {
             submitResearchText("plan", studentPlan);
+            saveCurrentInquiryPlan();
             goPage("ready");
           }}
         />
@@ -1961,13 +2489,106 @@ export default function HomePage() {
       ) : null}
 
       {page === "teacherGroups" && isTeacher ? (
-        <ControlPage token={token} onBack={() => goPage("home")} />
+        <ControlPage
+          token={token}
+          onBack={() => goPage("home")}
+        />
       ) : null}
 
       {page === "teacherStudentData" && isTeacher ? (
         <BehaviorRecord token={token} onBack={() => goPage("home")} />
       ) : null}
+
+      <AnimatePresence>
+        {shouldShowSuspectVoteModal ? (
+          <SuspectVoteModal
+            selectedGroupIds={draftSuspectVotes}
+            message={suspectVoteMessage}
+            onToggle={(groupId) => {
+              setDraftSuspectVotes((prev) =>
+                prev.includes(groupId)
+                  ? prev.filter((id) => id !== groupId)
+                  : [...prev, groupId],
+              );
+            }}
+            onSubmit={submitSuspectVote}
+          />
+        ) : null}
+      </AnimatePresence>
     </>
+  );
+}
+
+
+function SuspectVoteModal({
+  selectedGroupIds,
+  message,
+  onToggle,
+  onSubmit,
+}: {
+  selectedGroupIds: string[];
+  message: string;
+  onToggle: (groupId: string) => void;
+  onSubmit: () => void;
+}) {
+  return (
+    <motion.div
+      className="fixed inset-0 z-[90] flex items-center justify-center bg-stone-950/55 p-4 backdrop-blur-sm"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      <motion.div
+        className="w-full max-w-2xl rounded-[32px] border-4 border-stone-800 bg-[#fffaf0] p-6 shadow-[0_18px_0_rgba(68,64,60,0.35)]"
+        initial={{ scale: 0.94, y: 24 }}
+        animate={{ scale: 1, y: 0 }}
+        exit={{ scale: 0.94, y: 24 }}
+      >
+        <p className="text-xs font-black tracking-[0.28em] text-[#9b2f2f]">SUSPECT VOTE</p>
+        <h2 className="mt-2 font-serif text-3xl font-black tracking-[0.08em] text-stone-800">
+          你覺得誰是嫌犯？
+        </h2>
+        <p className="mt-2 text-sm font-bold text-stone-600">
+          可以複選六個玩家組織，選好後按下投票。
+        </p>
+
+        <div className="mt-5 grid gap-3 sm:grid-cols-2">
+          {SUSPECT_GROUPS.map((group) => {
+            const checked = selectedGroupIds.includes(group.id);
+            return (
+              <button
+                key={group.id}
+                type="button"
+                onClick={() => onToggle(group.id)}
+                className={`rounded-2xl border-2 px-4 py-3 text-left font-black transition ${
+                  checked
+                    ? "border-[#9b2f2f] bg-[#fbe9df] text-[#7a2d25]"
+                    : "border-stone-300 bg-white text-stone-700 hover:border-stone-600"
+                }`}
+              >
+                <span className="mr-2 inline-flex h-6 w-6 items-center justify-center rounded-full border-2 border-current text-xs">
+                  {checked ? "✓" : ""}
+                </span>
+                {group.name}
+              </button>
+            );
+          })}
+        </div>
+
+        {message ? <p className="mt-4 text-sm font-black text-[#9b2f2f]">{message}</p> : null}
+
+        <div className="mt-6 flex justify-end">
+          <button
+            type="button"
+            disabled={selectedGroupIds.length === 0}
+            onClick={onSubmit}
+            className="rounded-2xl border-2 border-stone-800 bg-stone-800 px-6 py-3 font-black text-white shadow-[0_5px_0_rgba(68,64,60,0.35)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:translate-y-0"
+          >
+            投票
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
   );
 }
 

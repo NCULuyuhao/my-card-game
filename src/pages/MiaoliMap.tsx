@@ -1608,7 +1608,7 @@ export default function MiaoliMap({
                 disabled={!selectedCanEdit}
                 onClick={() => applyState(selectedName, "保育")}
               >
-                設為保育
+                需要保育
               </button>
               <button
                 className="map-btn btn-develop"
@@ -1616,7 +1616,7 @@ export default function MiaoliMap({
                 disabled={!selectedCanEdit}
                 onClick={() => applyState(selectedName, "開發")}
               >
-                設為開發
+                需要開發
               </button>
               <button
                 className="map-btn btn-unknown"
