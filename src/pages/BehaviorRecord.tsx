@@ -68,7 +68,6 @@ type BehaviorRecordProps = {
   token?: string | null;
 };
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:3001";
 const ANALYSIS_API_BASE = import.meta.env.VITE_ANALYSIS_API_BASE_URL || "http://localhost:3002";
 
 const GROUP_NAMES: Record<string, string> = {
